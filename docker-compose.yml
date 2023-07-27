@@ -1,0 +1,51 @@
+version: "3.8"
+services:
+  rproxy:
+    restart: always
+    image: nginx:stable-alpine-slim
+    volumes:
+      - ./rproxy.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+    stdin_open: true
+    networks:
+      - frontend-backend
+    depends_on:
+      - frontend
+      - backend
+  
+  frontend:
+    restart: always
+    build: frontend
+    networks:
+      - frontend-backend
+    environment:
+      PORT: 80
+    #volumes:
+    #  - ./frontend/src:/app/src # allow live-debugging for test
+
+  backend:
+    restart: always
+    build: backend
+    depends_on:
+      - database
+    networks:
+      - backend-database
+      - frontend-backend
+    environment:
+      PORT: 80
+      DB_CONNECTION: mongodb://database:27017/eduwise
+    #volumes:
+    #  - ./backend/src:/app/src # allow live-debugging for test
+
+  database:
+    restart: always
+    image: mongo:latest
+    networks:
+      - backend-database
+    volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+    #  - ./data:/data/db
+networks:
+  frontend-backend:
+  backend-database:
