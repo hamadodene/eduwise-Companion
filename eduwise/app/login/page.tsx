@@ -9,13 +9,11 @@ import { useRouter } from "next/navigation";
 import { UserAuthForm } from "@/components/user-auth-form";
 
 interface InitialStateProps {
-    name:string,
     email:string,
     password:string
 }
 
 const initialState:InitialStateProps = {
-    name:'',
     email:'',
     password:''
 }
@@ -26,7 +24,7 @@ export default function page() {
 
      const onSubmit = (event: FormEvent) => {
         event.preventDefault()
-
+    
         signIn('credentials', {
             ...state,
             redirect:false,
@@ -36,17 +34,18 @@ export default function page() {
             }
 
             if(callback?.error) {
+                console.log("eeror "+ callback.error)
                 throw new Error('Invalid email or password')
             }
+            router.push('/')
         })
-        router.push('/')
      }
 
-     function handleChange(event:any) {
-        setState({...state, [event.target.name]: event.target.value})
-        //debug
-        console.log(event.target.value)
-   }
+
+    function handleChange(event:any) {
+        const { name, value } = event.currentTarget;
+        setState({...state, [name]: value})
+    }
 
    return (
     <>
@@ -62,7 +61,7 @@ export default function page() {
                                     Welcome to Eduwise
                                 </h1>
                             </div>
-                            <UserAuthForm />
+                            <UserAuthForm onSubmit={onSubmit} onChange={handleChange} email={state.email} password={state.password} />
                             <p className="px-8 text-center text-sm text-muted-foreground">
                                 Don't have an account?{" "}
                                 <Link href={"/register"} 

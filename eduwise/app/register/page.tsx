@@ -27,7 +27,8 @@ export default function page() {
 
     const onSubmit = (event: FormEvent) => {
        event.preventDefault()
-
+        
+       console.log("state is " + state.email)
        axios.post('/api/register', state)
        .then(() => {
             router.refresh()
@@ -37,13 +38,11 @@ export default function page() {
             }, 2500);
        }).catch((err:any) => {})
        .finally(() =>{})
-
     }
 
     function handleChange(event:any) {
-        setState({...state, [event.target.name]: event.target.value})
-        //debug
-        console.log(event.target.value)
+        const { name, value } = event.currentTarget;
+        setState({...state, [name]: value})
     }
 
     return (
@@ -60,7 +59,7 @@ export default function page() {
                                     Welcome to Eduwise
                                 </h1>
                             </div>
-                            <UserRegistrationForm />
+                            <UserRegistrationForm onSubmit={onSubmit} onChange={handleChange} email={state.email} name={state.name} password={state.password}/>
                             <p className="px-8 text-center text-sm text-muted-foreground">
                                 Already have an account?{" "}
                                 <Link href={"/login"} 

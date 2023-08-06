@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Account {
-  id                 String  @id @default((auto)) @map("_id") @db.ObjectId
+  id                 String @id @default(auto()) @map("_id") @db.ObjectId
   userId             String  @db.ObjectId
   type               String
   provider           String
@@ -30,7 +30,7 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default((auto)) @map("_id") @db.ObjectId
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
   sessionToken String   @unique
   userId       String   @db.ObjectId
   expires      DateTime
@@ -38,11 +38,15 @@ model Session {
 }
 
 model User {
-  id            String    @id @default((auto)) @map("_id") @db.ObjectId
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
   email         String?   @unique
+  hashedPassword  String?
   emailVerified DateTime?
+  role          String?   @default("user") // user, admin
   image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   accounts      Account[]
   sessions      Session[]
 }

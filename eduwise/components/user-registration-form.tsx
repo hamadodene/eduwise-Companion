@@ -12,17 +12,9 @@ import {
   CardFooter,
   CardHeader,
 } from "./ui/card" 
-import { FormEvent } from "react";
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+export function UserRegistrationForm({ ...props}) {
 
-export function UserRegistrationForm({ className, ...props }: UserAuthFormProps) {
-
-  const onSubmit = (event: FormEvent) => {
-    event.preventDefault()
-    console.log("Registration into account")
-  }
- 
   return (
     <Card>
       <CardHeader className="space-y-1">
@@ -48,21 +40,23 @@ export function UserRegistrationForm({ className, ...props }: UserAuthFormProps)
             </span>
           </div>
         </div>
-        <div className="grid gap-2">
-          <Label htmlFor="name">Name</Label>
-          <Input id="name" type="name" placeholder="Enter your name and surname...." />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="my-email@example.com" />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" placeholder="password"/>
-        </div>
+        <form onSubmit={props.onSubmit} className="text-center">
+            <div className="grid gap-2">
+                <Label htmlFor="name">Name</Label>
+                <Input id="name" type="name" name='name' placeholder="Enter your name and surname...."  onChange={props.onChange} defaultValue={props.name} />
+            </div>
+            <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" name='email' placeholder="my-email@example.com" onChange={props.onChange} defaultValue={props.email}/>
+            </div>
+            <div className="grid gap-2">
+                <Label htmlFor="password">Password</Label>
+                <Input id="password" type="password" name='password' placeholder="password" onChange={props.onChange} defaultValue={props.password}/>
+            </div>
+        </form>
       </CardContent>
       <CardFooter>
-        <Button className="w-full">Continue</Button>
+        <Button className="w-full" type="submit" onClick={props.onSubmit}>Continue</Button>
       </CardFooter>
     </Card>
   )
