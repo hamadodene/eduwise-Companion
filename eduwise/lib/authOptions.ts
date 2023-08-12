@@ -2,7 +2,7 @@
 import {AuthOptions} from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GitHubProvider from "next-auth/providers/github";
-import GoogleProvider from "next-auth/providers/google";
+import GoogleProvider, { GoogleProfile } from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import prisma from '@/lib/prismadb'
 import bcrypt from 'bcrypt'
@@ -18,12 +18,24 @@ export const authOptions: AuthOptions = {
                     role: profile.role ?? "user",
                     id: profile.id.toString(),
                     image: profile.avatar_url,
+                    email: profile.email,
+                    name: profile.name
                 }
             },
             clientId: process.env.GITHUB_ID as string,
             clientSecret: process.env.GITHUB_SECRET as string
         }),
         GoogleProvider({
+            profile(profile: GoogleProfile) {
+                return {
+                    ...profile,
+                    role: profile.role ?? "user",
+                    id: profile.sub,
+                    image: profile.picture,
+                    email: profile.email,
+                    name: profile.name
+                }
+            },
             clientId: process.env.GOOGLE_CLIENT_ID as string,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
         }),
@@ -33,7 +45,6 @@ export const authOptions: AuthOptions = {
                 email: { label: 'email', type: 'text'},
                 password: { label: 'password', type: 'password'} 
             },
-
             async authorize(credentials) {
                 if(!credentials?.email || !credentials?.password) {
                     throw new Error('Invalid credentials');
@@ -64,54 +75,24 @@ export const authOptions: AuthOptions = {
         })
     ],
     callbacks: {
-        async jwt({ token, user, session, trigger }) {
-            //debug
-            console.log("jwt callback", {token, user, session})
-
-            if(trigger === "update" && (session?.name || session?.email || session?.role)) {
-               token.name = session.name
-               token.email = session.email
-               token.role = session.role
-            }
-
+        async jwt({ token, user }) {
             // pass in user id and email
             if(user) {
                 return {
-                    ...token,
-                    id: user.id,
-                    email: user.email,
-                    name: user.name,
-                    role: user.role
+                    ...token
                 }
             }
-
-            // update user in the database
-            const newUser = await prisma.user.update({
-                where: {
-                    id: token.id as string
-                },
-                data: {
-                    name: token.name as string,
-                    email: token.email as string
-                }
-            })
-            //debug
-            console.log("newUser", newUser)
             return token
         },
         async session({ session, token, user}) {
-            console.log("session callback", {token, user, session})
             return {
                 ...session,
                 user: {
                     ...session.user,
-                    id: token.id,
-                    email: token.email,
-                    name: token.name,
-                    role:  token.role
+                    id: token.id
                 }
             }
-        }
+        },
     },
     pages: {
         signIn: '/'

@@ -11,20 +11,30 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
+  CardTitle,
+  CardDescription
 } from "./ui/card" 
+import { signIn } from 'next-auth/react';
+
 
 export function UserAuthForm({ ...props }) {
   return (
     <Card>
       <CardHeader className="space-y-1">
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl">Welcome to eduwise</CardTitle>
+        <CardDescription>
+          Enter your email below to login into your account
+        </CardDescription>
+      </CardHeader>
       </CardHeader>
       <CardContent className="grid gap-4">
         <div className="grid grid-cols-2 gap-6">
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => signIn('github', { callbackUrl: '/' })}>
             <Icons.gitHub className="mr-2 h-4 w-4" />
             Github
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => signIn('google', { callbackUrl: '/' })}>
             <Icons.google className="mr-2 h-4 w-4" />
             Google
           </Button>
@@ -39,7 +49,6 @@ export function UserAuthForm({ ...props }) {
             </span>
           </div>
         </div>
-        <form onSubmit={props.onSubmit}>
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" name="email" placeholder="my-email@example.com" onChange={props.onChange} defaultValue={props.email} />
@@ -48,7 +57,6 @@ export function UserAuthForm({ ...props }) {
             <Label htmlFor="password">Password</Label>
             <Input id="password" type="password" name="password" placeholder="password" onChange={props.onChange} defaultValue={props.password}/>
           </div>
-        </form>
       </CardContent>
       <CardFooter>
         <Button className="w-full" onClick={props.onSubmit}>Continue</Button>
