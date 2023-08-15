@@ -11,7 +11,7 @@ import { ChatHistory, chatHistory } from "@/data/chathistory"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Home, Settings, Blocks } from "lucide-react";
+import { Home, Settings, Blocks, UserSquare2 } from "lucide-react";
 
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -22,7 +22,7 @@ export function Sidebar({ className, chatHistory }: SidebarProps) {
 
     return (
         <>
-            <div className="flex gap-2 items-center hover:bg-secondary p-2 h-[60px] border-b-2">
+            <div className="flex gap-1 items-center hover:bg-secondary p-2 h-[60px] border-b-2">
                 <Avatar>
                     <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
                     <AvatarFallback>CN</AvatarFallback>
@@ -34,17 +34,27 @@ export function Sidebar({ className, chatHistory }: SidebarProps) {
             <div className={cn("pb-12", className)}>
                 <div className="space-y-4 py-4">
                     <div className="px-3 py-2">
-                        <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
-                            Discover
-                        </h2>
                         <div className="space-y-1">
                             <Button variant="secondary" className="w-full justify-start">
                                 <Home className="mr-2 h-4 w-4"/>
-                                Dashboard
+                                Home
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+                <div className="space-y-4 py-4">
+                    <div className="px-3 py-2">
+                        <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
+                            Settings
+                        </h2>
+                        <div className="space-y-1">
+                            <Button variant="ghost" className="w-full justify-start">
+                                <UserSquare2 className="mr-2 h-4 w-4"/>
+                                Profile
                             </Button>
                             <Button variant="ghost" className="w-full justify-start">
                                 <Settings className="mr-2 h-4 w-4"/>
-                                Settings
+                                Integrations
                             </Button>
                         </div>
                     </div>
