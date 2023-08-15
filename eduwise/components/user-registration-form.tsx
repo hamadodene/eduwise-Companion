@@ -15,7 +15,7 @@ import {
   CardDescription
 } from "./ui/card" 
 
-export function UserRegistrationForm({ ...props}) {
+export function UserRegistrationForm({ ...props }) {
 
   return (
     <Card>

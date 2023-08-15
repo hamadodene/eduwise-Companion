@@ -75,23 +75,26 @@ export const authOptions: AuthOptions = {
         })
     ],
     callbacks: {
-        async jwt({ token, user }) {
-            // pass in user id and email
-            if(user) {
-                return {
-                    ...token
-                }
-            }
-            return token
-        },
-        async session({ session, token, user}) {
+        session: ({ session, token }) => {
             return {
-                ...session,
-                user: {
-                    ...session.user,
-                    id: token.id
-                }
+              ...session,
+              user: {
+                ...session.user,
+                id: token.id,
+                randomKey: token.randomKey,
+              },
+            };
+          },
+        jwt: ({ token, user }) => {
+            if (user) {
+              const u = user as unknown as any;
+              return {
+                ...token,
+                id: u.id,
+                randomKey: u.randomKey,
+              };
             }
+            return token;
         },
     },
     pages: {

@@ -21,11 +21,11 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
         <head />
         <body className={inter.className}>
-          <UserProvider>
             <ThemeProvider attribute="class" defaultTheme="system"  enableSystem>
-              {children}
+              <UserProvider>
+                {children}
+              </UserProvider> 
             </ThemeProvider>
-          </UserProvider>
         </body>
       </html>
     </>

@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react"
 
 export const ProfilePicture = () => {
   const { data } = useSession()
-
+  console.log("session data is " + data)
   return (
     <Avatar>
       <AvatarImage src={data?.user.image} alt={data?.user.name} />
