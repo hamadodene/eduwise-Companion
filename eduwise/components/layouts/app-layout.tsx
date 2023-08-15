@@ -13,15 +13,13 @@ export const AppLayout = (props: PropsWithChildren) => {
       <div className="flex w-60 border-r hidden md:block">
         <Sidebar chatHistory={chatHistory} />
       </div>
-      <div className="flex-1">
+      <div className="flex-1 flex flex-col">
         <div className="flex relative items-center h-[60px] border-r border-b-2">
           <NavBar />
         </div>
-        <div className="flex flex-col h-full">
-          <div className="flex-grow">
+        <div className="flex flex-col h-full gap-4 overflow-y-auto">
             {/* CONTENT HERE*/}
             <Chat />
-          </div>
         </div>
       </div>
     </div>

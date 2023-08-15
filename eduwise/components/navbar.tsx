@@ -13,16 +13,14 @@ import { CouseListDialog } from "./CourseListDialog";
 export function NavBar({ ...props }) {
     return (
         <>
-            {/* NAVBAR HERE*/}
-            <Sheet>
-                <SheetTrigger className="md:hidden absolute left-5 bg-primary rounded">
+            <Sheet key={"left"}>
+                <SheetTrigger className="md:hidden absolute left-5 bg-primary rounded" asChild>
                     <Menu size={35} color="white" />
                 </SheetTrigger>
-                <SheetContent className="flex flex-col w-3/4 h-full">
+                <SheetContent className="flex flex-col w-3/4 h-full" side="left">
                     <Sidebar chatHistory={chatHistory} />
                 </SheetContent>
             </Sheet>
-
             <div className="absolute grid grid-flow-col gap-3 right-5">
                 <div>
                     <Dialog>
@@ -32,7 +30,7 @@ export function NavBar({ ...props }) {
                                 <span className="font-extrabold whitespace-nowrap hidden sm:block">New Chat</span>
                             </Button>
                         </DialogTrigger>
-                        <CouseListDialog/>
+                        <CouseListDialog />
                     </Dialog>
                 </div>
                 <div>

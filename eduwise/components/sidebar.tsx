@@ -65,7 +65,7 @@ export function Sidebar({ className, chatHistory }: SidebarProps) {
                 <h2 className="relative px-7 text-lg font-semibold tracking-tight">
                     Your chats
                 </h2>
-                <ScrollArea className="h-[400px] px-1">
+                <ScrollArea className="h-[200px] px-1">
                     <div className="space-y-1 p-2">
                         {chatHistory?.map((chathistory, i) => (
                             <Button
