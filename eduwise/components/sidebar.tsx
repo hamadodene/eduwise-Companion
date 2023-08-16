@@ -22,11 +22,13 @@ export function Sidebar({ className, chatHistory }: SidebarProps) {
 
     return (
         <>
-            <div className="flex gap-1 items-center hover:bg-secondary p-2 h-[60px] border-b-2">
-                <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                    <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
+            <div className="flex gap-3 items-center hover:bg-secondary p-2 h-[60px]">
+                <div>
+                    <Avatar>
+                        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                        <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                </div>
                 <div className="text-lg">
                     <p className="text-sm font-semibold">Edu wise</p>
                 </div>
@@ -36,7 +38,7 @@ export function Sidebar({ className, chatHistory }: SidebarProps) {
                     <div className="px-3 py-2">
                         <div className="space-y-1">
                             <Button variant="secondary" className="w-full justify-start">
-                                <Home className="mr-2 h-4 w-4"/>
+                                <Home className="mr-2 h-4 w-4" />
                                 Home
                             </Button>
                         </div>
@@ -49,11 +51,11 @@ export function Sidebar({ className, chatHistory }: SidebarProps) {
                         </h2>
                         <div className="space-y-1">
                             <Button variant="ghost" className="w-full justify-start">
-                                <UserSquare2 className="mr-2 h-4 w-4"/>
+                                <UserSquare2 className="mr-2 h-4 w-4" />
                                 Profile
                             </Button>
                             <Button variant="ghost" className="w-full justify-start">
-                                <Settings className="mr-2 h-4 w-4"/>
+                                <Settings className="mr-2 h-4 w-4" />
                                 Integrations
                             </Button>
                         </div>
@@ -65,7 +67,7 @@ export function Sidebar({ className, chatHistory }: SidebarProps) {
                 <h2 className="relative px-7 text-lg font-semibold tracking-tight">
                     Your chats
                 </h2>
-                <ScrollArea className="h-[200px] px-1">
+                <ScrollArea className="h-[300px] px-1">
                     <div className="space-y-1 p-2">
                         {chatHistory?.map((chathistory, i) => (
                             <Button
@@ -73,7 +75,7 @@ export function Sidebar({ className, chatHistory }: SidebarProps) {
                                 variant="ghost"
                                 className="w-full justify-start font-normal"
                             >
-                                <Blocks className="mr-2 h-4 w-4"/>
+                                <Blocks className="mr-2 h-4 w-4" />
                                 {chathistory}
                             </Button>
                         ))}

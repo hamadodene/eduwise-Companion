@@ -12,31 +12,38 @@ import { CouseListDialog } from "./CourseListDialog";
 
 export function NavBar({ ...props }) {
     return (
-        <>
-            <Sheet key={"left"}>
-                <SheetTrigger className="md:hidden absolute left-5 bg-primary rounded" asChild>
-                    <Menu size={35} color="white" />
-                </SheetTrigger>
-                <SheetContent className="flex flex-col w-3/4 h-full" side="left">
-                    <Sidebar chatHistory={chatHistory} />
-                </SheetContent>
-            </Sheet>
-            <div className="absolute grid grid-flow-col gap-3 right-5">
-                <div>
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button className="rounded-lg">
-                                <Plus className="mr-2 h-4 w-4" />
-                                <span className="font-extrabold whitespace-nowrap hidden sm:block">New Chat</span>
-                            </Button>
-                        </DialogTrigger>
-                        <CouseListDialog />
-                    </Dialog>
+        <div className="grid grid-cols-2 gap-4 w-full content-center">
+            <div className="col-span-1 col-start-1 flex gap-2 items-center justify-center relative left-5">
+                <div className="bg-primary rounded-lg md:hidden">
+                <Sheet key={"left"}>
+                    <SheetTrigger asChild>
+                        <Menu size={35} color="white" />
+                    </SheetTrigger>
+                    <SheetContent className="flex flex-col w-3/4 h-full" side="left">
+                        <Sidebar chatHistory={chatHistory} />
+                    </SheetContent>
+                </Sheet>
                 </div>
-                <div>
-                    <ModeToggle />
+
+                <input type="text" className="m-0 px-2 border-none rounded-md text-gray-400 w-full outline-0 truncate bg-transparent dark:bg-transparent"
+                    defaultValue="📚🔥 Explore the fundamentals of Machine Learning." />
+            </div>
+            <div className="col-span-1 flex items-center justify-end">
+                <div className="w-full">
+                    <div className="flex justify-end space-x-4">
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button className="rounded-lg">
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    <span className="font-extrabold whitespace-nowrap hidden sm:block">New Chat</span>
+                                </Button>
+                            </DialogTrigger>
+                            <CouseListDialog />
+                        </Dialog>
+                        <ModeToggle />
+                    </div>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
