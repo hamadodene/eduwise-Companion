@@ -6,6 +6,7 @@ import { PaperPlaneIcon } from "@radix-ui/react-icons"
 import { ScrollArea } from "./ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { useState } from "react";
+import TypingAnimation from "./TypingAnimation"
 
 export function Chat() {
   const [loading, setLoading] = useState(false)
@@ -26,7 +27,7 @@ export function Chat() {
       },
     ]);
     setInput("")
-    
+
     const response = await fetch("/api/generate", {
       method: "POST",
       headers: {
@@ -73,20 +74,29 @@ export function Chat() {
       <div className="flex-1 overflow-y-auto mt-4 mx-2 p-4">
         <ScrollArea className="w-full">
           <div className="space-y-4">
-
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={cn(
+            {
+              messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    "flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm",
+                    message.role === "user"
+                      ? "ml-auto bg-primary text-primary-foreground whitespace-normal max-w-lg bg-sky-200 max-w-sm md:max-w-lg"
+                      : "bg-muted mr-auto whitespace-normal bg-teal-600 max-w-sm md:max-w-lg"
+                  )}
+                >
+                  {message.content}
+                </div>
+              ))}
+            {
+              loading && (
+                <div key={messages.length} className={cn(
                   "flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm",
-                  message.role === "user"
-                    ? "ml-auto bg-primary text-primary-foreground whitespace-normal max-w-lg bg-sky-200 max-w-sm md:max-w-lg"
-                    : "bg-muted mr-auto whitespace-normal bg-teal-600 max-w-sm md:max-w-lg"
-                )}
-              >
-                {message.content}
-              </div>
-            ))}
+                  "bg-muted mr-auto whitespace-normal max-w-sm md:max-w-lg")}
+                >
+                  <TypingAnimation />
+                </div>
+              )}
           </div>
         </ScrollArea>
       </div>
