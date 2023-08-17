@@ -100,7 +100,7 @@ export function Chat() {
           </div>
         </ScrollArea>
       </div>
-      <div className="sticky bottom-5 mt-4 mx-0 md:mx-2 rounded-lg shadow-md border-2 p-4 min-w-screen flex items-center justify-center">
+      <div className="sticky bottom-5 mt-4 mx-0 md:mx-1 rounded-lg shadow-md border-2 p-4 min-w-screen flex items-center justify-center">
         <div className="flex w-full items-center space-x-2">
           <textarea
             value={input}

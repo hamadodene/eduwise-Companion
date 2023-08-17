@@ -51,20 +51,20 @@ model User {
   sessions      Session[]
 }
 
-model Chat {
+model Room {
   id        String      @id @default(auto()) @map("_id") @db.ObjectId
-  title:     String
+  title     String?      @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   messages  Message[]
 }
 
 model Message {
-  id        String       @id @default(auto()) @map("_id") @db.ObjectId
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
   request   String   
   response  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  chatId    String
-  chat      Chat     @relation(fields: [chatId], references: [id])
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id])
 }

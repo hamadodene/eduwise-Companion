@@ -6,8 +6,7 @@ import { Sidebar } from "@/components/sidebar"
 import { chatHistory } from "@/data/chathistory"
 import { Chat } from "@/components/chat"
 
-export const AppLayout = (props: PropsWithChildren) => {
-
+export const AppLayout = ({ children }) => {
   return (
     <div className="flex h-screen">
       <div className="flex w-60 border-r hidden md:block">
@@ -19,6 +18,7 @@ export const AppLayout = (props: PropsWithChildren) => {
         </div>
         <div className="flex flex-col h-full gap-4 overflow-y-auto">
             {/* CONTENT HERE*/}
+            {children}
             <Chat />
         </div>
       </div>
