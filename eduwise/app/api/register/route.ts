@@ -13,9 +13,6 @@ export async function POST(
         password
     } = body
 
-    // debug -- to remove
-    console.log(body)
-    
     if(!name || !password || !email) {
         return NextResponse.json("Missing name, email or password", { status: 400})
     }

@@ -17,7 +17,7 @@ class MoodleClient {
         logger?: any,
         service?: string,
         token?: string,
-        strictSSL: boolean
+        strictSSL?: boolean
     }) {
         this.url = options.url
         this.logger = options.logger || console
