@@ -35,7 +35,7 @@ export function NavBar({ ...props }) {
                             <DialogTrigger asChild>
                                 <Button className="rounded-lg">
                                     <Plus className="mr-2 h-4 w-4" />
-                                    <span className="font-extrabold whitespace-nowrap hidden sm:block">New Chat</span>
+                                    <span className="whitespace-nowrap hidden sm:block">New Chat</span>
                                 </Button>
                             </DialogTrigger>
                             <CouseListDialog />

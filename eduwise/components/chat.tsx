@@ -7,6 +7,8 @@ import { ScrollArea } from "./ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { useState } from "react";
 import TypingAnimation from "./TypingAnimation"
+import { Plus } from "lucide-react"
+import { Input } from "./ui/input"
 
 export function Chat() {
   const [loading, setLoading] = useState(false)
@@ -81,8 +83,8 @@ export function Chat() {
                   className={cn(
                     "flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm",
                     message.role === "user"
-                      ? "ml-auto bg-primary text-primary-foreground whitespace-normal max-w-lg bg-sky-200 max-w-sm md:max-w-lg"
-                      : "bg-muted mr-auto whitespace-normal bg-teal-600 max-w-sm md:max-w-lg"
+                      ? "ml-auto bg-primary text-primary-foreground whitespace-normal max-w-lg max-w-sm md:max-w-lg"
+                      : "bg-muted mr-auto whitespace-normal max-w-sm md:max-w-lg"
                   )}
                 >
                   {message.content}
@@ -102,12 +104,17 @@ export function Chat() {
       </div>
       <div className="sticky bottom-5 mt-4 mx-0 md:mx-1 rounded-lg shadow-md border-2 p-4 min-w-screen flex items-center justify-center">
         <div className="flex w-full items-center space-x-2">
-          <textarea
-            value={input}
-            id="message"
-            onChange={(e) => setInput(e.target.value)}
-            className="flex items-center grow h-auto h-30 shadow-2xl rounded-lg items-center outline-0 resize-none bg-transparent dark:bg-transparent"
-          ></textarea>
+          <Button size="icon" className="items-center">
+            <Plus className="h-4 w-4" />
+          </Button>
+          
+          <input
+          value={input}
+          id="message"
+          placeholder="Ask me something..."
+          onChange={(e) => setInput(e.target.value)}
+          className="flex items-center grow h-auto h-30  rounded-lg items-center outline-0 resize-none bg-transparent dark:bg-transparent"
+          />
           {!loading ? (
             <Button size="icon" onClick={(e) => generateResponse(e)}>
               <PaperPlaneIcon className="h-4 w-4" />

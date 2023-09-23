@@ -19,7 +19,7 @@ export const AppLayout = ({ children }) => {
         <div className="flex flex-col h-full gap-4 overflow-y-auto">
             {/* CONTENT HERE*/}
             {children}
-            <Chat />
+            {/*<Chat />*/}
         </div>
       </div>
     </div>

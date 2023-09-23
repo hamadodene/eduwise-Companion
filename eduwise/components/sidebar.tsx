@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Home, Settings, Blocks, UserSquare2 } from "lucide-react";
+import Link from "next/link";
 
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -52,7 +53,7 @@ export function Sidebar({ className, chatHistory }: SidebarProps) {
                         <div className="space-y-1">
                             <Button variant="ghost" className="w-full justify-start">
                                 <UserSquare2 className="mr-2 h-4 w-4" />
-                                Profile
+                                <Link href="/profile">Profile</Link>
                             </Button>
                             <Button variant="ghost" className="w-full justify-start">
                                 <Settings className="mr-2 h-4 w-4" />
