@@ -1,88 +1,66 @@
 "use client"
 
-import * as React from "react"
-import { useRef } from "react";
-import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-} from "@/components/ui/avatar"
-import { ChatHistory, chatHistory } from "@/data/chathistory"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Home, Settings, Blocks, UserSquare2 } from "lucide-react";
-import Link from "next/link";
+// components/Sidebar.js
+import React from 'react';
+import { Icons } from './icons';
+import { CogIcon, Plus, PlusCircleIcon, Settings2Icon, XIcon } from 'lucide-react';
+import { Button } from './ui/button';
+import { Dialog, DialogTrigger } from '@radix-ui/react-dialog';
+import { CoursesListDialog } from './coursesDialog';
+import { ModeToggle } from './mode-toogle';
 
-
-interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-    chatHistory: ChatHistory[]
-}
-
-export function Sidebar({ className, chatHistory }: SidebarProps) {
-
+const Sidebar = () => {
     return (
-        <>
-            <div className="flex gap-3 items-center hover:bg-secondary p-2 h-[60px]">
+        <div className="relative flex flex-col h-full bg-sky-100 dark:bg-gray-800 w-1/6 p-4">
+            <div className="mb-4 flex items-center justify-between">
                 <div>
-                    <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                        <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
+                    <h1 className="text-lg font-semibold">Eduwise companion</h1>
+                    <p className="text-sm">Empower Your Learning</p>
                 </div>
-                <div className="text-lg">
-                    <p className="text-sm font-semibold">Edu wise</p>
-                </div>
+                <Icons.logo className='h-10 w-10'></Icons.logo>
             </div>
-            <div className={cn("pb-12", className)}>
-                <div className="space-y-4 py-4">
-                    <div className="px-3 py-2">
-                        <div className="space-y-1">
-                            <Button variant="secondary" className="w-full justify-start">
-                                <Home className="mr-2 h-4 w-4" />
-                                Home
-                            </Button>
-                        </div>
+            <div className='mb-8'></div>
+            {/* Chat history */}
+            <div>
+                {/* border only on active chat*/}
+                <div className="relative mb-2 p-2 bg-white dark:bg-slate-900 border-2 border-sky-300 hover:bg-gray-300 rounded-lg group">
+                    <div className="flex justify-between items-center">
+                        <h2 className="text-sm font-semibold">Nuova conversasione</h2>
+                        <Button variant="ghost" className="absolute top-0 right-0 p-1 text-red-600 rounded-md group-hover:opacity-100 opacity-0 transition-opacity duration-300 bg-transparent">
+                            <XIcon />
+                        </Button>
+                    </div>
+                    <div className="mb-2"></div>
+                    <div className="flex justify-between">
+                        <p className="text-sm">2 messaggi</p>
+                        <p className="text-sm">2023-10-01 10:50:55</p>
                     </div>
                 </div>
-                <div className="space-y-4 py-4">
-                    <div className="px-3 py-2">
-                        <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
-                            Settings
-                        </h2>
-                        <div className="space-y-1">
-                            <Button variant="ghost" className="w-full justify-start">
-                                <UserSquare2 className="mr-2 h-4 w-4" />
-                                <Link href="/profile">Profile</Link>
-                            </Button>
-                            <Button variant="ghost" className="w-full justify-start">
-                                <Settings className="mr-2 h-4 w-4" />
-                                Integrations
-                            </Button>
-                        </div>
+                <div className='mb-2'></div>
+                <div className="relative mb-2 p-2 bg-white dark:bg-slate-900 hover:bg-gray-300 rounded-lg group">
+                    <div className="flex justify-between items-center">
+                        <h2 className="text-sm font-semibold">Nuova conversasione</h2>
+                        <Button variant="ghost" className="absolute top-0 right-0 p-1 text-red-600 rounded-md group-hover:opacity-100 opacity-0 transition-opacity duration-300">
+                            <XIcon />
+                        </Button>
+                    </div>
+                    <div className="mb-2"></div>
+                    <div className="flex justify-between">
+                        <p className="text-sm">5 messaggi</p>
+                        <p className="text-sm">2023-10-01 10:50:55</p>
                     </div>
                 </div>
             </div>
+            <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-between items-center">
+                <Button variant="ghost" className="rounded-lg bg-white dark:bg-slate-900">
+                    <Settings2Icon size={15}/>
+                </Button>
+                <Button variant="ghost" className="px-4 py-2 rounded-lg transition duration-300 bg-white flex  dark:bg-slate-900 items-center">
+                    <PlusCircleIcon className="w-4 h-4 mr-2" size={15} /> New Chat
+                </Button>
+            </div>
+        </div>
+    );
+};
 
-            <div className="py-2">
-                <h2 className="relative px-7 text-lg font-semibold tracking-tight">
-                    Your chats
-                </h2>
-                <ScrollArea className="h-[300px] px-1">
-                    <div className="space-y-1 p-2">
-                        {chatHistory?.map((chathistory, i) => (
-                            <Button
-                                key={`${chathistory}-${i}`}
-                                variant="ghost"
-                                className="w-full justify-start font-normal"
-                            >
-                                <Blocks className="mr-2 h-4 w-4" />
-                                {chathistory}
-                            </Button>
-                        ))}
-                    </div>
-                </ScrollArea>
-            </div>
-        </>
-    )
-}
+export default Sidebar;

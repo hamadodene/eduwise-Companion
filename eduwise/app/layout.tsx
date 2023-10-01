@@ -16,16 +16,18 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  return (   
+  return (
     <>
       <html lang="en">
-        <head />
+        <head>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet"/>
+        </head>
         <body className={inter.className} suppressHydrationWarning={true}>
-            <ThemeProvider attribute="class" defaultTheme="system"  enableSystem>
-              <UserProvider>
-                {children}
-              </UserProvider> 
-            </ThemeProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <UserProvider>
+              {children}
+            </UserProvider>
+          </ThemeProvider>
         </body>
       </html>
     </>

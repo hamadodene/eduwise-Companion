@@ -59,7 +59,7 @@ const courses = [
 type Course = (typeof courses)[number];
 
 
-export function CouseListDialog({ ...props }) {
+export function CoursesListDialog() {
     const [selectedCourse, setSelectedCourse] = React.useState<Course | null>(null);
 
     return (
