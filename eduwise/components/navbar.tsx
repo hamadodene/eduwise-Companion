@@ -4,6 +4,8 @@ import * as React from "react"
 import { Button } from "@/components/ui/button";
 import { Share2Icon } from 'lucide-react';
 import { EnterFullScreenIcon, Pencil1Icon } from "@radix-ui/react-icons"
+import { DialogTrigger } from "./ui/dialog";
+import { ChatTitleDialog } from "./ChatTitleDialog";
 
 const NavBar = () => {
     return (
@@ -13,9 +15,11 @@ const NavBar = () => {
                 <p className="text-sm">2 messaggi con eduwise</p>
             </div>
             <div className="flex space-x-4">
-                <Button variant="ghost" className="border-2" size="icon">
-                    <Pencil1Icon className="h-4 w-4" />
-                </Button>
+                <ChatTitleDialog>
+                    <Button variant="ghost" className="border-2" size="icon">
+                        <Pencil1Icon className="h-4 w-4" />
+                    </Button>
+                </ChatTitleDialog>
                 <Button variant="ghost" className="border-2" size="icon">
                     <Share2Icon className="h-4 w-4" />
                 </Button>

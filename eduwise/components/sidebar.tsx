@@ -3,15 +3,13 @@
 // components/Sidebar.js
 import React from 'react';
 import { Icons } from './icons';
-import { CogIcon, Plus, PlusCircleIcon, Settings2Icon, XIcon } from 'lucide-react';
+import { PlusCircleIcon, Settings2Icon, XIcon } from 'lucide-react';
 import { Button } from './ui/button';
-import { Dialog, DialogTrigger } from '@radix-ui/react-dialog';
-import { CoursesListDialog } from './coursesDialog';
-import { ModeToggle } from './mode-toogle';
+
 
 const Sidebar = () => {
     return (
-        <div className="relative flex flex-col h-full bg-sky-100 dark:bg-gray-800 w-1/6 p-4">
+        <div className="relative flex flex-col h-full bg-sky-100 dark:bg-gray-800 w-1/6 md:w-1/5 p-4">
             <div className="mb-4 flex items-center justify-between">
                 <div>
                     <h1 className="text-lg font-semibold">Eduwise companion</h1>
@@ -53,7 +51,7 @@ const Sidebar = () => {
             </div>
             <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-between items-center">
                 <Button variant="ghost" className="rounded-lg bg-white dark:bg-slate-900">
-                    <Settings2Icon size={15}/>
+                    <Settings2Icon size={15} />
                 </Button>
                 <Button variant="ghost" className="px-4 py-2 rounded-lg transition duration-300 bg-white flex  dark:bg-slate-900 items-center">
                     <PlusCircleIcon className="w-4 h-4 mr-2" size={15} /> New Chat
