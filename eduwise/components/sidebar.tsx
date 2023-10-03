@@ -6,6 +6,7 @@ import { Icons } from './icons';
 import { PlusCircleIcon, Settings2Icon, XIcon } from 'lucide-react';
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
+import Link from 'next/link';
 
 
 const Sidebar = () => {
@@ -51,12 +52,16 @@ const Sidebar = () => {
                 </div>
             </ScrollArea>
             <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-between items-center">
-                <Button variant="ghost" className="rounded-lg bg-white dark:bg-slate-900">
-                    <Settings2Icon size={15} />
-                </Button>
-                <Button variant="ghost" className="px-4 py-2 rounded-lg transition duration-300 bg-white flex  dark:bg-slate-900 items-center">
-                    <PlusCircleIcon className="w-4 h-4 mr-2" size={15} /> New Chat
-                </Button>
+                <Link href="/settings">
+                    <Button variant="ghost" className="rounded-lg bg-white dark:bg-slate-900">
+                        <Settings2Icon size={15} />
+                    </Button>
+                </Link>
+                <Link href="/courses">
+                    <Button variant="ghost" className="px-4 py-2 rounded-lg transition duration-300 bg-white flex  dark:bg-slate-900 items-center">
+                        <PlusCircleIcon className="w-4 h-4 mr-2" size={15} /> New Chat
+                    </Button>
+                </Link>
             </div>
         </div>
     );

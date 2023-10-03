@@ -7,9 +7,10 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
+    DialogTrigger
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { DialogPortal } from "@radix-ui/react-dialog"
 import { Pencil1Icon } from "@radix-ui/react-icons"
 import { BanIcon, Check } from "lucide-react"
 

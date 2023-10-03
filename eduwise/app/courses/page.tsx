@@ -13,14 +13,17 @@ import {
 import { ChevronLeft, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@radix-ui/react-scroll-area"
+import Link from "next/link"
 
 export default function page() {
     return (
         <Layout>
             <div className="p-4 h-20/100 flex items-center justify-between mb-5">
-                <Button variant="ghost" className="px-4 py-2 rounded-lg items-center">
-                    <ChevronLeft className="w-4 h-4 mr-2" size={15} /> Return
-                </Button>
+                <Link href="/">
+                    <Button variant="ghost" className="px-4 py-2 rounded-lg items-center">
+                        <ChevronLeft className="w-4 h-4 mr-2" size={15} /> Return
+                    </Button>
+                </Link>
                 <div className="flex space-x-4">
                     <Button variant="ghost" className="px-4 py-2 rounded-lg items-center">
                         <Plus className="w-4 h-4 mr-2" size={15} /> Add new course

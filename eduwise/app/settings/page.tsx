@@ -15,6 +15,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
+import Link from "next/link"
 
 export default function page() {
 
@@ -26,9 +27,11 @@ export default function page() {
                     <p className="text-sm">All settings</p>
                 </div>
                 <div className="flex space-x-4">
-                    <Button variant="ghost" className="border-2" size="icon">
-                        <XIcon className="h-4 w-4" />
-                    </Button>
+                    <Link href="/">
+                        <Button variant="ghost" className="border-2" size="icon">
+                            <XIcon className="h-4 w-4" />
+                        </Button>
+                    </Link>
                 </div>
             </div>
             <ScrollArea>
