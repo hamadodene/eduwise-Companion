@@ -5,9 +5,9 @@ import { ModeToggle } from './mode-toogle';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 
-const Content = () => {
+const ChatFooter = () => {
     return (
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t">
+        <div className="p-4 border-t sticky">
             <div className="flex space-x-4">
                 <Button
                     variant="ghost"
@@ -33,9 +33,8 @@ const Content = () => {
                     </Button>
                 </div>
             </div>
-
         </div>
     );
 };
 
-export default Content;
+export default ChatFooter;

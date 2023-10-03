@@ -10,13 +10,16 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { Pencil1Icon } from "@radix-ui/react-icons"
 import { BanIcon, Check } from "lucide-react"
 
-export const ChatTitleDialog = ({ children }) => {
+export const ChatTitleDialog = () => {
     return (
         <Dialog>
-            <DialogTrigger>
-                {children}
+            <DialogTrigger asChild>
+                <Button variant="ghost" className="border-2" size="icon">
+                    <Pencil1Icon className="h-4 w-4" />
+                </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>

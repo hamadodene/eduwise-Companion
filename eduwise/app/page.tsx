@@ -1,16 +1,20 @@
-import Content from "@/components/Content"
+import Chat from "@/components/Chat"
+import ChatFooer from "@/components/ChatFooter"
 import { Layout } from "@/components/layouts/layout"
 import NavBar from "@/components/navbar"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 export default async function IndexPage() {
   return (
     <Layout>
-      {/* Navbar */}
-      <div className="h-1/6">
-        <NavBar />
-      </div>
-      <div className="h-5/6 p-4 relative">
-        <Content></Content>
+      <div className="flex flex-col h-screen">
+        <div className="h-10/100">
+          <NavBar />
+        </div>
+          <ScrollArea className="flex-grow">
+            <Chat/>
+          </ScrollArea>
+          <ChatFooer/>
       </div>
     </Layout>
   )

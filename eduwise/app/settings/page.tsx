@@ -5,7 +5,6 @@ import React from "react"
 import { XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Slider } from "@/components/ui/slider"
 import {
     Select,
     SelectContent,
@@ -34,7 +33,7 @@ export default function page() {
             </div>
             <ScrollArea>
                 {/* GPT settings */}
-                <div className="border border-gray-100 rounded-lg ml-10 mr-10">
+                <div className="border rounded-lg ml-10 mr-10">
                     <div className="flex items-center justify-between p-4 border-b">
                         <div>
                             <div className="text-lg font-semibold">GPT model</div>
@@ -61,6 +60,17 @@ export default function page() {
                         </div>
                         <div>
                             <Input type="password" placeholder="Openai key" />
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between p-4 border-b">
+                        <div>
+                            <div className="text-lg font-semibold">Test OpenAI connection</div>
+                            <div className="text-gray-500">Check if your configured credential work properly</div>
+                        </div>
+                        <div>
+                            <Button variant="ghost" className="bg-green-100 hover:bg-green-200 dark:bg-gray-800">
+                                Check
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -92,6 +102,17 @@ export default function page() {
                         </div>
                         <div>
                             <Input type="password" placeholder="token" />
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between p-4 border-b">
+                        <div>
+                            <div className="text-lg font-semibold">Test Moodle Connection</div>
+                            <div className="text-gray-500">Check if your configured credential work properly</div>
+                        </div>
+                        <div>
+                            <Button variant="ghost" className="bg-green-100 hover:bg-green-200 dark:bg-gray-800">
+                                Check
+                            </Button>
                         </div>
                     </div>
                 </div>
