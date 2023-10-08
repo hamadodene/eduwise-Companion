@@ -1,20 +1,19 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/authOptions";
-import MoodleClient from "@/lib/moodle/moodleClient";
 
+// This only save credential on DB..
+// The credential check is already handle by /moodle/check
+// before save credential you can first check
 export async function POST(
     request: Request
 ) {
-    const session = await getServerSession(authOptions)
     const body = await request.json()
-    let token: string
+
 
     const {
+        userId,
         url,
         username,
         password,
-        forceupdate,
         moodletoken
     } = body
 
@@ -28,26 +27,18 @@ export async function POST(
 
     const exist = await prisma.moodleCredential.findFirst({
         where: {
-            userId: session.user.id
+            userId: userId
         }
     })
 
-    if (moodletoken) {
-        token = moodletoken
-    } else {
-        const moodleClient = new MoodleClient({
-            url: url,
-            password: password,
-            username: username
-        }).authenticateClient(username, password)
-        token = (await moodleClient).token
-    }
-    if (exist && forceupdate) {
+    if (exist) {
         try {
             const result = await prisma.moodleCredential.update({
-                where: { userId: session.user.id },
+                where: { userId: userId },
                 data: {
-                    token: token,
+                    token: moodletoken,
+                    username: username,
+                    password: password,
                     url: url
                 }
             })
@@ -55,14 +46,14 @@ export async function POST(
         } catch (error) {
             return NextResponse.json('Error during moodle credential update')
         }
-    } else if (exist && !forceupdate) {
-        return NextResponse.json("Token already configured..Use forceupdate to update with new token", { status: 400 })
     } else {
         try {
             const result = await prisma.moodleCredential.create({
                 data: {
-                    userId: session.user.id,
-                    token: token,
+                    userId: userId,
+                    token: moodletoken,
+                    username: username,
+                    password: password,
                     url: url
                 }
             })

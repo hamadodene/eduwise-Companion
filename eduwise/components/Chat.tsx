@@ -7,7 +7,7 @@ function Message({ text, isBot, imageUrl }) {
     const alignmentClass = isBot ? 'justify-start mr-auto' : 'justify-end  ml-auto';
     const bgColorClass = isBot ? 'bg-blue' : 'bg-green';
     const marginLeft = isBot ? 'mr-auto' : 'ml-auto'
-    const messageBgColor = isBot ? 'bg-gray-100 dark:bg-transparent' : 'bg-sky-100 dark:bg-gray-800'
+    const messageBgColor = isBot ? 'bg-slate-50 dark:bg-transparent' : 'bg-sky-100 dark:bg-gray-800'
 
     return (
         <div className={`flex flex-col mb-4 ${alignmentClass}`}>
@@ -18,7 +18,7 @@ function Message({ text, isBot, imageUrl }) {
                     className='rounded-lg'
                 />
             </div>
-            <div className={`${bgColorClass}-500 rounded-lg border-2 mt-2 p-2 max-w-4xl flex-grow ${messageBgColor}`}>
+            <div className={`${bgColorClass}-500 rounded-lg border mt-2 p-2 max-w-4xl flex-grow ${messageBgColor}`}>
                 <p>{text}</p>
             </div>
         </div>

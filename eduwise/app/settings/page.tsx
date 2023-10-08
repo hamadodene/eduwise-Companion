@@ -109,6 +109,15 @@ export default function page() {
                     </div>
                     <div className="flex items-center justify-between p-4 border-b">
                         <div>
+                            <div className="text-lg font-semibold">Endpoint</div>
+                            <div className="text-gray-500">Set your moodle endpoint</div>
+                        </div>
+                        <div>
+                            <Input type="text" placeholder="https://my-moodle-url.example.com" />
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between p-4 border-b">
+                        <div>
                             <div className="text-lg font-semibold">Test Moodle Connection</div>
                             <div className="text-gray-500">Check if your configured credential work properly</div>
                         </div>

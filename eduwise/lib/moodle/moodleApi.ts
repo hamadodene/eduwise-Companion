@@ -8,7 +8,9 @@ class MoodleApi {
         url: string,
         logger?: any,
         service?: string,
-        token: string,
+        token?: string,
+        username?: string,
+        password?: string,
         strictSSL?: boolean
     }) {
         this.moodleClient = new MoodleClient(options);

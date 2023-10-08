@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Share2Icon } from 'lucide-react';
 import { EnterFullScreenIcon, Pencil1Icon } from "@radix-ui/react-icons"
 import { ChatTitleDialog } from "@/components/ChatTitleDialog";
+import { ExportChatDialog } from "./ExportChatDialog";
 
 const NavBar = () => {
     return (
@@ -15,9 +16,7 @@ const NavBar = () => {
             </div>
             <div className="flex space-x-4">
                 <ChatTitleDialog/>
-                <Button variant="ghost" className="border-2" size="icon">
-                    <Share2Icon className="h-4 w-4" />
-                </Button>
+                <ExportChatDialog/>
                 <Button variant="ghost" className="border-2" size="icon">
                     <EnterFullScreenIcon className="h-4 w-4" />
                 </Button>

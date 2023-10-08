@@ -23,7 +23,7 @@ const Sidebar = () => {
             {/* Chat history */}
             <ScrollArea>
                 {/* border only on active chat*/}
-                <div className="relative mb-2 mr-4 ml-4 p-2 bg-white dark:bg-slate-900 border-2 border-sky-300 hover:bg-gray-300 rounded-lg group">
+                <div className="relative mb-2 mr-4 ml-4 p-2 bg-white dark:bg-slate-900 border-2 border-sky-300 hover:bg-[#f3f3f3] rounded-lg group">
                     <div className="flex justify-between items-center">
                         <h2 className="text-sm font-semibold">Nuova conversasione</h2>
                         <Button variant="ghost" className="absolute top-0 right-0 p-1 text-red-600 rounded-md group-hover:opacity-100 opacity-0 transition-opacity duration-300 bg-transparent">
@@ -32,12 +32,12 @@ const Sidebar = () => {
                     </div>
                     <div className="mb-2"></div>
                     <div className="flex justify-between">
-                        <p className="text-sm">2 messaggi</p>
-                        <p className="text-sm">2023-10-01 10:50:55</p>
+                        <p className="text-sm text-[#a6a6a6]">2 messaggi</p>
+                        <p className="text-sm text-[#a6a6a6]">2023-10-01 10:50:55</p>
                     </div>
                 </div>
                 <div className='mb-2'></div>
-                <div className="relative mb-2 mr-4 ml-4 p-2 bg-white dark:bg-slate-900 hover:bg-gray-300 rounded-lg group">
+                <div className="relative mb-2 mr-4 ml-4 p-2 bg-white dark:bg-slate-900 hover:bg-[#f3f3f3] rounded-lg group">
                     <div className="flex justify-between items-center">
                         <h2 className="text-sm font-semibold">Nuova conversasione</h2>
                         <Button variant="ghost" className="absolute top-0 right-0 p-1 text-red-600 rounded-md group-hover:opacity-100 opacity-0 transition-opacity duration-300">
@@ -46,8 +46,8 @@ const Sidebar = () => {
                     </div>
                     <div className="mb-2"></div>
                     <div className="flex justify-between">
-                        <p className="text-sm">5 messaggi</p>
-                        <p className="text-sm">2023-10-01 10:50:55</p>
+                        <p className="text-sm text-[#a6a6a6]">5 messaggi</p>
+                        <p className="text-sm text-[#a6a6a6]">2023-10-01 10:50:55</p>
                     </div>
                 </div>
             </ScrollArea>

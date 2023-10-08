@@ -11,8 +11,8 @@ datasource db {
 }
 
 model Account {
-  id                 String @id @default(auto()) @map("_id") @db.ObjectId
-  userId             String  @db.ObjectId
+  id                 String  @id @default(cuid()) @map("_id")
+  userId             String
   type               String
   provider           String
   providerAccountId  String
@@ -23,6 +23,8 @@ model Account {
   scope              String?
   id_token           String?
   session_state      String?
+  oauth_token_secret String?
+  oauth_token        String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -30,9 +32,9 @@ model Account {
 }
 
 model Session {
-  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  id           String   @id @default(cuid()) @map("_id")
   sessionToken String   @unique
-  userId       String   @db.ObjectId
+  userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -48,35 +50,60 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   moodleCredential MoodleCredential?
+  openai         OpenAi?   
   accounts      Account[]
   sessions      Session[]
-  rooms            Room[]
-}
-
-model Room {
-  id        String      @id @default(auto()) @map("_id") @db.ObjectId
-  title     String     
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  messages  Message[]
-  userId    String
-  user      User        @relation(fields: [userId], references: [id])
-}
-
-model Message {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  request   String   
-  response  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  roomId    String
-  room      Room     @relation(fields: [roomId], references: [id])
+  courses         Course[]  @relation("UserCourse")
 }
 
 model MoodleCredential {
   id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId   String   @unique
+  userId   String    @db.ObjectId @unique
   token    String
   url      String
+  username String?
+  password String?
   user     User     @relation(fields: [userId], references: [id])
+}
+
+model OpenAi {
+    id       String   @id @default(auto()) @map("_id") @db.ObjectId
+    userId   String    @db.ObjectId @unique
+    apiKey    String
+    apiHost   String
+    apiOrganizationId   String
+    modelTemperature Float
+    modelMaxResponseTokens Float
+    user     User     @relation(fields: [userId], references: [id])
+}
+
+model Course {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  moodleCourseId String?
+  shortname String
+  fullname String
+  summary String
+  origin  String  @default("custom") // moodle or custom
+  chats    Chat[] //1-n relation with chat
+  userId   String     @map("userId") @db.ObjectId
+  student   User     @relation("UserCourse", fields: [userId], references: [id])
+}
+
+model Chat {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  userTitle String?
+  autoTitle String?
+  courseId String   @db.ObjectId
+  course    Course   @relation(fields: [courseId], references: [id]) //n-1 relation with course
+  messages  Message[] // 1-n relation with message
+}
+
+model Message {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  chatId    String   @db.ObjectId
+  text      String
+  createdAt   DateTime
+  sender      String  @default("You")  //You or Bot
+  role        String  @default("user") // user, assistent, system
+  chat      Chat     @relation(fields: [chatId], references: [id]) //n-1 with chat
 }
