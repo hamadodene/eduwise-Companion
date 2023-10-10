@@ -9,21 +9,43 @@ export interface openai {
     apiKey: string
     apiHost: string
     apiOrganizationId: string
-    modelTemperature: number
-    modelMaxResponseTokens: number
 }
 
 export interface moodle {
     token: string
-    moodleApiHost: number
+    moodleApiHost: string
 }
 
 async function saveOpenAIConfig(config: openai) {
+    try {
+        const response = await fetch('/api/settings/openai', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({ config })
+        })
 
+        return await response.json()
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 async function saveMoodleConfig(config: moodle) {
+    try {
+        const response = await fetch('/api/settings/moodle', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({ config })
+        })
 
+        return await response.json()
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 async function loadOpenAIConfig(userId: string): Promise<openai> {
