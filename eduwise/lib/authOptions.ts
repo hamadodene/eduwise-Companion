@@ -54,14 +54,18 @@ export const authOptions: AuthOptions = {
         })
     ],
     callbacks: {
-        session: ({ session, user }) => {
-            return {
-                ...session,
-                user: {
-                    ...session.user,
-                    id: user.id
-                },
-            };
+        async jwt({ token, account, user }) {
+            // Persist the OAuth access_token and or the user id to the token right after signin
+            if (account) {
+                token.accessToken = account.access_token
+                token.id = user.id
+            }
+            return token
+        },
+        async session({ session, token, user }) {
+            session.user.id = token.id
+
+            return session
         }
     },
     pages: {

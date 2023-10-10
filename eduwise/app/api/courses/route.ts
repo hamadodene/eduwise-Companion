@@ -1,5 +1,6 @@
 
 import { NextRequest, NextResponse } from "next/server";
+import prisma from '@/lib/prismadb'
 
 // Create courses
 export async function POST(request: NextRequest) {

@@ -61,8 +61,6 @@ model MoodleCredential {
   userId   String    @db.ObjectId @unique
   token    String
   url      String
-  username String?
-  password String?
   user     User     @relation(fields: [userId], references: [id])
 }
 
@@ -70,10 +68,8 @@ model OpenAi {
     id       String   @id @default(auto()) @map("_id") @db.ObjectId
     userId   String    @db.ObjectId @unique
     apiKey    String
-    apiHost   String
     apiOrganizationId   String
-    modelTemperature Float
-    modelMaxResponseTokens Float
+    model     String
     user     User     @relation(fields: [userId], references: [id])
 }
 
@@ -93,6 +89,9 @@ model Chat {
   id       String   @id @default(auto()) @map("_id") @db.ObjectId
   userTitle String?
   autoTitle String?
+  chatModel String
+  createdAt DateTime
+  updatedAt DateTime?
   courseId String   @db.ObjectId
   course    Course   @relation(fields: [courseId], references: [id]) //n-1 relation with course
   messages  Message[] // 1-n relation with message
@@ -102,7 +101,10 @@ model Message {
   id       String   @id @default(auto()) @map("_id") @db.ObjectId
   chatId    String   @db.ObjectId
   text      String
+  model     String?
+  typing    Boolean   @default(false)
   createdAt   DateTime
+  updatedAt   DateTime?
   sender      String  @default("You")  //You or Bot
   role        String  @default("user") // user, assistent, system
   chat      Chat     @relation(fields: [chatId], references: [id]) //n-1 with chat

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import prisma from '@/lib/prismadb'
 
 export async function UPDATE(request: NextRequest, route: { params: { id: string } }) {
     try {

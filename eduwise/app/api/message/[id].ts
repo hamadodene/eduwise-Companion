@@ -2,12 +2,14 @@
 // delete message
 
 import { NextRequest, NextResponse } from "next/server";
+import prisma from '@/lib/prismadb'
 
 export async function UPDATE(request: NextRequest, route: { params: { id: string } }) {
     try {
         const body = await request.json()
         const {
-            text
+            text,
+            updateAt
         } = body
         const messageId = route.params.id
 
@@ -16,7 +18,8 @@ export async function UPDATE(request: NextRequest, route: { params: { id: string
                 id: messageId
             },
             data: {
-                text: text
+                text: text,
+                updatedAt: updateAt
             }
         })
         return NextResponse.json(result)

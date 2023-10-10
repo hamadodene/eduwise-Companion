@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from '@/lib/prismadb'
 
 // Delete chat
-export async function DELETE(request: NextRequest, route: { params: { id: string } }) {
+export async function DELETE(route: { params: { id: string } }) {
     try {
         const chatId: string = route.params.id
         // Delete first all messages
@@ -30,7 +30,8 @@ export async function UPDATE(request: NextRequest, route: { params: { id: string
         const chatId: string = route.params.id
         const {
             userTitle,
-            autoTitle
+            autoTitle,
+            updateAt
         } = body
 
         const result = await prisma.chat.update({
@@ -39,7 +40,51 @@ export async function UPDATE(request: NextRequest, route: { params: { id: string
             },
             data: {
                 userTitle: userTitle,
-                autoTitle: autoTitle
+                autoTitle: autoTitle,
+                updatedAt: updateAt
+            }
+        })
+
+        return NextResponse.json(result)
+    } catch (error) {
+        return NextResponse.json({ status: 400, message: error })
+    }
+}
+
+//Get all messages of chat
+export async function GET(route: { params: { id: string } }) {
+    try {
+        const chatId: string = route.params.id
+        const messages = await prisma.message.findMany({
+            where: {
+                id: chatId
+            }
+        })
+        return NextResponse.json(messages)
+    } catch (error) {
+        return NextResponse.json({ status: 400, message: error })
+    }
+}
+
+// Add message to chat
+export async function POST(request: NextRequest, route: { params: { id: string } }) {
+    try {
+        const body = await request.json()
+        const chatId: string = route.params.id
+        const {
+            text,
+            createdAt,
+            sender,
+            role
+        } = body
+
+        const result = await prisma.message.create({
+            data: {
+                chatId: chatId,
+                text: text,
+                createdAt: createdAt,
+                sender: sender,
+                role: role
             }
         })
 
@@ -47,19 +92,4 @@ export async function UPDATE(request: NextRequest, route: { params: { id: string
     } catch (error) {
         return NextResponse.json({status: 400, message: error})
     }
-}
-
-//Get all messages of chat
-export async function GET(route: { params: { id: string } }) {
-   try {
-    const chatId: string = route.params.id
-    const messages = await prisma.message.findMany({
-        where: {
-            id: chatId
-        }
-    })
-    return NextResponse.json(messages)
-   } catch (error) {
-        return NextResponse.json({status: 400, message: error})
-   } 
 }

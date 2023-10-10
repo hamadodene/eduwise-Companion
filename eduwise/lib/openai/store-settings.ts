@@ -1,8 +1,8 @@
 interface SettingsStore {
-    saveOpenAIConfigToMongoDB: (config: openai) => void
-    saveMoodleConfigToMongoDB: (config: moodle) => void
-    loadOpenAIConfigFromMongoDB: () => Promise<openai>
-    loadMoodleConfigFromMongoDB: () => Promise<moodle>
+    saveOpenAIConfig: (config: openai) => void
+    saveMoodleConfig: (config: moodle) => void
+    loadOpenAIConfig: (userId: string) => Promise<openai>
+    loadMoodleConfig: (userId: string) => Promise<moodle>
 }
 
 export interface openai {
@@ -14,34 +14,54 @@ export interface openai {
 }
 
 export interface moodle {
-    username: string
-    password: string
     token: string
     moodleApiHost: number
 }
 
-async function saveOpenAIConfigToMongoDB(config: openai) {
+async function saveOpenAIConfig(config: openai) {
 
 }
 
-async function saveMoodleConfigToMongoDB(config: moodle) {
+async function saveMoodleConfig(config: moodle) {
 
 }
 
-async function loadOpenAIConfigFromMongoDB(): Promise<openai> {
-    return
+async function loadOpenAIConfig(userId: string): Promise<openai> {
+    try {
+        const response = await fetch('/api/settings/openai/', {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(userId)
+        })
+        return await response.json()
+    } catch (error) {
+        console.log(error)
+    }
 }
 
-async function loadMoodleConfigFromMongoDB(): Promise<moodle>{
-    return
+async function loadMoodleConfig(userId: string): Promise<moodle> {
+    try {
+        const response = await fetch('/api/settings/moodle/', {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(userId)
+        })
+        return await response.json()
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 
 // Implementa l'interfaccia SettingsStore
-export const SettingsStore: SettingsStore = {
-    saveOpenAIConfigToMongoDB,
-    saveMoodleConfigToMongoDB,
-    loadOpenAIConfigFromMongoDB,
-    loadMoodleConfigFromMongoDB,
+export const useSettingsStore: SettingsStore = {
+    saveOpenAIConfig,
+    saveMoodleConfig,
+    loadOpenAIConfig,
+    loadMoodleConfig,
 }
 

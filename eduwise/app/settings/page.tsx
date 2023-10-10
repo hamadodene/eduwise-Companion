@@ -58,19 +58,30 @@ export default function page() {
 
                     <div className="flex items-center justify-between p-4 border-b">
                         <div>
-                            <div className="text-lg font-semibold">OPENAI key</div>
+                            <div className="text-lg font-semibold">OPENAI token</div>
                             <div className="text-gray-500">Set your custom openai token</div>
                         </div>
                         <div>
-                            <Input type="password" placeholder="Openai key" />
+                            <Input type="text" placeholder="Openai token" />
                         </div>
                     </div>
+                    <div className="flex items-center justify-between p-4 border-b">
+                        <div>
+                            <div className="text-lg font-semibold">OPENAI organizzation id</div>
+                            <div className="text-gray-500">Set openai organizzation id</div>
+                        </div>
+                        <div>
+                            <Input type="text" placeholder="Openai organizzation id" />
+                        </div>
+                    </div>
+
                     <div className="flex items-center justify-between p-4 border-b">
                         <div>
                             <div className="text-lg font-semibold">Test OpenAI connection</div>
                             <div className="text-gray-500">Check if your configured credential work properly</div>
                         </div>
                         <div>
+                            {/* if check successfull open popup to confirm if user want to save or not*/}
                             <Button variant="ghost" className="bg-green-100 hover:bg-green-200 dark:bg-gray-800">
                                 Check
                             </Button>
@@ -122,6 +133,7 @@ export default function page() {
                             <div className="text-gray-500">Check if your configured credential work properly</div>
                         </div>
                         <div>
+                            {/* if check successfull open popup to confirm if user want to save or not*/}
                             <Button variant="ghost" className="bg-green-100 hover:bg-green-200 dark:bg-gray-800">
                                 Check
                             </Button>

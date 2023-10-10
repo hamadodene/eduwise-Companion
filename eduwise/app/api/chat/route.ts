@@ -16,7 +16,9 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
         const {
-            courseId
+            courseId,
+            createdAt,
+            chatModel
         } = body
 
         // Check if courseId exist
@@ -30,11 +32,11 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ status: 400, message: "course not found" })
         }
 
-        const autoTitle = "New conversation"
         const chat = await prisma.chat.create({
             data: {
-                autoTitle,
-                courseId
+                courseId,
+                createdAt,
+                chatModel
             }
         })
 

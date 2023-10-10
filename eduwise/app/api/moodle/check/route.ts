@@ -30,8 +30,7 @@ export async function POST(
             const response = await fetch(`${this.url}/login/token.php?${queryParams}`, options)
             const data = await response.json()
             if ('token' in data) {
-                this.token = data.token
-                return NextResponse.json({ status: 200, message: "OK" })
+                return NextResponse.json({ status: 200, message: data.token })
 
             } else if ('error' in data) {
                 return NextResponse.json({ status: 400, message: data.error })

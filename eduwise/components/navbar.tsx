@@ -11,8 +11,8 @@ const NavBar = () => {
     return (
         <div className="p-4 flex items-center justify-between border-b">
             <div>
-                <h1 className="text-2xl font-semibold">Nuova conversasione</h1>
-                <p className="text-sm">2 messaggi con eduwise</p>
+                <h1 className="text-2xl font-semibold">New conversation</h1>
+                <p className="text-sm">2 messages with eduwise</p>
             </div>
             <div className="flex space-x-4">
                 <ChatTitleDialog/>
