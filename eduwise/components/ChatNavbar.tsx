@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { Button } from "@/components/ui/button"
-import { EnterFullScreenIcon, Pencil1Icon } from "@radix-ui/react-icons"
 import { ChatTitleDialog } from "@/components/ChatTitleDialog"
 import { useSidebar } from './sidebarContext'
 import { ListMinus } from "lucide-react"
@@ -23,9 +22,6 @@ const NavBar = () => {
             </div>
             <div className="space-x-4 ml-auto mr-2">
                 <ChatTitleDialog />
-                <Button variant="ghost" onClick={toggleSidebar} className="border-2" size="icon">
-                    <EnterFullScreenIcon className="h-4 w-4" />
-                </Button>
             </div>
         </div>
     )

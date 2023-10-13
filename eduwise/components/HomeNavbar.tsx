@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Search } from "./search"
 import { Button } from "./ui/button"
-import { ListMinus } from "lucide-react"
+import { ListMinus, Plus } from "lucide-react"
 import { useSidebar } from './sidebarContext'
 
 const NavBar = () => {
@@ -18,7 +18,7 @@ const NavBar = () => {
                 <Search />
             </div>
             <Button variant="ghost" className="ml-auto mr-2 px-4 py-2 border rounded-md">
-                Add Course
+               <Plus></Plus> <span className="hidden lg:block">Add course</span>
             </Button>
         </div>
     )

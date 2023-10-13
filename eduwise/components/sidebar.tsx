@@ -18,10 +18,11 @@ import { useSidebar } from './sidebarContext'
 
 
 const Sidebar = () => {
-    const { isSidebarOpen } = useSidebar()
+    const { isSidebarOpen, toggleSidebar } = useSidebar()
 
     return (
-        <div className={`relative flex flex-col h-full  bg-[#A3E4D7] dark:bg-gray-800  w-full md:w-4/12 ${isSidebarOpen ? '' : 'hidden'} lg:block`}>
+        <div className={`absolute lg:relative flex inset-y-0 left-0 flex-col h-screen lg:h-full
+        transition-all duration-300 ease-in-out bg-[#A3E4D7] dark:bg-gray-800 z-20 w-full md:w-4/12 ${isSidebarOpen ? '' : 'hidden'} lg:block`}>
             <div className="mb-4 mt-4 ml-4 mr-4 flex items-center justify-between">
                 <div>
                     <h1 className="text-lg font-semibold">Eduwise companion</h1>
@@ -55,14 +56,14 @@ const Sidebar = () => {
                     </Card>
                 ))}
             </ScrollArea>
-            <div className="absolute bottom-0 left-0 right-0 p-4 mt-4 flex justify-between items-center border-t">
-                <Link href="/settings">
-                    <Button variant="ghost" className="rounded-lg bg-white dark:bg-slate-900">
-                        <Settings2Icon size={15} />
-                    </Button>
-                </Link>
-                <Button asChild variant="ghost" className="px-4 py-2 rounded-lg transition duration-300 bg-white flex  dark:bg-slate-900 items-center">
-                     <Link href="/">New Chat</Link>
+            <div className="bottom-0 left-0 right-0 p-4 mt-4 flex justify-between items-center border-t">
+
+                <Button variant="link" onClick={toggleSidebar} className="rounded-lg bg-white dark:bg-slate-900">
+                    <Link href="/settings"><Settings2Icon size={15} /></Link>
+                </Button>
+
+                <Button variant="link" onClick={toggleSidebar} className="px-4 py-2 rounded-lg transition duration-300 bg-white flex  dark:bg-slate-900 items-center">
+                    <Link href="/">New Chat</Link>
                 </Button>
             </div>
         </div>

@@ -36,7 +36,7 @@ export default function page() {
             </div>
             <ScrollArea>
                 {/* GPT settings */}
-                <div className="border rounded-lg ml-10 mr-10">
+                <div className="border rounded-lg ml-2 mr-2">
                     <div className="flex items-center justify-between p-4 border-b">
                         <div>
                             <div className="text-lg font-semibold">GPT model</div>
@@ -90,7 +90,7 @@ export default function page() {
                 </div>
 
                 {/* Moodle settings */}
-                <div className="border rounded-lg ml-10 mr-10 mt-5">
+                <div className="border rounded-lg ml-2 mr-2 mt-5">
                     <div className="flex items-center justify-between p-4 border-b">
                         <div>
                             <div className="text-lg font-semibold">Username</div>
@@ -143,7 +143,7 @@ export default function page() {
 
 
                 {/* Reset and clear data */}
-                <div className="border rounded-lg ml-10 mr-10 mt-5 mb-10">
+                <div className="border rounded-lg ml-2 mr-2 mt-5 mb-10">
 
                     <div className="flex items-center justify-between p-4 border-b">
                         <div>
