@@ -63,7 +63,7 @@ export async function DELETE(request: NextRequest, route: { params: { id: string
         if (!deletable) {
             return NextResponse.json({ status: 400, message: "Only custom course can be DELETED" })
         }
-        
+
         // first get all Chats of this specific courses
         const chats = await prisma.chat.findMany({
             where: {
@@ -96,6 +96,22 @@ export async function DELETE(request: NextRequest, route: { params: { id: string
         })
 
         return NextResponse.json({ status: 200, message: "OK" })
+    } catch (error) {
+        return NextResponse.json({ status: 400, message: error })
+    }
+}
+
+// get course info
+export async function GET(route: { params: { id: string } }) {
+    try {
+        const courseId: string = route.params.id
+
+        const result = await prisma.course.findUnique({
+            where: {
+                id: courseId
+            }
+        })
+        return NextResponse.json({ result })
     } catch (error) {
         return NextResponse.json({ status: 400, message: error })
     }

@@ -5,14 +5,17 @@
 // We can also provider an enpoint to dowload content for specific course 
 
 import client from "@/lib/moodle/client"
-import { NextRequest, NextResponse } from "next/server";
-import { initializeclient } from "@/lib/moodle/client";
+import { NextRequest, NextResponse } from "next/server"
+import { initializeclient } from "@/lib/moodle/client"
+import { generateCoursePrompt } from "@/lib/prompts"
+
 
 interface Course {
   id: string
   shortname: string
   fullname: string
   summary: string
+  systemPrompt: string
 }
 
 interface CourseModel {
@@ -22,6 +25,7 @@ interface CourseModel {
   summary: string
   origin?: string
   userId?: string
+  systemPrompt: string
 }
 
 
@@ -30,14 +34,16 @@ class DefaultCourse implements CourseModel {
   shortname: string
   fullname: string
   summary: string
-  origin: string = "moodle";
-  userId: string = "";
+  origin: string = "moodle"
+  userId: string
+  systemPrompt: string
 
   constructor(course: Course, userId: string) {
     this.moodleCourseId = course.id.toString()
     this.shortname = course.shortname
     this.fullname = course.fullname
     this.summary = course.summary
+    this.systemPrompt = generateCoursePrompt(course.fullname) // system prompt generation
     this.userId = userId
   }
 }
@@ -103,7 +109,15 @@ export async function POST(request: NextRequest) {
       } else {
         // Course does not exist in the database, create it
         await prisma.course.create({
-          data: course
+          data: {
+            moodleCourseId: course.moodleCourseId,
+            shortname: course.shortname,
+            fullname: course.fullname,
+            summary: course.summary,
+            origin: course.origin,
+            userId: course.userId,
+            systemPrompt: course.systemPrompt
+          }
         });
       }
     }

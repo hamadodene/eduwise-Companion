@@ -28,7 +28,7 @@ const ChatFooter = () => {
             <div className="flex flex-col mt-4">
                 <div className="flex justify-between border rounded-lg p-4 flex space-x-2 items-center">
                     <Textarea className="p-2 rounded-md flex-grow border-none shadow-none" placeholder="Inserisci il testo"></Textarea>
-                    <Button className="flex items-center rounded-md transition duration-300 self-end bg-sky-400 hover:bg-sky-500">
+                    <Button className="flex items-center rounded-md transition duration-300 self-end bg-[#5DF0D0] hover:bg-[#5DF0D0] text-black">
                         <SendIcon className="w-4 h-4 ml-1 mr-2" /> Send
                     </Button>
                 </div>

@@ -1,3 +1,5 @@
+import { useSession } from "next-auth/react"
+
 interface SettingsStore {
     saveOpenAIConfig: (config: openai) => void
     saveMoodleConfig: (config: moodle) => void
@@ -48,8 +50,11 @@ async function saveMoodleConfig(config: moodle) {
     }
 }
 
-async function loadOpenAIConfig(userId: string): Promise<openai> {
+async function loadOpenAIConfig(): Promise<openai> {
     try {
+        const { data: session } = useSession()
+        const userId = session.user.id
+
         const response = await fetch('/api/settings/openai/', {
             method: 'GET',
             headers: {
@@ -63,8 +68,11 @@ async function loadOpenAIConfig(userId: string): Promise<openai> {
     }
 }
 
-async function loadMoodleConfig(userId: string): Promise<moodle> {
+async function loadMoodleConfig(): Promise<moodle> {
     try {
+        const { data: session } = useSession()
+        const userId = session.user.id
+
         const response = await fetch('/api/settings/moodle/', {
             method: 'GET',
             headers: {

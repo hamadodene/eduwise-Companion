@@ -1,13 +1,13 @@
 'use client'
 
-import React from 'react';
+import React from 'react'
 
 // Component to represent a message in the conversation
 function Message({ text, isBot, imageUrl }) {
-    const alignmentClass = isBot ? 'justify-start mr-auto' : 'justify-end  ml-auto';
-    const bgColorClass = isBot ? 'bg-blue' : 'bg-green';
+    const alignmentClass = isBot ? 'justify-start mr-auto' : 'justify-end  ml-auto'
+    const bgColorClass = isBot ? 'bg-blue' : 'bg-green'
     const marginLeft = isBot ? 'mr-auto' : 'ml-auto'
-    const messageBgColor = isBot ? 'bg-slate-50 dark:bg-transparent' : 'bg-sky-100 dark:bg-gray-800'
+    const messageBgColor = isBot ? 'bg-[#BFE4EE] dark:bg-transparent' : 'bg-[#5DF0D0] dark:bg-gray-800'
 
     return (
         <div className={`flex flex-col mb-4 ${alignmentClass}`}>
@@ -22,7 +22,7 @@ function Message({ text, isBot, imageUrl }) {
                 <p>{text}</p>
             </div>
         </div>
-    );
+    )
 }
 
 function Chat() {
@@ -44,7 +44,7 @@ function Chat() {
              + 'Attraversando queste terre ultraterrene, egli rappresenta l\'anima umana che cerca redenzione dai propri peccati per raggiungere il paradiso divino.\n'
           ), isBot: true, imageUrl: '/avatars/chatbot.png' },
         { text: "Sure, I'm looking for a mobile phone.", isBot: false, imageUrl: '/avatars/01.png' },
-    ];
+    ]
 
     return (
         <div className="flex flex-col p-4 w-full">
@@ -57,7 +57,7 @@ function Chat() {
                 />
             ))}
         </div>
-    );
+    )
 }
 
-export default Chat;
+export default Chat

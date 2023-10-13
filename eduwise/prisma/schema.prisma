@@ -82,6 +82,7 @@ model Course {
   origin  String  @default("custom") // moodle or custom
   chats    Chat[] //1-n relation with chat
   userId   String     @map("userId") @db.ObjectId
+  systemPrompt String  
   student   User     @relation("UserCourse", fields: [userId], references: [id])
 }
 

@@ -11,7 +11,7 @@ export const Layout = ({ children }) => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row h-screen font-sans">
+    <div className="flex flex-row h-screen font-sans">
       <Sidebar />
       <motion.div
         exit={{ opacity: 0 }}
@@ -20,7 +20,7 @@ export const Layout = ({ children }) => {
         transition={{ duration: 1, ease: "easeOut" }}
         className="flex flex-col dark:bg-slate-900 w-full h-full transition-opacity duration-300 ease-in-out"
       >
-          {children}
+        {children}
       </motion.div>
     </div>
   )
