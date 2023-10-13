@@ -22,8 +22,17 @@ class MoodleClient {
         this.url = options.url
         this.logger = options.logger || console
         this.service = options.service || 'moodle_mobile_app'
-        this.token = options.token || null
         this.strictSSL = options.strictSSL || true
+        if(options.token) {
+            this.token = options.token
+        } else if(options.username && options.password){
+            // try to get token
+            this.authenticateClient(options.username, options.password)
+        } else {
+            // credentials is null
+            // failling is handle in another point
+            this.token = null
+        }
     }
 
     // To use when user provider username and password.

@@ -1,52 +1,31 @@
 
-import {AuthOptions} from 'next-auth'
+import { AuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GitHubProvider from "next-auth/providers/github";
-import GoogleProvider, { GoogleProfile } from "next-auth/providers/google";
+import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import prisma from '@/lib/prismadb'
 import bcrypt from 'bcrypt'
-import { GithubProfile } from 'next-auth/providers/github'
 
 export const authOptions: AuthOptions = {
     adapter: PrismaAdapter(prisma),
     providers: [
         GitHubProvider({
-            profile(profile: GithubProfile) {
-                return {
-                    ...profile,
-                    role: profile.role ?? "user",
-                    id: profile.id.toString(),
-                    image: profile.avatar_url,
-                    email: profile.email,
-                    name: profile.name
-                }
-            },
             clientId: process.env.GITHUB_ID as string,
             clientSecret: process.env.GITHUB_SECRET as string
         }),
         GoogleProvider({
-            profile(profile: GoogleProfile) {
-                return {
-                    ...profile,
-                    role: profile.role ?? "user",
-                    id: profile.sub,
-                    image: profile.picture,
-                    email: profile.email,
-                    name: profile.name
-                }
-            },
             clientId: process.env.GOOGLE_CLIENT_ID as string,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
         }),
         CredentialsProvider({
             name: "Credentials",
             credentials: {
-                email: { label: 'email', type: 'text'},
-                password: { label: 'password', type: 'password'} 
+                email: { label: 'email', type: 'text' },
+                password: { label: 'password', type: 'password' }
             },
             async authorize(credentials) {
-                if(!credentials?.email || !credentials?.password) {
+                if (!credentials?.email || !credentials?.password) {
                     throw new Error('Invalid credentials');
                 }
 
@@ -56,7 +35,7 @@ export const authOptions: AuthOptions = {
                     }
                 })
 
-                if(!user || !user?.hashedPassword) {
+                if (!user || !user?.hashedPassword) {
                     throw new Error('Invalid credentials');
                 }
 
@@ -65,37 +44,29 @@ export const authOptions: AuthOptions = {
                     user.hashedPassword
                 )
 
-                if(!isCorrect) {
+                if (!isCorrect) {
                     throw new Error('Invalid credentials');
                 }
-                
+
                 console.log("user is " + user)
                 return user
             }
         })
     ],
     callbacks: {
-        session: ({ session, token }) => {
-            return {
-              ...session,
-              user: {
-                ...session.user,
-                id: token.id,
-                randomKey: token.randomKey,
-              },
-            };
-          },
-        jwt: ({ token, user }) => {
-            if (user) {
-              const u = user as unknown as any;
-              return {
-                ...token,
-                id: u.id,
-                randomKey: u.randomKey,
-              };
+        async jwt({ token, account, user }) {
+            // Persist the OAuth access_token and or the user id to the token right after signin
+            if (account) {
+                token.accessToken = account.access_token
+                token.id = user.id
             }
-            return token;
+            return token
         },
+        async session({ session, token, user }) {
+            session.user.id = token.id
+
+            return session
+        }
     },
     pages: {
         signIn: '/'

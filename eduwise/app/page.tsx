@@ -1,7 +1,10 @@
-import { AppLayout } from "@/components/layouts/app-layout"
+import { Layout } from "@/components/layouts/layout"
+import HomePage from "@/components/HomePage"
+
 export default async function IndexPage() {
   return (
-    <AppLayout>
-    </AppLayout>
+    <Layout>
+      <HomePage/>
+    </Layout>
   )
 }

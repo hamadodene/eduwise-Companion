@@ -1,88 +1,73 @@
 "use client"
 
-import * as React from "react"
-import { useRef } from "react";
+// components/Sidebar.js
+import React from 'react'
+import { Icons } from './icons'
+import { CircleIcon, Delete, PlusCircleIcon, Settings2Icon, StarIcon, XIcon } from 'lucide-react'
+import { Button } from './ui/button'
+import { ScrollArea } from './ui/scroll-area'
+import Link from 'next/link'
 import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-} from "@/components/ui/avatar"
-import { ChatHistory, chatHistory } from "@/data/chathistory"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Home, Settings, Blocks, UserSquare2 } from "lucide-react";
-import Link from "next/link";
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
+import { useSidebar } from './sidebarContext'
 
 
-interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-    chatHistory: ChatHistory[]
-}
 
-export function Sidebar({ className, chatHistory }: SidebarProps) {
+const Sidebar = () => {
+    const { isSidebarOpen, toggleSidebar } = useSidebar()
 
     return (
-        <>
-            <div className="flex gap-3 items-center hover:bg-secondary p-2 h-[60px]">
+        <div className={`absolute lg:relative flex inset-y-0 left-0 flex-col h-screen lg:h-full
+        transition-all duration-300 ease-in-out bg-[#A3E4D7] dark:bg-gray-800 z-20 w-full md:w-4/12 ${isSidebarOpen ? '' : 'hidden'} lg:block`}>
+            <div className="mb-4 mt-4 ml-4 mr-4 flex items-center justify-between">
                 <div>
-                    <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                        <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
+                    <h1 className="text-lg font-semibold">Eduwise companion</h1>
+                    <p className="text-sm">Empower Your Learning</p>
                 </div>
-                <div className="text-lg">
-                    <p className="text-sm font-semibold">Edu wise</p>
-                </div>
+                <Icons.logo className='h-10 w-10'></Icons.logo>
             </div>
-            <div className={cn("pb-12", className)}>
-                <div className="space-y-4 py-4">
-                    <div className="px-3 py-2">
-                        <div className="space-y-1">
-                            <Button variant="secondary" className="w-full justify-start">
-                                <Home className="mr-2 h-4 w-4" />
-                                Home
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-                <div className="space-y-4 py-4">
-                    <div className="px-3 py-2">
-                        <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
-                            Settings
-                        </h2>
-                        <div className="space-y-1">
-                            <Button variant="ghost" className="w-full justify-start">
-                                <UserSquare2 className="mr-2 h-4 w-4" />
-                                <Link href="/profile">Profile</Link>
-                            </Button>
-                            <Button variant="ghost" className="w-full justify-start">
-                                <Settings className="mr-2 h-4 w-4" />
-                                Integrations
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div className='mb-4'></div>
+            {/* Chat history */}
+            <ScrollArea className='h-full lg:h-3/4 mr-4 ml-4'>
+                {Array.from({ length: 5 }, (v, i) => (
+                    <Card key={i} className='hover:border-sky-300  mt-2'>
+                        <CardHeader className="flex flex-col items-start gap-4 space-y-0">
+                            <div className='w-full'>
+                                <CardTitle className='overflow-hidden truncate'>Studio del Machine learning</CardTitle>
+                            </div>
+                        </CardHeader>
 
-            <div className="py-2">
-                <h2 className="relative px-7 text-lg font-semibold tracking-tight">
-                    Your chats
-                </h2>
-                <ScrollArea className="h-[300px] px-1">
-                    <div className="space-y-1 p-2">
-                        {chatHistory?.map((chathistory, i) => (
-                            <Button
-                                key={`${chathistory}-${i}`}
-                                variant="ghost"
-                                className="w-full justify-start font-normal"
-                            >
-                                <Blocks className="mr-2 h-4 w-4" />
-                                {chathistory}
-                            </Button>
-                        ))}
-                    </div>
-                </ScrollArea>
+                        <CardContent>
+                            <div className="flex space-x-4 text-sm text-muted-foreground">
+                                <div className="flex items-center">
+                                    <CircleIcon className="mr-1 h-3 w-3 fill-red-400 text-sky-400" />
+                                    Machine learning
+                                </div>
+                                <div className="flex items-center">
+                                    <StarIcon className="mr-1 h-3 w-3" />
+                                    2 msg
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </ScrollArea>
+            <div className="bottom-0 left-0 right-0 p-4 mt-4 flex justify-between items-center border-t">
+
+                <Button variant="link" onClick={toggleSidebar} className="rounded-lg bg-white dark:bg-slate-900">
+                    <Link href="/settings"><Settings2Icon size={15} /></Link>
+                </Button>
+
+                <Button variant="link" onClick={toggleSidebar} className="px-4 py-2 rounded-lg transition duration-300 bg-white flex  dark:bg-slate-900 items-center">
+                    <Link href="/">New Chat</Link>
+                </Button>
             </div>
-        </>
+        </div>
     )
 }
+
+export default Sidebar

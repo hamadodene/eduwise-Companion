@@ -1,16 +1,12 @@
 import prisma from "@/lib/prismadb"
 import MoodleApi from "./moodleApi";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/authOptions";
-
 
 let client: MoodleApi | null = null;
 
-async function initializeclient() {
-  const session = await getServerSession(authOptions);
+export async function initializeclient(userId: string) {
   const moodleCredential = await prisma.moodleCredential.findFirst({
     where: {
-      userId: session.user.id
+      userId: userId
     }
   })
 
@@ -24,14 +20,17 @@ async function initializeclient() {
       url: moodleCredential.url,
       token: moodleCredential.token
     });
+  } else if (moodleCredential.username && moodleCredential.password) {
+    // We can try to authenticate client
+    client = new MoodleApi({
+      url: moodleCredential.url,
+      username: moodleCredential.username,
+      password: moodleCredential.password
+    });
+
   } else {
     throw new Error("No credential provide for moodle..Please configure first moodle integration");
   }
-
 }
-
-initializeclient().catch(error => {
-  console.error('Error initializing Moodle Api:', error);
-});
 
 export default client
