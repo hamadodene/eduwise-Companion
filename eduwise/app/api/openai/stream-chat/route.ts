@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createParser } from 'eventsource-parser'
 
-import { ApiChatInput, chatCompletionPayload, extractOpenaiChatInputs, postToOpenAI } from './chat/chat'
+import { ApiChatInput, chatCompletionPayload, extractOpenaiChatInputs, postToOpenAI } from '@/app/api/openai/chat/route'
 import { OpenAIAPI } from '@/app/types/api-openai'
 
 
@@ -87,7 +87,7 @@ export interface ApiChatFirstOutput {
   model: string
 }
 
-export default async function handler(req: NextRequest): Promise<Response> {
+export default async function handler(req: NextRequest, res: NextResponse): Promise<Response> {
   try {
     const apiChatInput = await extractOpenaiChatInputs(req)
     const stream: ReadableStream = await chatStreamRepeater(apiChatInput)

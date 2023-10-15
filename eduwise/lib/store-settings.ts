@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react"
 
 interface SettingsStore {
-    saveOpenAIConfig: (config: openai) => void
+    saveOpenAIConfig: (config: openai) => Promise<openai>
     saveMoodleConfig: (config: moodle) => void
     loadOpenAIConfig: (userId: string) => Promise<openai>
     loadMoodleConfig: (userId: string) => Promise<moodle>
@@ -10,8 +10,11 @@ interface SettingsStore {
 }
 
 export interface openai {
+    id?: string
     apiKey: string
     apiOrganizationId: string
+    model?: string,
+    userId?: string
 }
 
 export interface moodle {
@@ -51,8 +54,9 @@ async function checkOpenAiCredential(config: Partial<openai>): Promise<checkResp
     }
 }
 
-async function saveOpenAIConfig(config: openai) {
+async function saveOpenAIConfig(config: openai): Promise<openai> {
     try {
+        console.log("config " + JSON.stringify(config))
         const response = await fetch('/api/settings/openai', {
             method: 'POST',
             headers: {
@@ -61,7 +65,7 @@ async function saveOpenAIConfig(config: openai) {
             body: JSON.stringify({ config })
         })
 
-        return await response.json()
+        return await response.json() as openai
     } catch (error) {
         console.log(error)
     }

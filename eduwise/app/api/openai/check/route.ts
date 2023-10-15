@@ -24,7 +24,7 @@ export async function POST(
             messages: [
                 {
                     'role': 'user',
-                    'content': 'Tell me a funny joke'
+                    'content': 'This is a simple test. Reply only with "OK"'
                 }
             ]
         }),

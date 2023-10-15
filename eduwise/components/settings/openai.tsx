@@ -14,6 +14,8 @@ import { Button } from "../ui/button"
 import { checkResponse, useSettingsStore } from "@/lib/store-settings"
 import { openai } from "@/lib/store-settings"
 import { ReloadIcon } from "@radix-ui/react-icons"
+import OpenaiSettingsDialog from "./openaiSettingsDialog"
+import { useSession } from "next-auth/react"
 
 const OpenaiSettings = () => {
 
@@ -25,6 +27,19 @@ const OpenaiSettings = () => {
         message: '',
         success: false
     })
+
+    const [credentials, setCredentials] = useState<openai>({
+        apiKey: '',
+        apiOrganizationId: '',
+        model: '',
+        userId: ''
+    })
+
+    const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+    const [isSaveSuccessfully, setSaveSuccessfully] = useState(false)
+
+    const { data: session } = useSession()
 
     const handleTokenInputChange = event => {
         setToken(event.target.value)
@@ -59,7 +74,16 @@ const OpenaiSettings = () => {
             message: result.message
         })
 
-        console.log("check status " + checkStatus.message)
+        if (result.status == "200") {
+
+            setCredentials({
+                apiKey: token,
+                apiOrganizationId: organizzationId,
+                model: model,
+                userId: session.user.id
+            })
+            setIsDialogOpen(true)
+        }
     }
 
     return (
@@ -136,6 +160,12 @@ const OpenaiSettings = () => {
                     </div>
                 </div>
             </div >
+            <OpenaiSettingsDialog
+                isDialogOpen={isDialogOpen}
+                setIsDialogOpen={setIsDialogOpen}
+                credentials={credentials}
+                setSaveSuccessfully={setSaveSuccessfully}
+            />
         </>
     )
 }

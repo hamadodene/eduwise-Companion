@@ -6,11 +6,13 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
         const {
-            userId,
             apiKey,
             apiOrganizationId,
-            model
-        } = body
+            model,
+            userId
+        } = body.config
+
+        console.log("config server " + JSON.stringify(body))
 
         if (!apiKey || !apiOrganizationId) {
             return NextResponse.json({ status: 400, message: "Api key or organization id is not provide but both are mondatory" })
@@ -45,7 +47,7 @@ export async function POST(request: NextRequest) {
             })
         }
 
-        return NextResponse.json(result)
+        return NextResponse.json({id: result.id, apiKey: result.apiKey, apiOrganizationId: result.apiOrganizationId})
     } catch (error) {
         return NextResponse.json({ status: 400, message: error })
     }
