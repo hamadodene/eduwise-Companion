@@ -5,17 +5,50 @@ interface SettingsStore {
     saveMoodleConfig: (config: moodle) => void
     loadOpenAIConfig: (userId: string) => Promise<openai>
     loadMoodleConfig: (userId: string) => Promise<moodle>
+    checkOpenAiCredential: (Config: Partial<openai>) => Promise<checkResponse>
+    checking: boolean
 }
 
 export interface openai {
     apiKey: string
-    apiHost: string
     apiOrganizationId: string
 }
 
 export interface moodle {
     token: string
     moodleApiHost: string
+}
+
+export interface checkResponse {
+    status?: string,
+    success: boolean,
+    message: string
+}
+
+let checking = false
+
+async function checkOpenAiCredential(config: Partial<openai>): Promise<checkResponse> {
+    try {
+        checking = true
+        console.log("client " + config.apiKey)
+        console.log(" client " + config.apiOrganizationId)
+        const response = await fetch('/api/openai/check', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(config)
+        })
+
+        const result = await response.json() as checkResponse
+        checking = false
+
+        return result
+    } catch (error) {
+        console.log(error)
+        checking = false
+        return { success: false, message: "An error occured" }
+    }
 }
 
 async function saveOpenAIConfig(config: openai) {
@@ -93,5 +126,7 @@ export const useSettingsStore: SettingsStore = {
     saveMoodleConfig,
     loadOpenAIConfig,
     loadMoodleConfig,
+    checkOpenAiCredential,
+    checking
 }
 

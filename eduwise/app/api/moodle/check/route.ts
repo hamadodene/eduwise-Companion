@@ -27,7 +27,7 @@ export async function POST(
             }
         }
         try {
-            const response = await fetch(`${this.url}/login/token.php?${queryParams}`, options)
+            const response = await fetch(`${url}/login/token.php?${queryParams}`, options)
             const data = await response.json()
             if ('token' in data) {
                 return NextResponse.json({ status: 200, message: data.token })
