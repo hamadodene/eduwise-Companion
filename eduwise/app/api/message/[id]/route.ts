@@ -4,14 +4,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from '@/lib/prismadb'
 
-export async function UPDATE(request: NextRequest, route: { params: { id: string } }) {
+export async function UPDATE(request: NextRequest,{ params }: { params: { id: string } }) {
     try {
         const body = await request.json()
         const {
             text,
             updateAt
         } = body
-        const messageId = route.params.id
+        const messageId = params.id
 
         const result = prisma.message.update({
             where: {
@@ -28,9 +28,9 @@ export async function UPDATE(request: NextRequest, route: { params: { id: string
     }
 }
 
-export async function DELETE(route: { params: { id: string } }) {
+export async function DELETE({ params }: { params: { id: string } }) {
     try {
-        const messageId = route.params.id
+        const messageId = params.id
 
         await prisma.message.delete({
             where: {

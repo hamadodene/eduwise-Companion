@@ -3,9 +3,9 @@
 import { NextResponse } from "next/server"
 
 //Get chat info
-export async function GET(route: { params: { id: string } }) {
+export async function GET({ params }: { params: { id: string } }) {
     try {
-        const chatId: string = route.params.id
+        const chatId: string = params.id
         const chatInfo = await prisma.chat.findUnique({
             where: {
                 id: chatId

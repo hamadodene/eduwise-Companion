@@ -2,11 +2,15 @@ import { useSession } from "next-auth/react"
 
 interface SettingsStore {
     saveOpenAIConfig: (config: openai) => Promise<openai>
-    saveMoodleConfig: (config: moodle) => void
+    saveMoodleConfig: (config: moodle) => Promise<moodle>
     loadOpenAIConfig: (userId: string) => Promise<openai>
     loadMoodleConfig: (userId: string) => Promise<moodle>
     checkOpenAiCredential: (Config: Partial<openai>) => Promise<checkResponse>
-    checking: boolean
+    checkMoodleCredential: (Config: Partial<moodle>) => Promise<checkResponse>
+    checkingOpenai: boolean
+    savingOpenai: boolean
+    checkingMoodle: boolean
+    savingMoodle: boolean
 }
 
 export interface openai {
@@ -18,8 +22,12 @@ export interface openai {
 }
 
 export interface moodle {
+    id?: string
+    userId?: string
     token: string
-    moodleApiHost: string
+    url: string
+    username?: string
+    password?: string
 }
 
 export interface checkResponse {
@@ -28,13 +36,14 @@ export interface checkResponse {
     message: string
 }
 
-let checking = false
+let checkingOpenai = false
+let checkingMoodle = false
+let savingOpenai = false
+let savingMoodle = false
 
 async function checkOpenAiCredential(config: Partial<openai>): Promise<checkResponse> {
     try {
-        checking = true
-        console.log("client " + config.apiKey)
-        console.log(" client " + config.apiOrganizationId)
+        checkingOpenai = true
         const response = await fetch('/api/openai/check', {
             method: 'POST',
             headers: {
@@ -44,19 +53,21 @@ async function checkOpenAiCredential(config: Partial<openai>): Promise<checkResp
         })
 
         const result = await response.json() as checkResponse
-        checking = false
+        checkingOpenai = false
+
+        console.log("result " + JSON.stringify(result))
 
         return result
     } catch (error) {
         console.log(error)
-        checking = false
+        checkingOpenai = false
         return { success: false, message: "An error occured" }
     }
 }
 
 async function saveOpenAIConfig(config: openai): Promise<openai> {
     try {
-        console.log("config " + JSON.stringify(config))
+        let savingOpenai = true
         const response = await fetch('/api/settings/openai', {
             method: 'POST',
             headers: {
@@ -65,14 +76,40 @@ async function saveOpenAIConfig(config: openai): Promise<openai> {
             body: JSON.stringify({ config })
         })
 
-        return await response.json() as openai
+        const result = await response.json() as openai
+        savingOpenai = false
+        return result
     } catch (error) {
         console.log(error)
+        savingOpenai = false
     }
 }
 
-async function saveMoodleConfig(config: moodle) {
+async function checkMoodleCredential(config: Partial<moodle>): Promise<checkResponse> {
     try {
+        checkingMoodle = true
+        const response = await fetch('/api/moodle/check', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(config)
+        })
+
+        const result = await response.json() as checkResponse
+        checkingMoodle = false
+
+        return result
+    } catch (error) {
+        console.log(error)
+        checkingMoodle = false
+        return { success: false, message: "An error occured" }
+    }
+}
+
+async function saveMoodleConfig(config: moodle): Promise<moodle> {
+    try {
+        savingMoodle = true
         const response = await fetch('/api/settings/moodle', {
             method: 'POST',
             headers: {
@@ -81,43 +118,33 @@ async function saveMoodleConfig(config: moodle) {
             body: JSON.stringify({ config })
         })
 
-        return await response.json()
+        const result = await response.json() as moodle
+        console.log("result " +  JSON.stringify(result))
+        savingMoodle = false
+        return result
+    } catch (error) {
+        console.log(error)
+        savingMoodle = false
+    }
+}
+
+async function loadOpenAIConfig(userId: string): Promise<openai> {
+    try {
+        const response = await fetch(`/api/settings/openai/${userId}`, {
+            method: 'GET'
+        })
+        return await response.json() as openai
     } catch (error) {
         console.log(error)
     }
 }
 
-async function loadOpenAIConfig(): Promise<openai> {
+async function loadMoodleConfig(userId: string): Promise<moodle> {
     try {
-        const { data: session } = useSession()
-        const userId = session.user.id
-
-        const response = await fetch('/api/settings/openai/', {
-            method: 'GET',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify(userId)
+        const response = await fetch(`/api/settings/moodle/${userId}`, {
+            method: 'GET'
         })
-        return await response.json()
-    } catch (error) {
-        console.log(error)
-    }
-}
-
-async function loadMoodleConfig(): Promise<moodle> {
-    try {
-        const { data: session } = useSession()
-        const userId = session.user.id
-
-        const response = await fetch('/api/settings/moodle/', {
-            method: 'GET',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify(userId)
-        })
-        return await response.json()
+        return await response.json() as moodle
     } catch (error) {
         console.log(error)
     }
@@ -131,6 +158,9 @@ export const useSettingsStore: SettingsStore = {
     loadOpenAIConfig,
     loadMoodleConfig,
     checkOpenAiCredential,
-    checking
+    checkMoodleCredential,
+    checkingOpenai,
+    savingOpenai,
+    checkingMoodle,
+    savingMoodle
 }
-

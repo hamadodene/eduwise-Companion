@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from '@/lib/prismadb'
 
 // Delete chat
-export async function DELETE(route: { params: { id: string } }) {
+export async function DELETE({ params }: { params: { id: string } }) {
     try {
-        const chatId: string = route.params.id
+        const chatId: string = params.id
         // Delete first all messages
         await prisma.message.deleteMany({
             where: {
@@ -24,10 +24,10 @@ export async function DELETE(route: { params: { id: string } }) {
 }
 
 // Update chat data
-export async function UPDATE(request: NextRequest, route: { params: { id: string } }) {
+export async function UPDATE(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         const body = await request.json()
-        const chatId: string = route.params.id
+        const chatId: string = params.id
         const {
             userTitle,
             autoTitle,
@@ -52,9 +52,9 @@ export async function UPDATE(request: NextRequest, route: { params: { id: string
 }
 
 //Get all messages of chat
-export async function GET(route: { params: { id: string } }) {
+export async function GET({ params }: { params: { id: string } }) {
     try {
-        const chatId: string = route.params.id
+        const chatId: string = params.id
         const messages = await prisma.message.findMany({
             where: {
                 id: chatId
@@ -67,10 +67,10 @@ export async function GET(route: { params: { id: string } }) {
 }
 
 // Add message to chat
-export async function POST(request: NextRequest, route: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         const body = await request.json()
-        const chatId: string = route.params.id
+        const chatId: string = params.id
         const {
             text,
             createdAt,

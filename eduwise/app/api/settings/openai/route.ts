@@ -12,8 +12,6 @@ export async function POST(request: NextRequest) {
             userId
         } = body.config
 
-        console.log("config server " + JSON.stringify(body))
-
         if (!apiKey || !apiOrganizationId) {
             return NextResponse.json({ status: 400, message: "Api key or organization id is not provide but both are mondatory" })
         }
@@ -52,19 +50,4 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ status: 400, message: error })
     }
 
-}
-
-//Get chat info
-export async function GET(route: { params: { userid: string } }) {
-    try {
-        const userid: string = route.params.userid
-        const openAiInfo = await prisma.openAi.findUnique({
-            where: {
-                userId: userid
-            }
-        })
-        return NextResponse.json(openAiInfo)
-    } catch (error) {
-        return NextResponse.json({ status: 400, message: error })
-    }
 }

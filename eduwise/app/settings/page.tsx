@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import OpenaiSettings from "@/components/settings/openai"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
+import MoodleSettings from "@/components/settings/moodle"
 
 export default function page() {
 
@@ -29,59 +30,7 @@ export default function page() {
             <ScrollArea>
                 {/* GPT settings */}
                 <OpenaiSettings/>
-
-                {/* Moodle settings */}
-                <div className="border rounded-lg ml-2 mr-2 mt-5">
-                    <div className="flex items-center justify-between p-4 border-b">
-                        <div>
-                            <div className="text-lg font-semibold">Username</div>
-                            <div className="text-gray-500">Set your moodle username</div>
-                        </div>
-                        <div>
-                            <Input type="text" placeholder="username" />
-                        </div>
-                    </div>
-                    <div className="flex items-center justify-between p-4 border-b">
-                        <div>
-                            <div className="text-lg font-semibold">Password</div>
-                            <div className="text-gray-500">Set your moodle password</div>
-                        </div>
-                        <div>
-                            <Input type="password" placeholder="password" />
-                        </div>
-                    </div>
-                    <div className="flex items-center justify-between p-4 border-b">
-                        <div>
-                            <div className="text-lg font-semibold">Token</div>
-                            <div className="text-gray-500">Set your moodle token</div>
-                        </div>
-                        <div>
-                            <Input type="password" placeholder="token" />
-                        </div>
-                    </div>
-                    <div className="flex items-center justify-between p-4 border-b">
-                        <div>
-                            <div className="text-lg font-semibold">Endpoint</div>
-                            <div className="text-gray-500">Set your moodle endpoint</div>
-                        </div>
-                        <div>
-                            <Input type="text" placeholder="https://my-moodle-url.example.com" />
-                        </div>
-                    </div>
-                    <div className="flex items-center justify-between p-4 border-b">
-                        <div>
-                            <div className="text-lg font-semibold">Test Moodle Connection</div>
-                            <div className="text-gray-500">Check if your configured credential work properly</div>
-                        </div>
-                        <div>
-                            {/* if check successfull open popup to confirm if user want to save or not*/}
-                            <Button variant="ghost" className="bg-green-100 hover:bg-green-200 dark:bg-gray-800">
-                                Check
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-
+                <MoodleSettings/>
 
                 {/* Reset and clear data */}
                 <div className="border rounded-lg ml-2 mr-2 mt-5 mb-10">
