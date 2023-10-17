@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from '@/lib/prismadb'
 
-export async function UPDATE(request: NextRequest, route: { params: { id: string } }) {
+export async function UPDATE(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         const body = await request.json()
-        const courseId: string = route.params.id
+        const courseId: string = params.id
 
         const course = await prisma.course.findUnique({
             where: {

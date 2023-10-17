@@ -11,7 +11,6 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { CircleIcon, Info, Plus, StarIcon } from 'lucide-react'
-import Link from 'next/link'
 
 
 function HomePage() {
@@ -21,7 +20,7 @@ function HomePage() {
             {/* Content */}
             <div className="flex-1 overflow-y-scroll container mx-auto grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-6 mb-2 mt-2 overflow-hidden">
                 {Array.from({ length: 10 }, (v, i) => (
-                    <Card className='relative transition ease-in-out duration-800  hover:shadow-lg hover:border-[#A3E4D7] hover:bg-[#f3f3f3] '>
+                    <Card key={i} className='relative transition ease-in-out duration-800  hover:shadow-lg hover:border-[#A3E4D7] hover:bg-[#f3f3f3] '>
                         <CardHeader className="flex flex-col items-start gap-4 space-y-0">
                             <div className='w-full'>
                                 <CardTitle className='overflow-hidden truncate' >Macchine learning</CardTitle>

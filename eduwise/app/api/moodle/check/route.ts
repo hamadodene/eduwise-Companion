@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 //Api to check if token is valid
 // Note credential cannot be save on DB here...User can decide to change it
 export async function POST(
-    request: Request
+    request: NextRequest
 ) {
     const body = await request.json()
     const {
@@ -13,11 +13,16 @@ export async function POST(
         moodletoken
     } = body
 
+    if(!url) {
+        return NextResponse.json({status: 401})
+    }
+    
     if (!moodletoken && username && password) {
         // token not provide, try get token from username and password
         const queryParams = new URLSearchParams({
             username: username,
-            password: password
+            password: password,
+            service: 'moodle_mobile_app'
         })
 
         const options = {
@@ -27,7 +32,7 @@ export async function POST(
             }
         }
         try {
-            const response = await fetch(`${this.url}/login/token.php?${queryParams}`, options)
+            const response = await fetch(`${url}/login/token.php?${queryParams}`, options)
             const data = await response.json()
             if ('token' in data) {
                 return NextResponse.json({ status: 200, message: data.token })
@@ -46,18 +51,16 @@ export async function POST(
         try {
             const response = await fetch(`${url}/webservice/rest/server.php?wstoken=${moodletoken}`, {
                 method: 'GET'
-            });
+            })
+            
             if (response.status === 200) {
-                const responseData = await response.json();
-                console.log('Token is valid:', responseData);
-                return NextResponse.json('Token is valid')
+                return NextResponse.json({status: 200, message: "Token is valid"})
 
             } else {
                 console.log('Token is not valid:', response.status, response.statusText);
                 return NextResponse.json({ status: 401, message: "Invalid token" })
             }
         } catch (error) {
-
             console.error('Error checking token:', error);
             return NextResponse.json({ status: 400, message: 'Error during token validation' })
         }

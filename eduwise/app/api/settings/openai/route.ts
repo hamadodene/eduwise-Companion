@@ -6,11 +6,11 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
         const {
-            userId,
             apiKey,
             apiOrganizationId,
-            model
-        } = body
+            model,
+            userId
+        } = body.config
 
         if (!apiKey || !apiOrganizationId) {
             return NextResponse.json({ status: 400, message: "Api key or organization id is not provide but both are mondatory" })
@@ -45,24 +45,9 @@ export async function POST(request: NextRequest) {
             })
         }
 
-        return NextResponse.json(result)
+        return NextResponse.json({id: result.id, apiKey: result.apiKey, apiOrganizationId: result.apiOrganizationId})
     } catch (error) {
         return NextResponse.json({ status: 400, message: error })
     }
 
-}
-
-//Get chat info
-export async function GET(route: { params: { userid: string } }) {
-    try {
-        const userid: string = route.params.userid
-        const openAiInfo = await prisma.openAi.findUnique({
-            where: {
-                userId: userid
-            }
-        })
-        return NextResponse.json(openAiInfo)
-    } catch (error) {
-        return NextResponse.json({ status: 400, message: error })
-    }
 }

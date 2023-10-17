@@ -1,4 +1,4 @@
-import { ApiChatInput, ApiChatResponse } from '@/app/api/openai/chat';
+import { ApiChatInput, ApiChatResponse } from '@/app/api/openai/chat/route';
 import { Message, useChatStore } from '@/lib/store-chats';
 import { fastChatModelId } from './data';
 import { useSettingsStore } from '@/lib/store-settings';
