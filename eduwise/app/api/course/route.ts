@@ -34,10 +34,10 @@ export async function POST(request: NextRequest) {
     }
 }
 
+
 export async function GET(request: NextRequest) {
     try {
-        const body = await request.json()
-        const { userId } = body
+        const userId = request.nextUrl.searchParams.get("userid")
 
         const result = await prisma.course.findMany({
             where: {
@@ -47,8 +47,8 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(result)
 
     } catch (error) {
+        
         return NextResponse.json({ status: 400, message: error })
 
     }
-
 }

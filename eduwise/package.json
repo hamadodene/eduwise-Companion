@@ -61,6 +61,7 @@
     "zod": "^3.22.2"
   },
   "devDependencies": {
+    "@tailwindcss/line-clamp": "^0.4.4",
     "prisma": "^5.1.1"
   }
 }

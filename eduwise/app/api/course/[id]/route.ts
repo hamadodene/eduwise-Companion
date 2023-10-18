@@ -44,9 +44,9 @@ export async function UPDATE(request: NextRequest, { params }: { params: { id: s
 }
 
 
-export async function DELETE(request: NextRequest, route: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
     try {
-        const courseId: string = route.params.id
+        const courseId: string = params.id
 
         // Check if coure is custom course
         const deletable = await prisma.course.findUnique({
@@ -102,9 +102,9 @@ export async function DELETE(request: NextRequest, route: { params: { id: string
 }
 
 // get course info
-export async function GET(route: { params: { id: string } }) {
+export async function GET({ params }: { params: { id: string } }) {
     try {
-        const courseId: string = route.params.id
+        const courseId: string = params.id
 
         const result = await prisma.course.findUnique({
             where: {

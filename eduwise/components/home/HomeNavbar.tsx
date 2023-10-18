@@ -1,10 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { Search } from "./search"
-import { Button } from "./ui/button"
+import { Search } from "../search"
+import { Button } from "../ui/button"
 import { ListMinus, Plus } from "lucide-react"
-import { useSidebar } from './sidebarContext'
+import { useSidebar } from '../sidebarContext'
 
 const NavBar = () => {
     const { toggleSidebar } = useSidebar()

@@ -127,6 +127,24 @@ const MoodleSettings = () => {
         }
     }
 
+    const handleSinkCoursesFromMoodle = async (e) => {
+        e.preventDefault()
+        const result = await useSettingsStore.syncMoodleData(session.user.id)
+        console.log("synch..... " + JSON.stringify(result))
+        if(result.success) {
+            toast({
+                description: "Sync successfully"
+            }) 
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Sync failled",
+                description: "An error occured during synch..Please contact amministrator.."
+            })
+        }
+    }
+
+
     const handleResetButton = (e) => {
         e.preventDefault()
         setUsername('')
@@ -232,6 +250,23 @@ const MoodleSettings = () => {
                                 disabled={buttonDisabled}
                                 className="bg-green-100 hover:bg-green-200 dark:bg-gray-800 text-xl py-2 px-4 w-36">
                                 Save
+                            </Button>
+                        )}
+
+                    </div>
+                    <div className="text-center mx-auto">
+                        {/* if check successfull open popup to confirm if user want to save or not*/}
+                        {useSettingsStore.moodleInSync ? (
+                            <Button disabled className="bg-green-100 hover:bg-green-200 dark:bg-gray-800 text-xl py-2 px-4">
+                                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" /> In sync..
+                            </Button>
+                        ) : (
+                            <Button
+                                variant="ghost"
+                                onClick={handleSinkCoursesFromMoodle}
+                                disabled={buttonDisabled}
+                                className="bg-green-100 hover:bg-green-200 dark:bg-gray-800 text-xl py-2 px-4 w-36">
+                                Sync
                             </Button>
                         )}
 

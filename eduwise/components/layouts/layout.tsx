@@ -1,6 +1,6 @@
 'use client'
 
-import Sidebar from "@/components/sidebar"
+import Sidebar from "@/components/sidebar/sidebar"
 import { motion } from "framer-motion"
 
 export const Layout = ({ children }) => {

@@ -2,10 +2,10 @@
 
 // components/Sidebar.js
 import React from 'react'
-import { Icons } from './icons'
+import { Icons } from '../icons'
 import { CircleIcon, Delete, PlusCircleIcon, Settings2Icon, StarIcon, XIcon } from 'lucide-react'
-import { Button } from './ui/button'
-import { ScrollArea } from './ui/scroll-area'
+import { Button } from '../ui/button'
+import { ScrollArea } from '../ui/scroll-area'
 import Link from 'next/link'
 import {
     Card,
@@ -13,7 +13,8 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { useSidebar } from './sidebarContext'
+import { useSidebar } from '../sidebarContext'
+import ChatHistory from './chatHistory'
 
 
 
@@ -33,28 +34,7 @@ const Sidebar = () => {
             <div className='mb-4'></div>
             {/* Chat history */}
             <ScrollArea className='h-full lg:h-3/4 mr-4 ml-4'>
-                {Array.from({ length: 5 }, (v, i) => (
-                    <Card key={i} className='hover:border-sky-300  mt-2'>
-                        <CardHeader className="flex flex-col items-start gap-4 space-y-0">
-                            <div className='w-full'>
-                                <CardTitle className='overflow-hidden truncate'>Studio del Machine learning</CardTitle>
-                            </div>
-                        </CardHeader>
-
-                        <CardContent>
-                            <div className="flex space-x-4 text-sm text-muted-foreground">
-                                <div className="flex items-center">
-                                    <CircleIcon className="mr-1 h-3 w-3 fill-red-400 text-sky-400" />
-                                    Machine learning
-                                </div>
-                                <div className="flex items-center">
-                                    <StarIcon className="mr-1 h-3 w-3" />
-                                    2 msg
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
+                <ChatHistory/>
             </ScrollArea>
             <div className="bottom-0 left-0 right-0 p-4 mt-4 flex justify-between items-center border-t">
 

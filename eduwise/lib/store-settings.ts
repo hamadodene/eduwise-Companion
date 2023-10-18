@@ -7,10 +7,12 @@ interface SettingsStore {
     loadMoodleConfig: (userId: string) => Promise<moodle>
     checkOpenAiCredential: (Config: Partial<openai>) => Promise<checkResponse>
     checkMoodleCredential: (Config: Partial<moodle>) => Promise<checkResponse>
+    syncMoodleData: (userId: string) => Promise<checkResponse>
     checkingOpenai: boolean
     savingOpenai: boolean
     checkingMoodle: boolean
     savingMoodle: boolean
+    moodleInSync: boolean
 }
 
 export interface openai {
@@ -40,6 +42,7 @@ let checkingOpenai = false
 let checkingMoodle = false
 let savingOpenai = false
 let savingMoodle = false
+let moodleInSync = false
 
 async function checkOpenAiCredential(config: Partial<openai>): Promise<checkResponse> {
     try {
@@ -119,7 +122,7 @@ async function saveMoodleConfig(config: moodle): Promise<moodle> {
         })
 
         const result = await response.json() as moodle
-        console.log("result " +  JSON.stringify(result))
+        console.log("result " + JSON.stringify(result))
         savingMoodle = false
         return result
     } catch (error) {
@@ -151,6 +154,25 @@ async function loadMoodleConfig(userId: string): Promise<moodle> {
 }
 
 
+async function syncMoodleData(userId: string) {
+    try {
+        moodleInSync = true
+        const response = await fetch(`/api/moodle/sync`, {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json' 
+            },
+            body: JSON.stringify({userId})
+        })
+        const result = await response.json() as checkResponse
+
+        moodleInSync = false
+        return result
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 // Implementa l'interfaccia SettingsStore
 export const useSettingsStore: SettingsStore = {
     saveOpenAIConfig,
@@ -159,8 +181,10 @@ export const useSettingsStore: SettingsStore = {
     loadMoodleConfig,
     checkOpenAiCredential,
     checkMoodleCredential,
+    syncMoodleData,
     checkingOpenai,
     savingOpenai,
     checkingMoodle,
-    savingMoodle
+    savingMoodle,
+    moodleInSync
 }

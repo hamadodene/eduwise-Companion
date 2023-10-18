@@ -2,9 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from '@/lib/prismadb'
 
 // Get all chats
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
-        const chats = await prisma.chat.findMany()
+        const userId = request.nextUrl.searchParams.get("userid")
+        const chats = await prisma.chat.findMany({
+            where: {
+                userId: userId
+            }
+        })
         return NextResponse.json(chats)
     } catch (error) {
         return NextResponse.json({ status: 401, message: error })
@@ -18,6 +23,7 @@ export async function POST(request: NextRequest) {
         const {
             courseId,
             createdAt,
+            userId,
             chatModel
         } = body
 
@@ -36,6 +42,7 @@ export async function POST(request: NextRequest) {
             data: {
                 courseId,
                 createdAt,
+                userId,
                 chatModel
             }
         })

@@ -1,25 +1,32 @@
-import { useSession } from "next-auth/react"
-
-interface course {
+export interface course {
     shortname: string,
     fullname: string,
     summary: string,
     origin?: string,
-    userId: string
+    userId: string,
+    chats: []
 }
 
-export async function createCourses(shortname: string, fullname: string, summary: string) {
-    try {
-        const { data: session } = useSession()
-        const userId = session.user.id
+export interface chat {
+    id: string
+    userTitle: string
+    autoTitle: string
+    chatModel: string
+    createdAt: Date
+    updatedAt: Date
+    courseId: string
+    couseName?: string
+    messages: []
+}
 
+export async function createCourses(shortname: string, fullname: string, summary: string, userId: string) {
+    try {
         const courseData: Partial<course> = {
             shortname,
             fullname,
             summary,
             userId
         }
-
         const response = await fetch('/api/course', {
             method: 'POST',
             headers: {
@@ -68,20 +75,13 @@ export async function updateCourse(newCourse: Partial<course>, courseId: string)
     }
 }
 
-export async function getAllCourses() {
+export async function getAllCourses(userId: string) {
     try {
-        const { data: session } = useSession()
-        const userId = session.user.id
-
-        const response = await fetch('/api/course/', {
-            method: 'GET',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify(userId)
+        const response = await fetch(`/api/course?userid=${userId}`, {
+            method: 'GET'
         })
 
-        return await response.json()
+        return await response.json() as course[]
     } catch (error) {
         console.log(error)
     }
@@ -99,4 +99,18 @@ export async function getCourse(courseId: string) {
     } catch (error) {
         console.log(error)
     }
+}
+
+export async function getChats(userId: string) {
+    try {
+        const response = await fetch(`/api/chat?userid=${userId}`, {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json'
+            }
+        })
+        return await response.json() as chat[]
+    } catch (error) {
+        console.log(error)
+    } 
 }
