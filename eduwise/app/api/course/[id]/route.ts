@@ -102,7 +102,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 }
 
 // get course info
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         const courseId: string = params.id
 
@@ -113,6 +113,7 @@ export async function GET({ params }: { params: { id: string } }) {
         })
         return NextResponse.json({ result })
     } catch (error) {
+        console.log(error)
         return NextResponse.json({ status: 400, message: error })
     }
 }

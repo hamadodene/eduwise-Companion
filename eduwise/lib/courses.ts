@@ -1,4 +1,5 @@
 export interface course {
+    id?: string
     shortname: string,
     fullname: string,
     summary: string,
@@ -11,11 +12,11 @@ export interface chat {
     id: string
     userTitle: string
     autoTitle: string
-    chatModel: string
+    userId: string
     createdAt: Date
     updatedAt: Date
     courseId: string
-    couseName?: string
+    courseName?: string
     messages: []
 }
 
@@ -113,4 +114,31 @@ export async function getChats(userId: string) {
     } catch (error) {
         console.log(error)
     } 
+}
+
+
+export async function createChat(selectedCourse: course, userId: string) {
+    try {
+        const courseId = selectedCourse.id
+        const createdAt = new Date()
+        const courseName = selectedCourse.shortname
+        const chatData: Partial<chat> = {
+            courseId,
+            courseName,
+            createdAt,
+            userId
+        }
+
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({ chatData })
+        })
+
+        return await response.json() as chat
+    } catch (error) {
+        console.log(error)
+    }
 }

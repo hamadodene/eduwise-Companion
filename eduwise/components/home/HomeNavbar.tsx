@@ -4,7 +4,7 @@ import * as React from "react"
 import { Search } from "../search"
 import { Button } from "../ui/button"
 import { ListMinus, Plus } from "lucide-react"
-import { useSidebar } from '../sidebarContext'
+import { useSidebar } from '../context/sidebarContext'
 
 const NavBar = () => {
     const { toggleSidebar } = useSidebar()

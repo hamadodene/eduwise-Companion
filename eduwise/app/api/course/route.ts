@@ -42,6 +42,9 @@ export async function GET(request: NextRequest) {
         const result = await prisma.course.findMany({
             where: {
                 userId: userId
+            },
+            include: {
+                chats: true
             }
         })
         return NextResponse.json(result)

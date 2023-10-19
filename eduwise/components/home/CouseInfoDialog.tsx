@@ -40,6 +40,10 @@ const CourseInfoDialog: React.FC<CourseInfoDialogProps> = ({ isOpen, toogleDialo
         setSummary(event)
     }
 
+    const handleSaveButtonClick = async (e, couese: course) => {
+        // save course here
+    }
+
     return (
         <Dialog key={course.fullname} open={isOpen} onOpenChange={toogleDialog}>
             <DialogContent className="sm:max-w-[600px]">

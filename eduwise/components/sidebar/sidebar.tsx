@@ -13,7 +13,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { useSidebar } from '../sidebarContext'
+import { useSidebar } from '../context/sidebarContext'
 import ChatHistory from './chatHistory'
 
 

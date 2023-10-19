@@ -96,10 +96,10 @@ model Chat {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   userTitle String?
   autoTitle String?
-  chatModel String
   createdAt DateTime
   updatedAt DateTime?
   courseId  String    @db.ObjectId
+  courseName  String
   userId    String    @db.ObjectId
   student   User      @relation("UserChat", fields: [userId], references: [id])
   course    Course    @relation(fields: [courseId], references: [id]) //n-1 relation with course

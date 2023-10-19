@@ -35,7 +35,7 @@ function HomePage() {
         <div className='flex flex-col h-full'>
             <NavBar />
             {/* Content */}
-            <div className="flex-1 overflow-y-scroll container mx-auto grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-2 mb-2 mt-2 overflow-hidden">
+            <div className="overflow-y-scroll container mx-auto grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-2 mb-5 mt-2 overflow-hidden">
                 <Courses courses={courseData} />
             </div>
         </div>

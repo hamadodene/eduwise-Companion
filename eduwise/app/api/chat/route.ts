@@ -8,6 +8,9 @@ export async function GET(request: NextRequest) {
         const chats = await prisma.chat.findMany({
             where: {
                 userId: userId
+            },
+            include: {
+                messages: true
             }
         })
         return NextResponse.json(chats)
@@ -22,11 +25,12 @@ export async function POST(request: NextRequest) {
         const body = await request.json()
         const {
             courseId,
+            courseName,
             createdAt,
-            userId,
-            chatModel
-        } = body
+            userId
+        } = body.chatData
 
+        console.log(JSON.stringify(body.chatData))
         // Check if courseId exist
         const exist = await prisma.course.findUnique({
             where: {
@@ -41,14 +45,15 @@ export async function POST(request: NextRequest) {
         const chat = await prisma.chat.create({
             data: {
                 courseId,
+                courseName,
                 createdAt,
-                userId,
-                chatModel
+                userId
             }
         })
 
         return NextResponse.json(chat)
     } catch (error) {
+        console.log(error)
         return NextResponse.json({ status: 401, message: error })
     }
 }
