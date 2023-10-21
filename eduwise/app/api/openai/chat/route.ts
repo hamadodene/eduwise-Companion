@@ -12,8 +12,14 @@ if (!process.env.OPENAI_API_KEY)
 
 // helper functions
 export async function extractOpenaiChatInputs(req: NextRequest): Promise<ApiChatInput> {
+
   const body = await req.json()
-  const { userId } = body
+  console.log("request " + JSON.stringify(body))
+  const { 
+    userId
+  } = body
+
+  console.log("userid " + userId)
   const userApi = await prisma.openAi.findUnique({
     where: {
       userId: userId
@@ -38,7 +44,7 @@ export async function extractOpenaiChatInputs(req: NextRequest): Promise<ApiChat
   if (!api.apiKey)
     throw new Error('Missing OpenAI API Key. Add it on the client side (Settings icon) or server side.');
 
-  return { api, model, messages, temperature, max_tokens };
+  return { api, model, messages, temperature, max_tokens, userId };
 }
 
 const openAIHeaders = (api: OpenAIAPI.Configuration): HeadersInit => ({
@@ -94,6 +100,7 @@ export interface ApiChatInput {
   api: OpenAIAPI.Configuration
   model: string
   messages: OpenAIAPI.Chat.Message[]
+  userId: string
   temperature?: number
   max_tokens?: number
 }
@@ -102,7 +109,7 @@ export interface ApiChatResponse {
   message: OpenAIAPI.Chat.Message;
 }
 
-export default async function handler(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     const { api, ...rest } = await extractOpenaiChatInputs(req);
     const response = await postToOpenAI(api, '/v1/chat/completions', chatCompletionPayload(rest, false));

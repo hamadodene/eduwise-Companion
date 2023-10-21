@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react"
 import { useToast } from "@/components/ui/use-toast"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { checkResponse, moodle, useSettingsStore } from "@/lib/store-settings"
+import { useSettingsContext } from "@/components/context/SettingsContext"
 
 const MoodleSettings = () => {
     const [username, setUsername] = useState('')
@@ -16,9 +17,9 @@ const MoodleSettings = () => {
 
     const [isDisabled, setIsDisabled] = useState(false)
     const [buttonDisabled, setButtonDisabled] = useState(true)
-    const [saving, setSaving] = useState(false)
     const { toast } = useToast()
-    const { data: session, status } = useSession()
+    const { data: session } = useSession()
+    const { addMoodleCredential } = useSettingsContext()
 
     const [checkStatus, setCheckStatus] = useState<checkResponse>({
         status: '',
@@ -53,6 +54,7 @@ const MoodleSettings = () => {
             const result = await useSettingsStore.loadMoodleConfig(session.user.id)
             setToken(result.token)
             setUrl(result.url)
+            addMoodleCredential(result)
         }
     }, [session])
 
@@ -117,6 +119,7 @@ const MoodleSettings = () => {
                 description: "Credentials saved successfully"
             })
             setButtonDisabled(true)
+            addMoodleCredential(result)
         } else {
             toast({
                 variant: "destructive",
@@ -130,11 +133,10 @@ const MoodleSettings = () => {
     const handleSinkCoursesFromMoodle = async (e) => {
         e.preventDefault()
         const result = await useSettingsStore.syncMoodleData(session.user.id)
-        console.log("synch..... " + JSON.stringify(result))
-        if(result.success) {
+        if (result.success) {
             toast({
                 description: "Sync successfully"
-            }) 
+            })
         } else {
             toast({
                 variant: "destructive",

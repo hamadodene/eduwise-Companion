@@ -29,8 +29,7 @@ export async function POST(request: NextRequest) {
             createdAt,
             userId
         } = body.chatData
-
-        console.log(JSON.stringify(body.chatData))
+        
         // Check if courseId exist
         const exist = await prisma.course.findUnique({
             where: {

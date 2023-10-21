@@ -1,20 +1,29 @@
 import { useSession } from "next-auth/react"
+import { chat } from "./courses"
 
-type defaultRole = 'assistant' | 'system' | 'user';
+type defaultRole = 'assistant' | 'system' | 'user'
 
 export interface Chat {
-  userTitle?: string
-  autoTitle?: string
+  id: string
+  userTitle: string
+  autoTitle: string
+  userId: string
+  createdAt: Date
+  updatedAt: Date
   courseId: string
+  courseName?: string
+  messages: any[]
 }
 
 export interface Message {
+  id: string
   text: string
   sender: 'You' | 'Bot' | string
   model?: string,
-  typing?: boolean
+  userId: string,
+  typing?: boolean // Not storing on DB
   updateAt?: number
-  createAt: number
+  createdAt: number
   role: defaultRole
 }
 
@@ -24,7 +33,7 @@ export interface ChatStore {
   deleteChat: (chatId: string) => Promise<void>
   getChatInfo: (chatId: string) => Promise<Chat>
 
-  addMessageToChat: (chatId: string, text: string, sender: string, role: string) => Promise<Message>
+  addMessageToChat: (chatId: string, text: string, sender: string, role: string, userId: string) => Promise<Message>
   getMessagesForChat: (chatId: string) => Promise<Message[]>
   updateMessage: (message: Partial<Message>, messageId: String) => Promise<void>
   deleteMessage: (messageId: string) => Promise<void>
@@ -36,7 +45,7 @@ export const useChatStore: ChatStore = {
     courseId: string
   ) => {
     try {
-      const message: Chat = {
+      const message: Partial<Chat> = {
         courseId
       }
       const response = await fetch('/api/chat', {
@@ -58,11 +67,11 @@ export const useChatStore: ChatStore = {
       const message: Partial<Chat> = newChat
 
       const response = await fetch(`/api/chat/${chatId}`, {
-        method: 'UPDATE',
+        method: 'PUT',
         headers: {
           'Content-type': 'application/json'
         },
-        body: JSON.stringify({ message })
+        body: JSON.stringify(message)
       })
 
       return await response.json()
@@ -88,22 +97,19 @@ export const useChatStore: ChatStore = {
   getChatInfo: async (chatId: string) => {
     try {
       const response = await fetch(`/api/chat/info/${chatId}`, {
-        method: 'GET',
-        headers: {
-          'Content-type': 'application/json'
-        }
+        method: 'GET'
       })
       return await response.json()
     } catch (error) {
       console.log(error)
     }
   },
-  addMessageToChat: async (chatId: string, text: string, sender: string, role: defaultRole) => {
-    const newMessage: Message = {
+  addMessageToChat: async (chatId: string, text: string, sender: string, role: defaultRole, userId: string) => {
+    const newMessage: Partial<Message> = {
       text,
-      createAt: Date.now(),
       sender,
-      role
+      role,
+      userId
     }
 
     try {
@@ -115,22 +121,22 @@ export const useChatStore: ChatStore = {
         body: JSON.stringify({ newMessage })
       })
 
-      return await response.json()
+      return await response.json() as Message
     } catch (error) {
       console.log(error)
     }
   },
 
-  getMessagesForChat: async (chatId: string) => {
+  getMessagesForChat: async (chatPathName: string) => {
     try {
-      const response = await fetch(`/api/chat/${chatId}`, {
+      const response = await fetch(`/api/${chatPathName}`, {
         method: 'GET',
         headers: {
           'Content-type': 'application/json'
         }
       })
 
-      return await response.json()
+      return await response.json() as Message[]
     } catch (error) {
       console.log(error)
     }
@@ -139,11 +145,11 @@ export const useChatStore: ChatStore = {
   updateMessage: async (newMessage: Partial<Message>, messageId: String) => {
     try {
       const response = await fetch(`/api/message/${messageId}`, {
-        method: 'GET',
+        method: 'PUT',
         headers: {
           'Content-type': 'application/json'
         },
-        body: JSON.stringify({ newMessage })
+        body: JSON.stringify(newMessage)
       })
 
       return await response.json()

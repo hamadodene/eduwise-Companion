@@ -2,8 +2,8 @@
 
 import * as React from "react"
 import { Button } from "@/components/ui/button"
-import { ChatTitleDialog } from "@/components/ChatTitleDialog"
-import { useSidebar } from './context/sidebarContext'
+import { ChatTitleDialog } from "@/components/chat/ChatTitleDialog"
+import { useSidebar } from '../context/sidebarContext'
 import { ListMinus } from "lucide-react"
 
 const NavBar = () => {

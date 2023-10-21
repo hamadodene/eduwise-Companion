@@ -9,21 +9,21 @@ import {
 } from "@/components/ui/card"
 import { CircleIcon, StarIcon } from "lucide-react"
 import { useSession } from "next-auth/react"
-import { chat, course, getChats, getCourse } from "@/lib/courses"
+import { getChats } from "@/lib/courses"
 import { useRouter } from 'next/navigation'
 import { useChatContext } from "@/components//context/ChatHistoryContext"
 import { useSidebar } from "../context/sidebarContext"
+import { Chat } from "@/lib/store-chats"
 
 const ChatHistory = () => {
     const { data: session } = useSession()
-    const { addChat, chatList } = useChatContext()
+    const { addChat, chatList, setActiveChat, currentPage } = useChatContext()
     const router = useRouter()
     const { setIsSidebarOpen } = useSidebar()
 
     const handleGetAllchats = useCallback(async () => {
         if (session) {
             const result = await getChats(session.user.id)
-            console.log("chats "+ JSON.stringify(result))
             result.forEach(res => {
                 addChat(res)
             })
@@ -34,21 +34,31 @@ const ChatHistory = () => {
         if (chatList.length === 0) { // Controlla se la lista è vuota
             handleGetAllchats()
         }
-    }, [session,handleGetAllchats])
+        if (currentPage) {
+            for (let i = 0; i < chatList.length; i++) {
+                const chat = chatList[i]
+                if (chat.id === currentPage) {
+                    setActiveChat(chat)
+                    break
+                }
+            }
+        }
+    }, [session, handleGetAllchats])
 
-    const handleCardClick = (e, chatId) => {
+    const handleCardClick = (e, chat: Chat) => {
         e.preventDefault()
-        if(window.innerWidth <= 768) {
+        if (window.innerWidth <= 768) {
             setIsSidebarOpen(false)
         }
-        router.push(`/chat/${chatId}`)
+        setActiveChat(chat)
+        router.push(`/chat/${chat.id}`)
     }
 
     return (
         <>
             {
                 chatList.map((chat, index) => (
-                    <Card key={index} onClick={(e) => handleCardClick(e, chat.id)} className='hover:border-sky-300 hover:bg-[#f3f3f3] mt-2'>
+                    <Card key={index} onClick={(e) => handleCardClick(e, chat)} className='hover:border-sky-800 hover:bg-[#f3f3f3] mt-2'>
                         <CardHeader className="flex flex-col items-start gap-4 space-y-0">
                             <div className='w-full'>
                                 <CardTitle className='overflow-hidden truncate'>{chat.autoTitle || chat.userTitle || "New conversation"}</CardTitle>

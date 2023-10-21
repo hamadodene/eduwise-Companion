@@ -16,7 +16,7 @@ import { openai } from "@/lib/store-settings"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { useSession } from "next-auth/react"
 import { useToast } from "@/components/ui/use-toast"
-
+import { useSettingsContext } from "@/components/context/SettingsContext"
 
 const OpenaiSettings = () => {
 
@@ -42,6 +42,7 @@ const OpenaiSettings = () => {
 
 
     const { data: session } = useSession()
+    const { addOpenaiCredential } = useSettingsContext()
 
     const handleTokenInputChange = event => {
         setToken(event.target.value)
@@ -57,10 +58,16 @@ const OpenaiSettings = () => {
 
     const handleLoadOpenaiCredentials = useCallback(async () => {
         if (session) {
-            const result = await useSettingsStore.loadOpenAIConfig(session.user.id)
-            setToken(result.apiKey)
-            setOrganizzationId(result.apiOrganizationId)
-            setModel(result.model)
+            try {
+                const result = await useSettingsStore.loadOpenAIConfig(session.user.id)
+                setToken(result.apiKey)
+                setOrganizzationId(result.apiOrganizationId)
+                setModel(result.model)
+                addOpenaiCredential(result)
+            } catch (error) {
+                // TODO
+            }
+
         }
     }, [session])
 
@@ -116,6 +123,7 @@ const OpenaiSettings = () => {
                 description: "Credentials saved successfully"
             })
             setButtonDisabled(true)
+            addOpenaiCredential(result)
         } else {
             toast({
                 variant: "destructive",

@@ -5,6 +5,7 @@ export interface course {
     summary: string,
     origin?: string,
     userId: string,
+    systemPrompt: string,
     chats: []
 }
 

@@ -17,18 +17,17 @@ import CourseInfoDialog from "./CouseInfoDialog"
 import { Button } from "../ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { useRouter } from 'next/navigation'
-import { useChatContext } from "@/components//context/ChatHistoryContext"
-
-interface CourseProps {
-    courses: course[]
-}
+import { useChatContext } from "@/components/context/ChatHistoryContext"
+import { useCourseContext } from "@/components/context/CourseContext"
 
 const Courses = ({ courses }) => {
     const { dialogs, openDialog, closeDialog } = useDialog()
     const { data: session } = useSession()
     const { toast } = useToast()
     const router = useRouter()
-    const { addChat } = useChatContext()
+    const { addChat, setActiveChat } = useChatContext()
+    const { resetCourseList } = useCourseContext()
+
 
     // TODO
     // create chat button
@@ -38,9 +37,12 @@ const Courses = ({ courses }) => {
         e.preventDefault()
         const result = await createChat(course, session.user.id)
 
-        if(result.id) {
+        if (result.id) {
             result.courseName = course.shortname
             addChat(result)
+            // need to reload course List
+            resetCourseList()
+            setActiveChat(result)
             router.push(`/chat/${result.id}`)
         } else {
             toast({
