@@ -18,6 +18,7 @@ export interface chat {
     updatedAt: Date
     courseId: string
     courseName?: string
+    systemPrompt: string,
     messages: []
 }
 

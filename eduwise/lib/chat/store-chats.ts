@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react"
-import { chat } from "./courses"
+import { chat } from "../courses"
 
 type defaultRole = 'assistant' | 'system' | 'user'
 
@@ -12,6 +12,7 @@ export interface Chat {
   updatedAt: Date
   courseId: string
   courseName?: string
+  systemPrompt: string
   messages: any[]
 }
 
@@ -39,7 +40,6 @@ export interface ChatStore {
   deleteMessage: (messageId: string) => Promise<void>
 }
 
-// Implementazione di ChatStore (puoi usare MongoDB o un altro database)
 export const useChatStore: ChatStore = {
   createChat: async (
     courseId: string

@@ -11,23 +11,22 @@ import {
 } from "@/components/ui/card"
 import { CircleIcon, Info, Plus, StarIcon } from "lucide-react"
 import { useSession } from "next-auth/react"
-import { course, createChat } from "@/lib/courses"
+import { course, createChat as persisteChatOnDB } from "@/lib/courses"
 import { useDialog } from "@/components/context/DialogContext"
 import CourseInfoDialog from "./CouseInfoDialog"
 import { Button } from "../ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { useRouter } from 'next/navigation'
-import { useChatContext } from "@/components/context/ChatHistoryContext"
 import { useCourseContext } from "@/components/context/CourseContext"
+import { useLocalChatStore } from "@/lib/chat/local-chat-state"
 
 const Courses = ({ courses }) => {
     const { dialogs, openDialog, closeDialog } = useDialog()
     const { data: session } = useSession()
     const { toast } = useToast()
     const router = useRouter()
-    const { addChat, setActiveChat } = useChatContext()
     const { resetCourseList } = useCourseContext()
-
+    const { createChat, setActiveChatId } = useLocalChatStore.getState()
 
     // TODO
     // create chat button
@@ -35,14 +34,14 @@ const Courses = ({ courses }) => {
 
     const handleCreateChat = async (e, course: course) => {
         e.preventDefault()
-        const result = await createChat(course, session.user.id)
+        const result = await persisteChatOnDB(course, session.user.id)
 
         if (result.id) {
             result.courseName = course.shortname
-            addChat(result)
+            createChat(result)
             // need to reload course List
             resetCourseList()
-            setActiveChat(result)
+            setActiveChatId(result.id)
             router.push(`/chat/${result.id}`)
         } else {
             toast({

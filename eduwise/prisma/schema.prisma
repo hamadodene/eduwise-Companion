@@ -102,6 +102,8 @@ model Chat {
   updatedAt DateTime @updatedAt
   courseId  String    @db.ObjectId
   courseName  String
+  systemPrompt  String
+  model     String?
   userId    String    @db.ObjectId
   student   User      @relation("UserChat", fields: [userId], references: [id])
   course    Course    @relation(fields: [courseId], references: [id]) //n-1 relation with course

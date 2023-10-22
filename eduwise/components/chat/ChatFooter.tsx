@@ -1,13 +1,12 @@
-// Contenuto.js
+'use client'
+
 import { CogIcon, SendIcon, Settings, Settings2Icon, SettingsIcon, UploadIcon } from 'lucide-react'
 import React, { useState } from 'react'
 import { ModeToggle } from '@/components/mode-toogle'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { useChatContext } from '@/components/context/ChatHistoryContext'
-import { Message } from '@/lib/store-chats'
 
-const ChatFooter = ({userMessage, setUserMessage,handleSendMessage}) => {
+const ChatFooter = ({ userMessage, setUserMessage, handleSendMessage }) => {
     const handleUserMessageChange = event => {
         event.preventDefault()
         setUserMessage(event.target.value)

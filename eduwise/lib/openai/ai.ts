@@ -1,18 +1,20 @@
 import { ApiChatInput, ApiChatResponse } from '@/app/api/openai/chat/route'
-import { Message, useChatStore } from '@/lib/store-chats'
+import { Message, useChatStore } from '@/lib/chat/store-chats'
 import { fastChatModelId } from './data'
-import { openai } from '../store-settings'
+import { openai } from '../settings/store-settings'
+import { useLocalChatStore } from '@/lib/chat/local-chat-state'
 /**
  * Main function to send the chat to the assistant and receive a response (streaming)
  */
 export async function streamAssistantMessage(
-  chatId: string, assistantMessageId: string, history: Message[], openaiCredential: openai, updateMessage, userId,
+  chatId: string, assistantMessageId: string, history: Message[], openaiCredential: openai, userId,
   onFirstParagraph?: (firstParagraph: string) => void,
 ) {
 
   const apiKey = openaiCredential.apiKey
   const apiOrganizationId = openaiCredential.apiOrganizationId
   const chatModelId = openaiCredential.model
+  const { editMessage } = useLocalChatStore.getState();
 
   const payload: ApiChatInput = {
     api: {
@@ -57,8 +59,7 @@ export async function streamAssistantMessage(
             incrementalText = incrementalText.substring(endOfJson + 1)
             try {
               const parsed = JSON.parse(json)
-              //await useChatStore.updateMessage({ model: parsed.model }, chatId)
-              updateMessage(assistantMessageId, { model: parsed.model })
+              editMessage(chatId, assistantMessageId, { model: parsed.model }, false)
               parsedFirstPacket = true
             } catch (e) {
               // error parsing JSON, ignore
@@ -78,30 +79,32 @@ export async function streamAssistantMessage(
             sentFirstParagraph = true
           }
         }
-        //await useChatStore.updateMessage({ text: incrementalText }, assistantMessageId)
-        updateMessage(assistantMessageId, { text: incrementalText })
+        editMessage(chatId, assistantMessageId, { text: incrementalText }, false)
       }
+      // persist on db
       await useChatStore.updateMessage({ text: incrementalText }, assistantMessageId)
     }
   } catch (error: any) {
     console.error('Fetch request error:', error)
   }
 
-  updateMessage(assistantMessageId, { typing: false })
+  // Set typing false, but not need to store it on DB
+  editMessage(chatId, assistantMessageId, { typing: false }, false)
 }
 
 /**
  * Creates the AI titles for conversations, by taking the last 5 first-lines and asking AI what's that about
  */
-export async function updateAutoConversationTitle(chatId: string, userId: string, activeChat, openaiCredential) {
+export async function updateAutoConversationTitle(chatId: string, userId: string, openaiCredential) {
+  // external state
+  const { chats, setAutoTitle } = useLocalChatStore.getState();
 
-  const chat = await useChatStore.getChatInfo(chatId)
-
-  if (!chat || chat.autoTitle || chat.userTitle) return
-  const messages = activeChat.messages
+  // only operate on valid conversations, without any title
+  const chat = chats.find(c => c.id === chatId) ?? null;
+  if (!chat || chat.autoTitle || chat.userTitle) return;
 
   // first line of the last 5 messages
-  const historyLines: string[] = messages.slice(-5).filter(m => m.role !== 'system').map(m => {
+  const historyLines: string[] = chat.messages.slice(-5).filter(m => m.role !== 'system').map(m => {
     let text = m.text.split('\n')[0]
     text = text.length > 50 ? text.substring(0, 50) + '...' : text
     text = `${m.role === 'user' ? 'You' : 'Assistant'}: ${text}`
@@ -147,8 +150,12 @@ export async function updateAutoConversationTitle(chatId: string, userId: string
         ?.replaceAll('"', '')
         ?.replace('Title: ', '')
         ?.replace('title: ', '')
-      if (title)
+      if (title) {
+        //Persist title
         await useChatStore.updateChat({ autoTitle: title }, chatId)
+        //Set locally
+        setAutoTitle(chatId, title)
+      }
     }
   } catch (error: any) {
     console.error('updateAutoConversationTitle: fetch request error:', error)

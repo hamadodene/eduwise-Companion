@@ -1,20 +1,25 @@
 'use client'
-import React, { useEffect, useState } from "react"
-import { useChatContext } from "@/components/context/ChatHistoryContext"
+
+import React from "react"
 import ChatMessage from "./ChatMessage"
-import { Message } from "@/lib/store-chats"
+import { useLocalChatStore } from "@/lib/chat/local-chat-state"
+import { shallow } from "zustand/shallow"
+import useStore from "@/lib/chat/useStore"
 
-const MessageList = () => {
-    const { activeChat } = useChatContext()
-    const [messages, setMessages] = useState<Partial<Message>[]>([])
+const MessageList = (props: { chatId: string }) => {
+    const messagesEndRef = React.useRef<HTMLDivElement | null>(null)
 
-    useEffect(() => {
-        if (activeChat) {
-            const messages = activeChat.messages
-            setMessages(messages)
-        }
-    }, [activeChat, messages])
+    // https://docs.pmnd.rs/zustand/integrations/persisting-store-data#usage-in-next.js
+    // TODO
+    const messages = useLocalChatStore(state => {
+        const chat = state.chats.find(chat => chat.id === props.chatId)
+        return chat ? chat.messages : []
+    }, shallow)
 
+
+    React.useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, [messages])
 
     return (
         <>
@@ -29,7 +34,7 @@ const MessageList = () => {
                         />
                     ))
             }
-
+            <div ref={messagesEndRef}></div>
         </>
     )
 }

@@ -71,7 +71,6 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     try {
         const body = await request.json()
         const chatId: string = params.id
-        console.log('body ' + JSON.stringify(body.newMessage))
         const {
             text,
             sender,
@@ -91,7 +90,6 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
         return NextResponse.json(result)
     } catch (error) {
-        console.log("add message to chat " + error)
         return NextResponse.json({ status: 400, message: error })
     }
 }
