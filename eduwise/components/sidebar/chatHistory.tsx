@@ -30,7 +30,7 @@ const ChatHistory = () => {
         createChat: state.createChat,
         deleteChat: state.deleteChat,
         setActiveChat: state.setActiveChatId,
-    }), shallow);
+    }), shallow)
 
     const handleGetAllchats = useCallback(async () => {
         if (session) {

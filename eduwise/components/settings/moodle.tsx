@@ -53,8 +53,10 @@ const MoodleSettings = () => {
         if (session) {
             if (!moodleToken || !moodleEndpoint) {
                 const result = await useSettingsStore.loadMoodleConfig(session.user.id)
-                setMoodleToken(result.token)
-                setMoodleEndpoint(result.url)
+                if (result) {
+                    setMoodleToken(result.token)
+                    setMoodleEndpoint(result.url)
+                }
             }
         }
     }, [session])

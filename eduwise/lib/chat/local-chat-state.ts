@@ -27,7 +27,6 @@ export interface ChatStore {
 
 
 export const useLocalChatStore = createWithEqualityFn<ChatStore>()(
-  persist(
     (set, get) => ({
       // default state
       //For now we have not a default chat
@@ -142,19 +141,7 @@ export const useLocalChatStore = createWithEqualityFn<ChatStore>()(
               : chat),
         })),
 
-    }),
-    {
-      name: 'eduwise-local-state',
-      version: 2,
-      onRehydrateStorage: () => (state) => {
-        if (state) {
-          // if nothing is selected, select the first conversation
-          if (!state.activeChatId && state.chats.length)
-            state.activeChatId = state.chats[0].id
-        }
-      },
-      storage: createJSONStorage(() => sessionStorage),
-    }),
+    })
 )
 
 

@@ -19,7 +19,7 @@ const runAssistantUpdatingState = async (chat: ChatModel, assistantModelId: stri
     const { appendMessage, setMessages } = useLocalChatStore.getState()
 
     const systemMessage = history ? history.find((message) => message.role === "system") : null
-    
+
     if (!systemMessage) {
         const newSystemMessage: Partial<Message> = {
             role: "system",
@@ -57,7 +57,7 @@ export default function page() {
     const { setMessages, chats, appendMessage } = useLocalChatStore.getState()
     const parts = chatPathName.split('/')
     const chatId = parts[parts.length - 1]
-    const { apiKey, apiOrganizationId, gptModel, setApiKey, setApiOrganizationId, setGtpModel} = useLocalSettingsStore.getState()
+    const { apiKey, apiOrganizationId, gptModel, setApiKey, setApiOrganizationId, setGtpModel } = useLocalSettingsStore.getState()
 
     const handleLoadChatMessages = useCallback(async () => {
         if (session) {
@@ -80,12 +80,14 @@ export default function page() {
             await handleLoadChatMessages()
         }
         const loadOpenAiCredential = async () => {
-            if(!apiKey || !apiOrganizationId || !gptModel) {
-                // load from db
-                const result = await useSettingsStore.loadOpenAIConfig(session.user.id)
-                setApiKey(result.apiKey)
-                setApiOrganizationId(result.apiOrganizationId)
-                setGtpModel(result.model)
+            if (!apiKey || !apiOrganizationId || !gptModel) {
+                if (session) {
+                    // load from db
+                    const result = await useSettingsStore.loadOpenAIConfig(session.user.id)
+                    setApiKey(result.apiKey)
+                    setApiOrganizationId(result.apiOrganizationId)
+                    setGtpModel(result.model)
+                }
             }
         }
         loadChatData()

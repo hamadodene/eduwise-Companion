@@ -24,35 +24,30 @@ interface SettingsStore {
 }
 
 export const useLocalSettingsStore = create<SettingsStore>()(
-    persist(
-        (set) => ({
+    (set) => ({
 
-            // OpenAI API settings
-            apiKey: (function () {
-                if (typeof localStorage === 'undefined') return ''
-                return localStorage.getItem('eduwise-settings-openai-api-key') || ''
-            })(),
-            setApiKey: (apiKey: string) => set({ apiKey }),
+        // OpenAI API settings
+        apiKey: (function () {
+            if (typeof localStorage === 'undefined') return ''
+            return localStorage.getItem('eduwise-settings-openai-api-key') || ''
+        })(),
+        setApiKey: (apiKey: string) => set({ apiKey }),
 
-            gptModel: '',
-            setGtpModel: (gptModel: string) => set({ gptModel }),
+        gptModel: '',
+        setGtpModel: (gptModel: string) => set({ gptModel }),
 
-            apiOrganizationId: '',
-            setApiOrganizationId: (apiOrganizationId: string) => set({ apiOrganizationId }),
+        apiOrganizationId: '',
+        setApiOrganizationId: (apiOrganizationId: string) => set({ apiOrganizationId }),
 
-            // Moodle api settings
-            moodleToken: (function () {
-                if (typeof localStorage === 'undefined') return ''
-                return localStorage.getItem('eduwise-settings-moodle-token') || ''
-            })(),
-            setMoodleToken: (moodleToken: string) => set({ moodleToken }),
+        // Moodle api settings
+        moodleToken: (function () {
+            if (typeof localStorage === 'undefined') return ''
+            return localStorage.getItem('eduwise-settings-moodle-token') || ''
+        })(),
+        setMoodleToken: (moodleToken: string) => set({ moodleToken }),
 
-            moodleEndpoint: '',
-            setMoodleEndpoint: (moodleEndpoint: string) => set({ moodleEndpoint })
+        moodleEndpoint: '',
+        setMoodleEndpoint: (moodleEndpoint: string) => set({ moodleEndpoint })
 
-        }),
-        {
-            name: 'eduwise-settings',
-            storage: createJSONStorage(() => sessionStorage),
-        }),
+    })
 )
