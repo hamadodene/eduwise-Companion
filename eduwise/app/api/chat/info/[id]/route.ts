@@ -1,9 +1,9 @@
 // /api/chat/info/[chatid]
 
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
 //Get chat info
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         const chatId: string = params.id
         const chatInfo = await prisma.chat.findUnique({

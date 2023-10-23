@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button"
 import { useSession } from "next-auth/react"
 import { useToast } from "@/components/ui/use-toast"
 import { ReloadIcon } from "@radix-ui/react-icons"
-import { checkResponse, moodle, useSettingsStore } from "@/lib/store-settings"
+import { checkResponse, moodle, useSettingsStore } from "@/lib/settings/store-settings"
+import { useLocalSettingsStore } from "@/lib/settings/local-settings-store"
 
 const MoodleSettings = () => {
     const [username, setUsername] = useState('')
@@ -16,9 +17,9 @@ const MoodleSettings = () => {
 
     const [isDisabled, setIsDisabled] = useState(false)
     const [buttonDisabled, setButtonDisabled] = useState(true)
-    const [saving, setSaving] = useState(false)
     const { toast } = useToast()
-    const { data: session, status } = useSession()
+    const { data: session } = useSession()
+    const { setMoodleToken, setMoodleEndpoint, moodleToken, moodleEndpoint } = useLocalSettingsStore.getState()
 
     const [checkStatus, setCheckStatus] = useState<checkResponse>({
         status: '',
@@ -50,9 +51,11 @@ const MoodleSettings = () => {
 
     const handleLoadMoodleCredentials = useCallback(async () => {
         if (session) {
-            const result = await useSettingsStore.loadMoodleConfig(session.user.id)
-            setToken(result.token)
-            setUrl(result.url)
+            if (!moodleToken || !moodleEndpoint) {
+                const result = await useSettingsStore.loadMoodleConfig(session.user.id)
+                setMoodleToken(result.token)
+                setMoodleEndpoint(result.url)
+            }
         }
     }, [session])
 
@@ -117,6 +120,8 @@ const MoodleSettings = () => {
                 description: "Credentials saved successfully"
             })
             setButtonDisabled(true)
+            setMoodleToken(result.token)
+            setMoodleEndpoint(result.url)
         } else {
             toast({
                 variant: "destructive",
@@ -130,11 +135,10 @@ const MoodleSettings = () => {
     const handleSinkCoursesFromMoodle = async (e) => {
         e.preventDefault()
         const result = await useSettingsStore.syncMoodleData(session.user.id)
-        console.log("synch..... " + JSON.stringify(result))
-        if(result.success) {
+        if (result.success) {
             toast({
                 description: "Sync successfully"
-            }) 
+            })
         } else {
             toast({
                 variant: "destructive",
@@ -195,7 +199,7 @@ const MoodleSettings = () => {
                     <div className="w-6/12">
                         <Input
                             type="text"
-                            value={token}
+                            value={moodleToken}
                             onChange={handleTokenInputChange}
                             disabled={isDisabled}
                             placeholder="token" />
@@ -209,7 +213,7 @@ const MoodleSettings = () => {
                     <div className="w-6/12">
                         <Input
                             type="text"
-                            value={url}
+                            value={moodleEndpoint}
                             onChange={handleUrlInputChange}
                             required
                             disabled={isDisabled}

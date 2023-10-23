@@ -13,7 +13,7 @@ export namespace OpenAIAPI {
     export interface Message {
       role: 'assistant' | 'system' | 'user'
       content: string
-    }
+    } 
 
     export interface CompletionsRequest {
       model: string

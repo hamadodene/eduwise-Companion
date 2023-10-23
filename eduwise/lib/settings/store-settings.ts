@@ -122,7 +122,6 @@ async function saveMoodleConfig(config: moodle): Promise<moodle> {
         })
 
         const result = await response.json() as moodle
-        console.log("result " + JSON.stringify(result))
         savingMoodle = false
         return result
     } catch (error) {

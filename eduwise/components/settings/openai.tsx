@@ -11,12 +11,12 @@ import {
 } from "@/components/ui/select"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
-import { checkResponse, useSettingsStore } from "@/lib/store-settings"
-import { openai } from "@/lib/store-settings"
+import { checkResponse, useSettingsStore } from "@/lib/settings/store-settings"
+import { openai } from "@/lib/settings/store-settings"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { useSession } from "next-auth/react"
 import { useToast } from "@/components/ui/use-toast"
-
+import { useLocalSettingsStore } from "@/lib/settings/local-settings-store"
 
 const OpenaiSettings = () => {
 
@@ -39,7 +39,7 @@ const OpenaiSettings = () => {
     const [isDisabled, setIsDisabled] = useState(false)
     const [buttonDisabled, setButtonDisabled] = useState(true)
     const { toast } = useToast()
-
+    const { apiKey, apiOrganizationId, gptModel, setApiKey, setApiOrganizationId, setGtpModel } = useLocalSettingsStore.getState()
 
     const { data: session } = useSession()
 
@@ -57,10 +57,17 @@ const OpenaiSettings = () => {
 
     const handleLoadOpenaiCredentials = useCallback(async () => {
         if (session) {
-            const result = await useSettingsStore.loadOpenAIConfig(session.user.id)
-            setToken(result.apiKey)
-            setOrganizzationId(result.apiOrganizationId)
-            setModel(result.model)
+            try {
+                if (!apiKey || !apiOrganizationId || !gptModel) {
+                    const result = await useSettingsStore.loadOpenAIConfig(session.user.id)
+                    setApiKey(result.apiKey)
+                    setApiOrganizationId(result.apiOrganizationId)
+                    setGtpModel(result.model)
+                }
+            } catch (error) {
+                // TODO
+            }
+
         }
     }, [session])
 
@@ -116,6 +123,8 @@ const OpenaiSettings = () => {
                 description: "Credentials saved successfully"
             })
             setButtonDisabled(true)
+            setApiKey(result.apiKey)
+            setApiOrganizationId(result.apiOrganizationId)
         } else {
             toast({
                 variant: "destructive",
@@ -145,7 +154,7 @@ const OpenaiSettings = () => {
                         <div className="text-gray-500">Select the model you want to use as default</div>
                     </div>
                     <div>
-                        <Select onValueChange={handleModelSelectorChange} defaultValue={model}>
+                        <Select onValueChange={handleModelSelectorChange} defaultValue={gptModel}>
                             <SelectTrigger className="w-[180px]">
                                 <SelectValue placeholder="gpt-3.5-turbo" />
                             </SelectTrigger>
@@ -168,7 +177,7 @@ const OpenaiSettings = () => {
                         <Input
                             type="text"
                             placeholder="Openai token"
-                            value={token}
+                            value={apiKey}
                             onChange={handleTokenInputChange}
                             required
                             disabled={isDisabled}
@@ -184,7 +193,7 @@ const OpenaiSettings = () => {
                         <Input
                             type="text"
                             placeholder="Openai organizzation id"
-                            value={organizzationId}
+                            value={apiOrganizationId}
                             onChange={handleOnganizzationIdInputChange}
                             required
                             disabled={isDisabled}

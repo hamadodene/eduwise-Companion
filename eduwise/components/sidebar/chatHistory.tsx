@@ -9,49 +9,62 @@ import {
 } from "@/components/ui/card"
 import { CircleIcon, StarIcon } from "lucide-react"
 import { useSession } from "next-auth/react"
-import { chat, course, getChats, getCourse } from "@/lib/courses"
 import { useRouter } from 'next/navigation'
-import { useChatContext } from "@/components//context/ChatHistoryContext"
 import { useSidebar } from "../context/sidebarContext"
+import { Chat } from "@/lib/chat/store-chats"
+import { useLocalChatStore } from "@/lib/chat/local-chat-state"
+import { getChats } from "@/lib/courses"
+import { ScrollArea } from "@radix-ui/react-scroll-area"
+import { useChatIDs } from "@/lib/chat/local-chat-state"
+import { shallow } from "zustand/shallow"
 
 const ChatHistory = () => {
     const { data: session } = useSession()
-    const { addChat, chatList } = useChatContext()
     const router = useRouter()
     const { setIsSidebarOpen } = useSidebar()
+    const [chatList, setChatList] = useState<Chat[]>([])
+    // external state
+    const { chats, setActiveChatId, createChat } = useLocalChatStore(state => ({
+        chats: state.chats,
+        setActiveChatId: state.setActiveChatId,
+        createChat: state.createChat,
+        deleteChat: state.deleteChat,
+        setActiveChat: state.setActiveChatId,
+    }), shallow);
 
     const handleGetAllchats = useCallback(async () => {
         if (session) {
-            const result = await getChats(session.user.id)
-            console.log("chats "+ JSON.stringify(result))
-            result.forEach(res => {
-                addChat(res)
-            })
+            if (chats.length === 0) {
+                const result = await getChats(session.user.id)
+                result.forEach(res => {
+                    createChat(res)
+                })
+            }
+            setChatList(chats)
         }
-    }, [session])
+    }, [session, chats, createChat])
 
     useEffect(() => {
-        if (chatList.length === 0) { // Controlla se la lista è vuota
-            handleGetAllchats()
-        }
-    }, [session,handleGetAllchats])
+        handleGetAllchats()
+    }, [session, handleGetAllchats])
 
-    const handleCardClick = (e, chatId) => {
+    const handleCardClick = (e, chat: Chat) => {
         e.preventDefault()
-        if(window.innerWidth <= 768) {
+        if (window.innerWidth <= 768) {
             setIsSidebarOpen(false)
         }
-        router.push(`/chat/${chatId}`)
+        setActiveChatId(chat.id)
+        router.push(`/chat/${chat.id}`)
     }
 
     return (
-        <>
+        <ScrollArea className='h-full lg:h-3/4 mr-4 ml-4'>
             {
                 chatList.map((chat, index) => (
-                    <Card key={index} onClick={(e) => handleCardClick(e, chat.id)} className='hover:border-sky-300 hover:bg-[#f3f3f3] mt-2'>
+                    <Card key={index} onClick={(e) => handleCardClick(e, chat)} className='hover:border-sky-800 hover:bg-[#f3f3f3] mt-2'>
                         <CardHeader className="flex flex-col items-start gap-4 space-y-0">
                             <div className='w-full'>
-                                <CardTitle className='overflow-hidden truncate'>{chat.autoTitle || chat.userTitle || "New conversation"}</CardTitle>
+                                <CardTitle className='overflow-hidden truncate'>{chat.autoTitle || chat.userTitle || "New chat"}</CardTitle>
                             </div>
                         </CardHeader>
 
@@ -69,7 +82,7 @@ const ChatHistory = () => {
                         </CardContent>
                     </Card>
                 ))}
-        </>
+        </ScrollArea>
     )
 }
 

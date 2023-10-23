@@ -87,7 +87,7 @@ export interface ApiChatFirstOutput {
   model: string
 }
 
-export default async function handler(req: NextRequest, res: NextResponse): Promise<Response> {
+export async function POST(req: NextRequest): Promise<Response> {
   try {
     const apiChatInput = await extractOpenaiChatInputs(req)
     const stream: ReadableStream = await chatStreamRepeater(apiChatInput)
@@ -95,7 +95,7 @@ export default async function handler(req: NextRequest, res: NextResponse): Prom
   } catch (error: any) {
     if (error.name === 'AbortError') {
       console.log('Fetch request aborted in handler')
-      return new Response('Request aborted by the user.', { status: 499 }) // Use 499 status code for client closed request
+      return new NextResponse('Request aborted by the user.', { status: 499 }) // Use 499 status code for client closed request
     } else if (error.code === 'ECONNRESET') {
       console.log('Connection reset by the client in handler')
       return new NextResponse('Connection reset by the client.', { status: 499 }) // Use 499 status code for client closed request

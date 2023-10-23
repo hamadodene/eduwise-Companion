@@ -33,9 +33,7 @@ const Sidebar = () => {
             </div>
             <div className='mb-4'></div>
             {/* Chat history */}
-            <ScrollArea className='h-full lg:h-3/4 mr-4 ml-4'>
-                <ChatHistory/>
-            </ScrollArea>
+            <ChatHistory />
             <div className="bottom-0 left-0 right-0 p-4 mt-4 flex justify-between items-center border-t">
 
                 <Button variant="link" onClick={toggleSidebar} className="rounded-lg bg-white dark:bg-slate-900">

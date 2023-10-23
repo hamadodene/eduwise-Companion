@@ -10,25 +10,34 @@ import {
     DialogTrigger
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { DialogPortal } from "@radix-ui/react-dialog"
-import { Pencil1Icon } from "@radix-ui/react-icons"
+import { Chat } from "@/lib/chat/store-chats"
 import { BanIcon, Check } from "lucide-react"
+import { useState } from "react"
 
-export const ChatTitleDialog = () => {
+interface ChatTitleDialogProps {
+    chat?: Chat
+    isOpen: boolean
+    toogleDialog: () => void
+}
+
+export const ChatTitleDialog: React.FC<ChatTitleDialogProps> = ({ isOpen, toogleDialog}) => {
+    const [title, setTitle] = useState('New conversation')
+
+    const handleTitleInputChange = event => {
+        event.preventDefault()
+        setTitle(event.target.value)
+    }
+    
+
     return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <Button variant="ghost" className="border-2" size="icon">
-                    <Pencil1Icon className="h-4 w-4" />
-                </Button>
-            </DialogTrigger>
+        <Dialog open={isOpen} onOpenChange={toogleDialog}>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Edit chat title</DialogTitle>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Input id="name" value="Nuova conversazione" className="col-span-3" />
+                        <Input id="name" value={title} onChange={handleTitleInputChange} className="col-span-3" />
                     </div>
                 </div>
                 <DialogFooter>

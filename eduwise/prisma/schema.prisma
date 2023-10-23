@@ -85,6 +85,8 @@ model Course {
   shortname      String
   fullname       String
   summary        String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
   origin         String  @default("custom") // moodle or custom
   chats          Chat[] //1-n relation with chat
   userId         String  @map("userId") @db.ObjectId
@@ -96,10 +98,12 @@ model Chat {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   userTitle String?
   autoTitle String?
-  createdAt DateTime
-  updatedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime @updatedAt
   courseId  String    @db.ObjectId
   courseName  String
+  systemPrompt  String
+  model     String?
   userId    String    @db.ObjectId
   student   User      @relation("UserChat", fields: [userId], references: [id])
   course    Course    @relation(fields: [courseId], references: [id]) //n-1 relation with course
@@ -111,12 +115,11 @@ model Message {
   chatId    String    @db.ObjectId
   text      String
   model     String?
-  typing    Boolean   @default(false)
-  createdAt DateTime
-  updatedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime @updatedAt
   userId    String    @db.ObjectId
   student   User      @relation("UserMessage", fields: [userId], references: [id])
-  sender    String    @default("You") //You or Bot
+  sender    String
   role      String    @default("user") // user, assistent, system
   chat      Chat      @relation(fields: [chatId], references: [id]) //n-1 with chat
 }

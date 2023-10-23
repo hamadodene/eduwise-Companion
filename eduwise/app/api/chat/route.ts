@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
         })
         return NextResponse.json(chats)
     } catch (error) {
+        console.log(error)
         return NextResponse.json({ status: 401, message: error })
     }
 }
@@ -26,27 +27,29 @@ export async function POST(request: NextRequest) {
         const {
             courseId,
             courseName,
-            createdAt,
-            userId
+            userId,
+            model
         } = body.chatData
-
-        console.log(JSON.stringify(body.chatData))
+        
         // Check if courseId exist
-        const exist = await prisma.course.findUnique({
+        const course = await prisma.course.findUnique({
             where: {
                 id: courseId
             }
         })
 
-        if (!exist) {
+        if (!course) {
             return NextResponse.json({ status: 400, message: "course not found" })
         }
+
+        const systemPrompt = course.systemPrompt
 
         const chat = await prisma.chat.create({
             data: {
                 courseId,
                 courseName,
-                createdAt,
+                systemPrompt,
+                model,
                 userId
             }
         })

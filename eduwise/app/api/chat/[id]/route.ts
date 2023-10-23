@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from '@/lib/prismadb'
 
 // Delete chat
-export async function DELETE({ params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         const chatId: string = params.id
         // Delete first all messages
@@ -24,7 +24,7 @@ export async function DELETE({ params }: { params: { id: string } }) {
 }
 
 // Update chat data
-export async function UPDATE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         const body = await request.json()
         const chatId: string = params.id
@@ -52,7 +52,7 @@ export async function UPDATE(request: NextRequest, { params }: { params: { id: s
 }
 
 //Get all messages of chat
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         const chatId: string = params.id
         const messages = await prisma.message.findMany({
@@ -73,16 +73,16 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         const chatId: string = params.id
         const {
             text,
-            createdAt,
             sender,
-            role
-        } = body
+            role,
+            userId
+        } = body.newMessage
 
         const result = await prisma.message.create({
             data: {
+                userId: userId,
                 chatId: chatId,
                 text: text,
-                createdAt: createdAt,
                 sender: sender,
                 role: role
             }
@@ -90,6 +90,6 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
         return NextResponse.json(result)
     } catch (error) {
-        return NextResponse.json({status: 400, message: error})
+        return NextResponse.json({ status: 400, message: error })
     }
 }

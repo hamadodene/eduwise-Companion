@@ -5,6 +5,7 @@ export interface course {
     summary: string,
     origin?: string,
     userId: string,
+    systemPrompt: string,
     chats: []
 }
 
@@ -17,6 +18,7 @@ export interface chat {
     updatedAt: Date
     courseId: string
     courseName?: string
+    systemPrompt: string,
     messages: []
 }
 
