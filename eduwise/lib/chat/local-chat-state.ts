@@ -2,7 +2,8 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
 import { Chat, Message } from './store-chats'
 import { createWithEqualityFn } from 'zustand/traditional'
-export { createWithEqualityFn  } from 'zustand/traditional'
+export { createWithEqualityFn } from 'zustand/traditional'
+
 
 export interface ChatStore {
   chats: Chat[]
@@ -27,6 +28,7 @@ export interface ChatStore {
 
 
 export const useLocalChatStore = createWithEqualityFn<ChatStore>()(
+  persist(
     (set, get) => ({
       // default state
       //For now we have not a default chat
@@ -141,6 +143,17 @@ export const useLocalChatStore = createWithEqualityFn<ChatStore>()(
               : chat),
         })),
 
+    }),
+    {
+      name: 'eduwise-local-chat-state',
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          // if nothing is selected, select the first conversation
+          if (!state.activeChatId && state.chats.length)
+            state.activeChatId = state.chats[0].id
+        }
+      },
+      storage: createJSONStorage(() => sessionStorage),
     })
 )
 

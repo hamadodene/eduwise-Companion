@@ -4,7 +4,7 @@ import HomePage from "@/components/home/HomePage"
 export default async function IndexPage() {
   return (
     <Layout>
-      <HomePage/>
+      <HomePage />
     </Layout>
   )
 }

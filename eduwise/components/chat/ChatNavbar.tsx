@@ -10,9 +10,10 @@ import { Pencil1Icon } from "@radix-ui/react-icons"
 import { Chat } from "@/lib/chat/store-chats"
 
 interface NavBarProps {
-    activeChat?: Chat
+    chatTitle: string
+    numMessage: number
 }
-const NavBar: React.FC<NavBarProps> = () => {
+const NavBar: React.FC<NavBarProps> = ({chatTitle, numMessage}) => {
     const { toggleSidebar } = useSidebar()
     const { dialogs, openDialog, closeDialog } = useDialog()
 
@@ -24,8 +25,8 @@ const NavBar: React.FC<NavBarProps> = () => {
                     <ListMinus />
                 </Button>
                 <div>
-                    <h1 className="text-2xl font-semibold">New conversation</h1>
-                    <p className="text-sm">2 messages with eduwise</p>
+                    <h1 className="text-2xl font-semibold">{chatTitle}</h1>
+                    <p className="text-sm">{numMessage} message/s</p>
                 </div>
 
             </div>

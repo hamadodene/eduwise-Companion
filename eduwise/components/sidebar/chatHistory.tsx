@@ -8,14 +8,13 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { CircleIcon, StarIcon } from "lucide-react"
-import { useSession } from "next-auth/react"
+import { getSession, useSession } from "next-auth/react"
 import { useRouter } from 'next/navigation'
 import { useSidebar } from "../context/sidebarContext"
 import { Chat } from "@/lib/chat/store-chats"
 import { useLocalChatStore } from "@/lib/chat/local-chat-state"
 import { getChats } from "@/lib/courses"
 import { ScrollArea } from "@radix-ui/react-scroll-area"
-import { useChatIDs } from "@/lib/chat/local-chat-state"
 import { shallow } from "zustand/shallow"
 
 const ChatHistory = () => {
@@ -31,6 +30,7 @@ const ChatHistory = () => {
         deleteChat: state.deleteChat,
         setActiveChat: state.setActiveChatId,
     }), shallow)
+
 
     const handleGetAllchats = useCallback(async () => {
         if (session) {
@@ -87,3 +87,10 @@ const ChatHistory = () => {
 }
 
 export default ChatHistory
+
+export async function getServerSideProps(context: any) {
+    const session = await getSession(context)
+    return {
+        props: { session }
+    }
+}

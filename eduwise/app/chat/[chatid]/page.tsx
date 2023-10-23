@@ -14,6 +14,7 @@ import { useLocalChatStore } from "@/lib/chat/local-chat-state"
 import { useLocalSettingsStore } from "@/lib/settings/local-settings-store"
 import { useSettingsStore } from "@/lib/settings/store-settings"
 
+
 const runAssistantUpdatingState = async (chat: ChatModel, assistantModelId: string, userId: string, history: Message[], openaiCredential) => {
     const chatId = chat.id
     const { appendMessage, setMessages } = useLocalChatStore.getState()
@@ -58,21 +59,27 @@ export default function page() {
     const parts = chatPathName.split('/')
     const chatId = parts[parts.length - 1]
     const { apiKey, apiOrganizationId, gptModel, setApiKey, setApiOrganizationId, setGtpModel } = useLocalSettingsStore.getState()
+    const [chatTitle, setChatTile] = useState("New conversation")
+    const [numMessage, setNumMessages] = useState<number>()
 
     const handleLoadChatMessages = useCallback(async () => {
         if (session) {
+            // check if chats is on state side
             const chat = chats.find(chat => chat.id === chatId)
-            const messages = chat ? chat.messages : []
-
-            // maybe not save locally
-            if (!messages) {
-                // try get message from db
-                const result = await useChatStore.getMessagesForChat(chatPathName)
-                // save message locally
-                setMessages(chatId, result)
+            if (chat) {
+                const messages = chat ? chat.messages : []
+                setChatTile(chat.userTitle || chat.autoTitle)
+                setNumMessages(messages.length)
+                // maybe not save locally
+                if (!messages) {
+                    // try get message from db
+                    const result = await useChatStore.getMessagesForChat(chatPathName)
+                    // save message locally
+                    setMessages(chatId, result)
+                }
             }
         }
-    }, [session])
+    }, [session, chats])
 
 
     useEffect(() => {
@@ -130,7 +137,7 @@ export default function page() {
     return (
         <Layout>
             <div className="flex flex-col h-screen">
-                <NavBar />
+                <NavBar chatTitle={chatTitle} numMessage={numMessage} />
                 <ScrollArea className="flex-grow">
                     <Chat chatId={chatId} />
                 </ScrollArea>

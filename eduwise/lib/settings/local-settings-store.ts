@@ -24,6 +24,7 @@ interface SettingsStore {
 }
 
 export const useLocalSettingsStore = create<SettingsStore>()(
+    persist(
     (set) => ({
 
         // OpenAI API settings
@@ -49,5 +50,10 @@ export const useLocalSettingsStore = create<SettingsStore>()(
         moodleEndpoint: '',
         setMoodleEndpoint: (moodleEndpoint: string) => set({ moodleEndpoint })
 
-    })
+    }),
+
+    {
+        name: 'eduwise-local-settings-state',
+        storage: createJSONStorage(() => sessionStorage),
+      })
 )

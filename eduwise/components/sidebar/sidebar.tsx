@@ -9,14 +9,23 @@ import Link from 'next/link'
 import { useSidebar } from '../context/sidebarContext'
 import ChatHistory from './chatHistory'
 import { useRouter } from "next/navigation"
-import { signOut } from 'next-auth/react'
+import { getSession, signOut } from 'next-auth/react'
+import { useLocalChatStore } from '@/lib/chat/local-chat-state'
 
+export async function getServerSideProps(context: any) {
+    const session = await getSession(context)
+    return {
+      props: { session }
+    }
+  }
 
 const Sidebar = () => {
-    const { isSidebarOpen, toggleSidebar } = useSidebar()
+    const { isSidebarOpen } = useSidebar()
     const router = useRouter()
+    const {} = useLocalChatStore.getState()
 
     function signOutHandler() {
+        useLocalChatStore.persist.clearStorage()
         router.push("/login");
       }
 
