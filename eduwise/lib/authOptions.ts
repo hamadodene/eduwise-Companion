@@ -69,10 +69,11 @@ export const authOptions: AuthOptions = {
         }
     },
     pages: {
-        signIn: '/'
+        signIn: '/login'
     },
     debug: process.env.NODE_ENV === 'development',
     session: {
+        maxAge: 60 * 60 * 24, // 24h session
         strategy: "jwt"
     },
     secret: process.env.NEXTAUTH_SECRET

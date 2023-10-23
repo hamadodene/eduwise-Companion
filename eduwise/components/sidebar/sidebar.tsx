@@ -3,23 +3,22 @@
 // components/Sidebar.js
 import React from 'react'
 import { Icons } from '../icons'
-import { CircleIcon, Delete, PlusCircleIcon, Settings2Icon, StarIcon, XIcon } from 'lucide-react'
+import { LogOutIcon, Settings2Icon } from 'lucide-react'
 import { Button } from '../ui/button'
-import { ScrollArea } from '../ui/scroll-area'
 import Link from 'next/link'
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
 import { useSidebar } from '../context/sidebarContext'
 import ChatHistory from './chatHistory'
-
+import { useRouter } from "next/navigation"
+import { signOut } from 'next-auth/react'
 
 
 const Sidebar = () => {
     const { isSidebarOpen, toggleSidebar } = useSidebar()
+    const router = useRouter()
+
+    function signOutHandler() {
+        router.push("/login");
+      }
 
     return (
         <div className={`absolute lg:relative flex inset-y-0 left-0 flex-col h-screen lg:h-full
@@ -35,12 +34,20 @@ const Sidebar = () => {
             {/* Chat history */}
             <ChatHistory />
             <div className="bottom-0 left-0 right-0 p-4 mt-4 flex justify-between items-center border-t">
-
-                <Button variant="link" onClick={toggleSidebar} className="rounded-lg bg-white dark:bg-slate-900">
+                <div className='space-x-2'>
+                <Button variant="link" className="rounded-lg bg-white dark:bg-slate-900">
                     <Link href="/settings"><Settings2Icon size={15} /></Link>
                 </Button>
-
-                <Button variant="link" onClick={toggleSidebar} className="px-4 py-2 rounded-lg transition duration-300 bg-white flex  dark:bg-slate-900 items-center">
+                <Button  className="rounded-lg bg-white dark:bg-slate-900" variant="link" onClick={() => {
+                    signOutHandler()
+                    signOut({ redirect: false }).then(() => {
+                        router.push("/login")
+                    })
+                }}>
+                    <LogOutIcon size={15} />
+                </Button>
+                </div>
+                <Button variant="link" className="px-4 py-2 rounded-lg transition duration-300 bg-white flex  dark:bg-slate-900 items-center">
                     <Link href="/">New Chat</Link>
                 </Button>
             </div>

@@ -14,7 +14,6 @@ if (!process.env.OPENAI_API_KEY)
 export async function extractOpenaiChatInputs(req: NextRequest): Promise<ApiChatInput> {
 
   const body = await req.json()
-  console.log("request " + JSON.stringify(body))
   const { 
     userId
   } = body

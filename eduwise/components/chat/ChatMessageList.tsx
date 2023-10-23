@@ -11,11 +11,16 @@ const MessageList = (props: { chatId: string }) => {
 
     // https://docs.pmnd.rs/zustand/integrations/persisting-store-data#usage-in-next.js
     // TODO
-    const messages = useLocalChatStore(state => {
+    /*const messages = useLocalChatStore(state => {
         const chat = state.chats.find(chat => chat.id === props.chatId)
         return chat ? chat.messages : []
-    }, shallow)
+    }, shallow)*/
 
+    const messages = useStore(useLocalChatStore, (state) => {
+        const chat = state.chats.find(chat => chat.id === props.chatId)
+        return chat ? chat.messages : [] 
+    })
+    
 
     React.useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

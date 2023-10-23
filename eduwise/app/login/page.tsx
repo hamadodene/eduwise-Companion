@@ -25,14 +25,14 @@ export default function page() {
      const onSubmit = (event: FormEvent) => {
         event.preventDefault()
     
-        signIn('credentials', {
+        const result = signIn('credentials', {
             ...state,
-            redirect:false,
+            redirect:true,
+            callbackUrl: "/"
         }).then((callback) => {
             if(!callback?.ok) {
                 router.refresh()
             }
-
             if(callback?.error) {
                 console.log("eeror "+ callback.error)
                 throw new Error('Invalid email or password')

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import NavBar from './HomeNavbar'
 import Courses from './Courses'
 import { useSession } from 'next-auth/react'
@@ -12,6 +12,7 @@ function HomePage() {
     const { addCourse, courseList } = useCourseContext()
 
     const handleGetAllCourses = useCallback(async () => {
+        console.log('Session is available:', session)
         if (session) {
             const result = await getAllCourses(session.user.id)
             result.forEach(res => {
@@ -26,6 +27,11 @@ function HomePage() {
         }
     }, [session, handleGetAllCourses])
 
+    if (!session) {
+        // Return some loading indicator or a message while waiting for the session.
+        return <div>Loading...</div>;
+    }
+    
     return (
         <div className='flex flex-col h-full'>
             <NavBar />
