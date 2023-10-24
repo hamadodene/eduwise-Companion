@@ -57,17 +57,12 @@ const OpenaiSettings = () => {
 
     const handleLoadOpenaiCredentials = useCallback(async () => {
         if (session) {
-            try {
-                if (!apiKey || !apiOrganizationId || !gptModel) {
-                    const result = await useSettingsStore.loadOpenAIConfig(session.user.id)
-                    setApiKey(result.apiKey)
-                    setApiOrganizationId(result.apiOrganizationId)
-                    setGtpModel(result.model)
-                }
-            } catch (error) {
-                // TODO
+            if (!apiKey || !apiOrganizationId || !gptModel) {
+                const result = await useSettingsStore.loadOpenAIConfig(session.user.id)
+                setApiKey(result.apiKey)
+                setApiOrganizationId(result.apiOrganizationId)
+                setGtpModel(result.model)
             }
-
         }
     }, [session])
 

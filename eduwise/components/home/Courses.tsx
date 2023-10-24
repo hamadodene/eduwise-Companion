@@ -22,16 +22,15 @@ import { useLocalChatStore } from "@/lib/chat/local-chat-state"
 
 const Courses = ({ courses }) => {
     const { dialogs, openDialog, closeDialog } = useDialog()
-    const { data: session } = useSession()
+    const { data: session } = useSession({
+        required: true
+    })
     const { toast } = useToast()
     const router = useRouter()
     const { resetCourseList } = useCourseContext()
     const { createChat, setActiveChatId } = useLocalChatStore.getState()
 
-    // TODO
-    // create chat button
-    //inprove Dialog style
-
+    
     const handleCreateChat = async (e, course: course) => {
         e.preventDefault()
         const result = await persisteChatOnDB(course, session.user.id)

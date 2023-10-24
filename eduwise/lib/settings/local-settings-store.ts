@@ -54,6 +54,7 @@ export const useLocalSettingsStore = create<SettingsStore>()(
 
     {
         name: 'eduwise-local-settings-state',
+        version: 2,
         storage: createJSONStorage(() => sessionStorage),
       })
 )

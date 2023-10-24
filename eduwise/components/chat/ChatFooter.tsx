@@ -12,17 +12,6 @@ const ChatFooter = ({ userMessage, setUserMessage, handleSendMessage }) => {
         setUserMessage(event.target.value)
     }
 
-    /*const handleSendMessage = () => {
-        const newMessage: Partial<Message> = {
-            text: userMessage,
-            sender: 'You',
-            createAt: Date.now(),
-            role: "user",
-        }
-        addMessage(newMessage)
-        setUserMessage('')
-    }*/
-
     return (
         <div className="p-4 border-t sticky">
             <div className="flex space-x-4">

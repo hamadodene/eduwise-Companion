@@ -6,11 +6,21 @@ import Courses from './Courses'
 import { useSession } from 'next-auth/react'
 import { getAllCourses } from '@/lib/courses'
 import { useCourseContext } from '@/components/context/CourseContext'
+import { useLocalChatStore } from '@/lib/chat/local-chat-state'
+import { useLocalSettingsStore } from '@/lib/settings/local-settings-store'
 
 function HomePage() {
     const { data: session } = useSession()
     const { addCourse, courseList } = useCourseContext()
-
+    /*
+        useLocalChatStore.persist.setOptions({
+          name: `eduwise-local-chat-store-${session.user.id}`
+        })
+      
+        useLocalSettingsStore.persist.setOptions({
+          name: `eduwise-local-settings-store-${session.user.id}`
+        })
+    */
     const handleGetAllCourses = useCallback(async () => {
         console.log('Session is available:', session)
         if (session) {
@@ -31,7 +41,7 @@ function HomePage() {
         // Return some loading indicator or a message while waiting for the session.
         return <div>Loading...</div>;
     }
-    
+
     return (
         <div className='flex flex-col h-full'>
             <NavBar />

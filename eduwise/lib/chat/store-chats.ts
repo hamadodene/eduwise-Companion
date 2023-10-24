@@ -127,9 +127,9 @@ export const useChatStore: ChatStore = {
     }
   },
 
-  getMessagesForChat: async (chatPathName: string) => {
+  getMessagesForChat: async (chatId: string) => {
     try {
-      const response = await fetch(`/api/${chatPathName}`, {
+      const response = await fetch(`/api/chat/${chatId}`, {
         method: 'GET',
         headers: {
           'Content-type': 'application/json'

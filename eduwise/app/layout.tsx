@@ -19,6 +19,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+
   return (
     <>
       <html lang="en">
@@ -27,14 +28,14 @@ export default function RootLayout({
           <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet" />
         </head>
         <body className={inter.className} suppressHydrationWarning={true}>
-          <Providers>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              <UserProvider>
+          <UserProvider>
+            <Providers>
+              <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                 {children}
                 <Toaster />
-              </UserProvider>
-            </ThemeProvider>
-          </Providers>
+              </ThemeProvider>
+            </Providers>
+          </UserProvider>
         </body>
       </html>
     </>

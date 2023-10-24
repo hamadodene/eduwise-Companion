@@ -4,9 +4,8 @@ import React from "react"
 
 const ChatMessage = ({ text, isBot }) => {
     const alignmentClass = isBot ? 'justify-start mr-auto' : 'justify-end  ml-auto'
-    const bgColorClass = isBot ? 'bg-blue' : 'bg-green'
     const marginLeft = isBot ? 'mr-auto' : 'ml-auto'
-    const messageBgColor = isBot ? 'bg-[#BFE4EE] dark:bg-transparent' : 'bg-[#5DF0D0] dark:bg-gray-800'
+    const messageBgColor = isBot ? 'bg-[#BFE4EE]' : 'bg-[#5DF0D0]'
 
     return (
         <div className={`flex flex-col mb-4 ${alignmentClass}`}>
@@ -17,7 +16,7 @@ const ChatMessage = ({ text, isBot }) => {
                     className='rounded-lg'
                 />
             </div>
-            <div className={`${bgColorClass}-500 rounded-lg border mt-2 p-2 max-w-4xl flex-grow ${messageBgColor}`}>
+            <div className={`rounded-lg border mt-2 p-2 max-w-4xl flex-grow ${messageBgColor}`}>
                 <p>{text}</p>
             </div>
         </div>

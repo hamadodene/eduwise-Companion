@@ -25,7 +25,7 @@ const NavBar: React.FC<NavBarProps> = ({chatTitle, numMessage}) => {
                     <ListMinus />
                 </Button>
                 <div>
-                    <h1 className="text-2xl font-semibold">{chatTitle}</h1>
+                    <h1 className="text-2xl font-semibold">{chatTitle || "New conversation"}</h1>
                     <p className="text-sm">{numMessage} message/s</p>
                 </div>
 

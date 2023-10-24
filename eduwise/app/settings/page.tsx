@@ -1,4 +1,3 @@
-'use client'
 
 import { Layout } from "@/components/layouts/layout"
 import React from "react"
@@ -6,7 +5,6 @@ import { XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import OpenaiSettings from "@/components/settings/openai"
-import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import MoodleSettings from "@/components/settings/moodle"
 
