@@ -10,24 +10,42 @@ import {
     DialogTrigger
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Chat } from "@/lib/chat/store-chats"
 import { BanIcon, Check } from "lucide-react"
 import { useState } from "react"
+import useChatStore, { Chat } from "@/lib/chat/store-chats"
+import { useLocalChatStore } from "@/lib/chat/local-chat-state"
 
 interface ChatTitleDialogProps {
-    chat?: Chat
+    chatTitle: string
     isOpen: boolean
     toogleDialog: () => void
 }
 
-export const ChatTitleDialog: React.FC<ChatTitleDialogProps> = ({ isOpen, toogleDialog}) => {
-    const [title, setTitle] = useState('New conversation')
-
+export const ChatTitleDialog: React.FC<ChatTitleDialogProps> = ({ chatTitle, isOpen, toogleDialog}) => {
+    const [title, setTitle] = useState(chatTitle)
+    const { setUserTitle } = useLocalChatStore.getState()
     const handleTitleInputChange = event => {
         event.preventDefault()
         setTitle(event.target.value)
     }
     
+    const handleConfirmButton = async (e) => {
+        e.preventDefault()
+        const newChat: Partial<Chat> = {
+            userTitle: title
+        }
+        const chatId = useLocalChatStore.getState().activeChatId
+        try {
+            const result = await useChatStore.updateChat(newChat, chatId)
+            if(result) {
+                setUserTitle(chatId, result.userTitle)
+                setTitle(result.userTitle)
+            }
+            toogleDialog()
+        } catch (error) {
+            
+        }
+    }
 
     return (
         <Dialog open={isOpen} onOpenChange={toogleDialog}>
@@ -42,11 +60,11 @@ export const ChatTitleDialog: React.FC<ChatTitleDialogProps> = ({ isOpen, toogle
                 </div>
                 <DialogFooter>
                     <div className="flex space-x-2">
-                        <Button variant="ghost" className="flex items-center px-4 py-2 rounded-lg">
+                        <Button variant="ghost" onClick={toogleDialog} className="flex items-center px-4 py-2 rounded-lg">
                             <BanIcon className="mr-2" size={15} />
                             Cancel
                         </Button>
-                        <Button className="flex items-center px-4 py-2 rounded-lg">
+                        <Button onClick={handleConfirmButton} className="flex items-center px-4 py-2 rounded-lg">
                             <Check className="mr-2" size={15} />
                             Confirm
                         </Button>

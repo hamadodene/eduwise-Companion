@@ -3,9 +3,7 @@
 import React from "react"
 import ChatMessage from "./ChatMessage"
 import { useLocalChatStore } from "@/lib/chat/local-chat-state"
-import { shallow } from "zustand/shallow"
 import useStore from "@/lib/chat/useStore"
-import { useSession } from "next-auth/react"
 
 const MessageList = (props: { chatId: string }) => {
     const messagesEndRef = React.useRef<HTMLDivElement | null>(null)

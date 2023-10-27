@@ -9,7 +9,7 @@ export async function GET(request: NextRequest, { params }: { params: { userid: 
                 userId: userid
             }
         })
-        return NextResponse.json(openAiInfo)
+        return NextResponse.json(openAiInfo || {})
     } catch (error) {
         return NextResponse.json({ status: 400, message: error })
     }

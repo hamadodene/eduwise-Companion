@@ -18,7 +18,9 @@ const MoodleSettings = () => {
     const [isDisabled, setIsDisabled] = useState(false)
     const [buttonDisabled, setButtonDisabled] = useState(true)
     const { toast } = useToast()
-    const { data: session } = useSession()
+    const { data: session } = useSession({
+        required: true
+    })
     const { setMoodleToken, setMoodleEndpoint, moodleToken, moodleEndpoint } = useLocalSettingsStore.getState()
 
     const [checkStatus, setCheckStatus] = useState<checkResponse>({

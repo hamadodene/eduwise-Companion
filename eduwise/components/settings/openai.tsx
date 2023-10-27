@@ -41,7 +41,9 @@ const OpenaiSettings = () => {
     const { toast } = useToast()
     const { apiKey, apiOrganizationId, gptModel, setApiKey, setApiOrganizationId, setGtpModel } = useLocalSettingsStore.getState()
 
-    const { data: session } = useSession()
+    const { data: session } = useSession({
+        required: true
+    })
 
     const handleTokenInputChange = event => {
         setToken(event.target.value)

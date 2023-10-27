@@ -17,18 +17,9 @@ const ChatFooter = ({ userMessage, setUserMessage, handleSendMessage }) => {
             <div className="flex space-x-4">
                 <Button
                     variant="ghost"
-                    className="p-2 rounded-lg border-2"
-                    title='Settings'
-                    size='sm'
-                >
-                    <Settings2Icon size={15} />
-                </Button>
-                <ModeToggle />
-                <Button
-                    variant="ghost"
-                    className="p-2 rounded-lg border-2"
+                    className="p-2 rounded-lg border-2 space-x-2"
                     size='sm'>
-                    <UploadIcon size={15} />
+                    <UploadIcon size={15} /> <p>Upload</p>
                 </Button>
             </div>
             <div className="flex flex-col mt-4">

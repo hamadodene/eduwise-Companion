@@ -1,5 +1,3 @@
-import { useSession } from "next-auth/react"
-import { chat } from "../courses"
 
 type defaultRole = 'assistant' | 'system' | 'user'
 
@@ -30,7 +28,7 @@ export interface Message {
 
 export interface ChatStore {
   createChat: (courseId: string, userTitle?: string, autoTitle?: string) => Promise<Chat>
-  updateChat: (chat: Partial<Chat>, chatId: string) => Promise<void>
+  updateChat: (chat: Partial<Chat>, chatId: string) => Promise<Chat>
   deleteChat: (chatId: string) => Promise<void>
   getChatInfo: (chatId: string) => Promise<Chat>
 
@@ -74,7 +72,7 @@ export const useChatStore: ChatStore = {
         body: JSON.stringify(message)
       })
 
-      return await response.json()
+      return await response.json() as Chat
     } catch (error) {
       console.log(error)
     }

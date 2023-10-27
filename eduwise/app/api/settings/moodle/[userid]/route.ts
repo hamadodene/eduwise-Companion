@@ -16,7 +16,7 @@ export async function GET(request: NextRequest, { params }: { params: { userid: 
                 userId: userid.toString()
             }
         })
-        return NextResponse.json(moodleInfo)
+        return NextResponse.json(moodleInfo || {})
     } catch (error) {
         console.log(error)
         return NextResponse.json({ status: 400, message: error })
