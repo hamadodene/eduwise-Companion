@@ -6,8 +6,6 @@ import Courses from './Courses'
 import { useSession } from 'next-auth/react'
 import { getAllCourses } from '@/lib/courses'
 import { useCourseContext } from '@/components/context/CourseContext'
-import { useLocalChatStore } from '@/lib/chat/local-chat-state'
-import { useLocalSettingsStore } from '@/lib/settings/local-settings-store'
 
 function HomePage() {
     const { data: session } = useSession()
@@ -46,7 +44,7 @@ function HomePage() {
         <div className='flex flex-col h-full'>
             <NavBar />
             {/* Content */}
-            <div className="overflow-y-scroll container mx-auto grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-2 mb-5 mt-2 overflow-hidden">
+            <div className="overflow-y-scroll container mx-auto grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 h-full gap-2 mt-2 overflow-hidden">
                 <Courses courses={courseList} />
             </div>
         </div>
