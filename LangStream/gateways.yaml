@@ -1,0 +1,9 @@
+gateways:
+  - id: chat
+    type: chat
+    chat-options:
+      answers-topic: answers-topic
+      questions-topic: questions-topic
+      headers:
+        - key: langstream-client-session-id
+          value-from-parameters: sessionId

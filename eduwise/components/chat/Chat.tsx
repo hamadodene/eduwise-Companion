@@ -5,12 +5,13 @@ import MessageList from './ChatMessageList'
 import { ScrollArea } from '../ui/scroll-area'
 import NavBar from './ChatNavbar'
 import ChatFooter from './ChatFooter'
-import useChatStore, { Chat as ChatModel, Message } from '@/lib/chat/store-chats'
+import useChatStore, { Chat, Chat as ChatModel, Message } from '@/lib/chat/store-chats'
 import { useLocalChatStore } from '@/lib/chat/local-chat-state'
 import { useSession } from 'next-auth/react'
 import { useSettingsStore } from '@/lib/settings/store-settings'
 import { streamAssistantMessage, updateAutoConversationTitle } from '@/lib/openai/ai'
 import { useLocalSettingsStore } from '@/lib/settings/local-settings-store'
+import { usePathname } from 'next/navigation'
 
 
 const runAssistantUpdatingState = async (chat: ChatModel, assistantModelId: string, userId: string, history: Message[], openaiCredential) => {
@@ -49,32 +50,34 @@ const runAssistantUpdatingState = async (chat: ChatModel, assistantModelId: stri
 }
 
 
-const Chat = (props: { chatId: string }) => {
+const Chat = () => {
     const { data: session } = useSession({
         required: true
     })
     const [userMessage, setUserMessage] = useState('')
     const { setMessages, chats, appendMessage } = useLocalChatStore.getState()
-
-
+    const [courseId, setCourseId] = useState("")
+    const [chat, setChat] = useState<Chat>()
     const { apiKey, apiOrganizationId, gptModel, setApiKey, setApiOrganizationId, setGtpModel } = useLocalSettingsStore.getState()
-    const [chatTitle, setChatTile] = useState("New conversation")
-    const [numMessage, setNumMessages] = useState<number>()
+    const chatPathName = usePathname()
+    const parts = chatPathName.split('/')
+    const chatId = parts[parts.length - 1]
+
 
     const handleLoadChatMessages = useCallback(async () => {
         if (session) {
             // check if chats is on state side
-            const chat = chats.find(chat => chat.id === props.chatId)
+            const chat = chats.find(chat => chat.id === chatId)
+            setCourseId(chat.courseId)
+            console.log('chats '+ chat)
             if (chat) {
                 const messages = chat ? chat.messages : []
-                setChatTile(chat.userTitle || chat.autoTitle)
-                setNumMessages(messages.length)
                 // maybe not save locally
                 if (!messages) {
                     // try get message from db
-                    const result = await useChatStore.getMessagesForChat(props.chatId)
+                    const result = await useChatStore.getMessagesForChat(chatId)
                     // save message locally
-                    setMessages(props.chatId, result)
+                    setMessages(chatId, result)
                 }
             }
         }
@@ -106,7 +109,7 @@ const Chat = (props: { chatId: string }) => {
 
     const handleSendMessage = async () => {
         //const chat = await useChatStore.getChatInfo(chatId)
-        const chat = _findConversation(props.chatId)
+        const chat = _findConversation(chatId)
 
         const openaiCredential = {
             apiKey: apiKey,
@@ -121,9 +124,9 @@ const Chat = (props: { chatId: string }) => {
                 sender: 'You'
             }
 
-            const userMessageStored = await useChatStore.addMessageToChat(props.chatId, userMsg.text, userMsg.sender, userMsg.role, session.user.id)
+            const userMessageStored = await useChatStore.addMessageToChat(chatId, userMsg.text, userMsg.sender, userMsg.role, session.user.id)
             if (userMessageStored.id) {
-                appendMessage(props.chatId, userMessageStored)
+                appendMessage(chatId, userMessageStored)
                 setUserMessage('')
                 await runAssistantUpdatingState(chat, openaiCredential.model, session.user.id, [...chat.messages, userMessageStored], openaiCredential)
             }
@@ -133,14 +136,14 @@ const Chat = (props: { chatId: string }) => {
 
     return (
         <div className="flex flex-col h-screen bg-[#F8F8F8]">
-            <NavBar chatTitle={chatTitle} numMessage={numMessage} />
+            <NavBar/>
             <ScrollArea className='flex-1'>
                 <div className="flex flex-col p-4 w-full">
-                    <MessageList chatId={props.chatId} />
+                    <MessageList chatId={chatId} />
                 </div>
             </ScrollArea>
             <div className="sticky bottom-0 mb-0">
-                <ChatFooter userMessage={userMessage} setUserMessage={setUserMessage} handleSendMessage={handleSendMessage} />
+                <ChatFooter chatId={chatId} courseId={courseId} userMessage={userMessage} setUserMessage={setUserMessage} handleSendMessage={handleSendMessage} />
             </div>
         </div>
     )

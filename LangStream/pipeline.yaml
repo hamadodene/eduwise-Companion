@@ -1,0 +1,63 @@
+topics:
+  - name: "questions-topic"
+    creation-mode: create-if-not-exists
+  - name: "answers-topic"
+    creation-mode: create-if-not-exists
+errors:
+    on-failure: "skip"
+pipeline:
+  - name: "convert-to-structure"
+    type: "document-to-json"
+    input: "questions-topic"
+    configuration:
+      text-field: "question"
+  - name: "compute-embeddings"
+    type: "compute-ai-embeddings"
+    configuration:
+      model: "text-embedding-ada-002"
+      embeddings-field: "value.embeddings_vector"
+      text: "{{ value.question }}"
+      batch-size: 10
+      flush-interval: 500
+  - name: "lookup-related-documents"
+    type: "query-vector-db"
+    configuration:
+      datasource: "PineconeDatasource"
+      query: |
+        {
+          "index": "eduwise-index",
+          "size": 10,
+          "query": {
+            "knn": {
+              "embeddings": {
+                "vector": ?,
+                "k": 10
+              }
+            }
+          }
+        }
+      fields:
+        - "value.embeddings_vector"
+      output-field: "value.related_documents"
+  - name: "re-rank documents with MMR"
+    type: "re-rank"
+    configuration:
+      max: 5 # keep only the top 5 documents, because we have an hard limit on the prompt size
+      field: "value.related_documents"
+      query-text: "value.question"
+      query-embeddings: "value.embeddings_vector"
+      output-field: "value.related_documents"
+      text-field: "record.document.content"
+      embeddings-field: "record.document.embeddings"
+      algorithm: "MMR"
+      lambda: 0.5
+      k1: 1.2
+      b: 0.75
+  - name: "Format response"
+    type: compute
+    output: "answers-topic"
+    configuration:
+      fields:
+        - name: "value"
+          type: []
+          expression: "value.related_documents"

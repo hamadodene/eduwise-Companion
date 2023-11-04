@@ -1,0 +1,56 @@
+name: "Ingest text files from S3"
+assets:
+pipeline:
+  - name: "Read from S3"
+    type: "s3-source"
+    configuration:
+      bucketName: "${secrets.s3.bucket-name}"
+      endpoint: "${secrets.s3.endpoint}"
+      access-key: "${secrets.s3.access-key}"
+      secret-key: "${secrets.s3.secret}"
+      region: "${secrets.s3.region}"
+      idle-time: 5
+  - name: "Extract text"
+    type: "text-extractor"
+  - name: "Normalise text"
+    type: "text-normaliser"
+    configuration:
+      make-lowercase: true
+      trim-spaces: true
+  - name: "Split into chunks"
+    type: "text-splitter"
+    configuration:
+      splitter_type: "RecursiveCharacterTextSplitter"
+      chunk_size: 400
+      separators: ["\n\n", "\n", " ", ""]
+      keep_separator: false
+      chunk_overlap: 100
+      length_function: "cl100k_base"
+  - name: "Convert to structured data"
+    type: "document-to-json"
+    configuration:
+      text-field: text
+      copy-properties: true
+  - name: "prepare-structure"
+    type: "compute"
+    configuration:
+      fields:
+        - name: "value.filename"
+          expression: "properties.url"
+          type: STRING
+  - name: "compute-embeddings"
+    type: "compute-ai-embeddings"
+    configuration:
+      model: "text-embedding-ada-002"
+      embeddings-field: "value.embeddings_vector"
+      text: "{{ value.text }}"
+      batch-size: 10
+      flush-interval: 500
+  - name: "Write to Pinecone"
+    type: "vector-db-sink"
+    configuration:
+      datasource: "PineconeDatasource"
+      vector.id: "value.id"
+      vector.vector: "value.embeddings_vector"
+      vector.namespace: ""
+      vector.metadata.content: "value.text"

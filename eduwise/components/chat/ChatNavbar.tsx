@@ -16,7 +16,6 @@ const NavBar = () => {
     const { dialogs, openDialog, closeDialog } = useDialog()
     const { activeChatId, chats } = useLocalChatStore.getState()
     const activeChat: Chat =  chats.find(chat => chat.id === activeChatId)
-    const title = activeChat.userTitle
     const numMessage =  activeChat.messages.length
 
     return (
@@ -26,7 +25,7 @@ const NavBar = () => {
                     <ListMinus />
                 </Button>
                 <div>
-                    <h1 className="text-2xl font-semibold">{title || activeChat.autoTitle ||"New conversation"}</h1>
+                    <h1 className="text-2xl font-semibold">{activeChat.userTitle || activeChat.autoTitle ||"New conversation"}</h1>
                     <p className="text-sm">{numMessage} message/s</p>
                 </div>
 

@@ -50,7 +50,7 @@ const Sidebar = () => {
                 </Link>
                 <Button className="rounded-lg bg-transparent h-10 mt-4 border border-gray-200" variant="link" onClick={() => {
                     signOutHandler()
-                    signOut({ redirect: false }).then(() => {
+                    signOut({ redirect: true }).then(() => {
                         router.push("/login")
                     })
                 }}>

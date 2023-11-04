@@ -1,11 +1,12 @@
 'use client'
 
 import axios from 'axios'
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { UserRegistrationForm } from '@/components/user-registration-form'
 import Link from 'next/link'
 import { Command } from "lucide-react"
+import { useSession } from 'next-auth/react'
 
 interface InitialStateProps {
     name:string,
@@ -26,6 +27,17 @@ export default function page() {
     const router = useRouter()
     const [state, setState] = useState(initialState)
 
+    const { data: session } = useSession()
+
+    
+    useEffect(() => {
+      if (session && ( new Date() < new Date(session.expires))) {
+        // push to home page is there is a valid session
+        router.push("/")
+      }
+  
+    }, [session])
+  
     const onSubmit = (event: FormEvent) => {
        event.preventDefault()
         

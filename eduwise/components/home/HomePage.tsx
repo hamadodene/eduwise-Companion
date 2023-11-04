@@ -6,22 +6,20 @@ import Courses from './Courses'
 import { useSession } from 'next-auth/react'
 import { getAllCourses } from '@/lib/courses'
 import { useCourseContext } from '@/components/context/CourseContext'
+import { useRouter } from 'next/navigation'
 
 function HomePage() {
-    const { data: session } = useSession()
+    const router = useRouter()
+    const { data: session } = useSession({
+        required: true,
+        onUnauthenticated() {
+            router.push("/login")
+        },
+    })
     const { addCourse, courseList } = useCourseContext()
-    /*
-        useLocalChatStore.persist.setOptions({
-          name: `eduwise-local-chat-store-${session.user.id}`
-        })
-      
-        useLocalSettingsStore.persist.setOptions({
-          name: `eduwise-local-settings-store-${session.user.id}`
-        })
-    */
+    
     const handleGetAllCourses = useCallback(async () => {
-        console.log('Session is available:', session)
-        if (session) {
+        if (session && !( new Date() > new Date(session.expires))) {
             const result = await getAllCourses(session.user.id)
             result.forEach(res => {
                 addCourse(res)

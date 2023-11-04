@@ -1,21 +1,26 @@
-
 import { Layout } from "@/components/layouts/layout"
-import React from "react"
-import { ListMinus, XIcon } from "lucide-react"
+import React, { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import OpenaiSettings from "@/components/settings/openai"
 import MoodleSettings from "@/components/settings/moodle"
 import NavBar from "@/components/settings/settingsNavbar"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/authOptions"
+import { redirect } from "next/navigation"
+import { useSettingsStore } from "@/lib/settings/store-settings"
 
-export default function page() {
-
+export default async function page() {
+    const session = await getServerSession(authOptions)
+    if(!session) {
+        redirect("/login")
+    }
     return (
         <Layout>
             <NavBar/>
             <ScrollArea>
                 {/* GPT settings */}
-                <OpenaiSettings />
+                <OpenaiSettings/>
                 <MoodleSettings />
 
                 {/* Reset and clear data */}

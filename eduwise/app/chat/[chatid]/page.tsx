@@ -1,17 +1,19 @@
-'use client'
 import Chat from "@/components/chat/Chat"
 import { Layout } from "@/components/layouts/layout"
-import React, {  } from "react"
-import { usePathname } from 'next/navigation'
+import { authOptions } from "@/lib/authOptions"
+import { getServerSession } from "next-auth"
+import { redirect } from "next/navigation"
+import React from "react"
 
-export default function page() {
-    const chatPathName = usePathname()
-    const parts = chatPathName.split('/')
-    const chatId = parts[parts.length - 1]
-
+export default async function page() {
+    const session = await getServerSession(authOptions)
+    if(!session) {
+        redirect("/login")
+    }
+    
     return (
         <Layout>
-            <Chat chatId={chatId} />
+            <Chat/>
         </Layout>
     )
 }

@@ -1,12 +1,16 @@
 'use client'
 
-import { CogIcon, SendIcon, Settings, Settings2Icon, SettingsIcon, UploadIcon } from 'lucide-react'
-import React, { useState } from 'react'
-import { ModeToggle } from '@/components/mode-toogle'
+import { SendIcon, UploadIcon } from 'lucide-react'
+import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { ChatUploadDialog } from './ChatUploadDialog'
+import { useDialog } from '../context/DialogContext'
 
-const ChatFooter = ({ userMessage, setUserMessage, handleSendMessage }) => {
+const ChatFooter = ({ chatId, courseId, userMessage, setUserMessage, handleSendMessage }) => {
+
+    const { dialogs, openDialog, closeDialog } = useDialog()
+
     const handleUserMessageChange = event => {
         event.preventDefault()
         setUserMessage(event.target.value)
@@ -18,7 +22,9 @@ const ChatFooter = ({ userMessage, setUserMessage, handleSendMessage }) => {
                 <Button
                     variant="ghost"
                     className="p-2 rounded-lg border-2 space-x-2"
-                    size='sm'>
+                    size='sm'
+                    onClick={() => openDialog(`chatUploadDialog`)}
+                    >
                     <UploadIcon size={15} /> <p>Upload</p>
                 </Button>
             </div>
@@ -30,6 +36,12 @@ const ChatFooter = ({ userMessage, setUserMessage, handleSendMessage }) => {
                     </Button>
                 </div>
             </div>
+            <ChatUploadDialog
+                courseId={courseId as string}
+                chatId={chatId as string}
+                isOpen={dialogs['chatUploadDialog']}
+                toogleDialog={() => closeDialog('chatUploadDialog')}
+            />
         </div>
     )
 }

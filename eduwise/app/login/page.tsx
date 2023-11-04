@@ -3,8 +3,8 @@
 import Link from "next/link"
 import { Command } from "lucide-react"
 
-import { FormEvent, useState } from "react";
-import { signIn } from 'next-auth/react'
+import { FormEvent, useEffect, useState } from "react";
+import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from "next/navigation";
 import { UserAuthForm } from "@/components/user-auth-form";
 
@@ -22,6 +22,17 @@ export default function page() {
   const router = useRouter()
   const [state, setState] = useState(initialState)
   const [isLoading, setIsLoading] = useState(false)
+  const { data: session } = useSession()
+
+
+  useEffect(() => {
+    if (session && ( new Date() < new Date(session.expires))) {
+      // push to home page is there is a valid session
+      router.push("/")
+    }
+
+  }, [session])
+
 
   const onSubmit = (event: FormEvent) => {
     event.preventDefault()
@@ -78,24 +89,24 @@ export default function page() {
         </div>
         <div className="lg:p-8 mt-8 md:mt-0 px-4">
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-              <div className="flex flex-col space-y-2 text-center">
-                <h1 className="text-2xl font-semibold tracking-tight">
-                  Login to eduwise
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Enter your email below to login into your account
-                </p>
-              </div>
-              <UserAuthForm onSubmit={onSubmit} onChange={handleChange} isLoading={isLoading} email={state.email} password={state.password} />
-              <p className="px-8 text-center text-sm text-muted-foreground">
-                Don't have an account?{" "}
-                <Link href={"/register"}
-                  className="underline underline-offset-4 hover:text-primary"
-                >
-                  Sign up
-                </Link>
+            <div className="flex flex-col space-y-2 text-center">
+              <h1 className="text-2xl font-semibold tracking-tight">
+                Login to eduwise
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Enter your email below to login into your account
               </p>
-              {/*<p className="px-8 text-center text-sm text-muted-foreground">
+            </div>
+            <UserAuthForm onSubmit={onSubmit} onChange={handleChange} isLoading={isLoading} email={state.email} password={state.password} />
+            <p className="px-8 text-center text-sm text-muted-foreground">
+              Don't have an account?{" "}
+              <Link href={"/register"}
+                className="underline underline-offset-4 hover:text-primary"
+              >
+                Sign up
+              </Link>
+            </p>
+            {/*<p className="px-8 text-center text-sm text-muted-foreground">
                 By clicking continue, you agree to our{" "}
                 <Link
                   href="/terms"
@@ -112,9 +123,9 @@ export default function page() {
                 </Link>
                 .
               </p>*/}
-            </div>
           </div>
         </div>
       </div>
-      )
+    </div>
+  )
 }
