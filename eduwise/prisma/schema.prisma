@@ -92,6 +92,15 @@ model Course {
   userId         String  @map("userId") @db.ObjectId
   systemPrompt   String
   student        User    @relation("UserCourse", fields: [userId], references: [id])
+  documents Document[]
+}
+
+model Document {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  url       String  // Store the URL of the document in AWS S3
+  course    Course  @relation(fields: [courseId], references: [id])
+  courseId  String  @map("courseId") @db.ObjectId
 }
 
 model Chat {

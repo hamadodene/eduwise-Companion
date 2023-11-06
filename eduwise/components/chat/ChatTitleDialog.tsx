@@ -20,29 +20,31 @@ interface ChatTitleDialogProps {
     toogleDialog: () => void
 }
 
-export const ChatTitleDialog: React.FC<ChatTitleDialogProps> = ({ chatTitle, isOpen, toogleDialog}) => {
+export const ChatTitleDialog: React.FC<ChatTitleDialogProps> = ({ chatTitle, isOpen, toogleDialog }) => {
     const [title, setTitle] = useState(chatTitle)
     const { setUserTitle } = useLocalChatStore.getState()
     const handleTitleInputChange = event => {
         event.preventDefault()
         setTitle(event.target.value)
     }
-    
+
     const handleConfirmButton = async (e) => {
         e.preventDefault()
         const newChat: Partial<Chat> = {
             userTitle: title
         }
         const chatId = useLocalChatStore.getState().activeChatId
-        try {
-            const result = await useChatStore.updateChat(newChat, chatId)
-            if(result) {
-                setUserTitle(chatId, result.userTitle)
-                setTitle(result.userTitle)
+        if (chatId !== null) {
+            try {
+                const result = await useChatStore.updateChat(newChat, chatId)
+                if (result) {
+                    setUserTitle(chatId, result.userTitle)
+                    setTitle(result.userTitle)
+                }
+                toogleDialog()
+            } catch (error) {
+
             }
-            toogleDialog()
-        } catch (error) {
-            
         }
     }
 

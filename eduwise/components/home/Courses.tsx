@@ -12,7 +12,7 @@ import {
 import { CircleIcon, Info, Plus, StarIcon } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { course, createChat as persisteChatOnDB } from "@/lib/courses"
-import { useDialog } from "@/components/context/DialogContext"
+import { DialogContextType, useDialog } from "@/components/context/DialogContext"
 import CourseInfoDialog from "./CouseInfoDialog"
 import { Button } from "../ui/button"
 import { useToast } from "@/components/ui/use-toast"
@@ -21,7 +21,7 @@ import { useCourseContext } from "@/components/context/CourseContext"
 import { useLocalChatStore } from "@/lib/chat/local-chat-state"
 
 const Courses = ({ courses }) => {
-    const { dialogs, openDialog, closeDialog } = useDialog()
+    const { dialogs, openDialog, closeDialog } = useDialog() as DialogContextType
     const router = useRouter()
     const { data: session } = useSession({
         required: true,

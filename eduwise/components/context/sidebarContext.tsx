@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react'
 
-type SidebarContextType = {
+export type SidebarContextType = {
   isSidebarOpen: boolean
   toggleSidebar: () => void
   setIsSidebarOpen: (value: boolean) => void

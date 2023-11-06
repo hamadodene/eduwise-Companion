@@ -44,6 +44,25 @@ export async function createCourses(shortname: string, fullname: string, summary
     }
 }
 
+export async function addDocument(courseId: string, name: string, url: string) {
+    try {
+        const response = await fetch('/api/document', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                courseId: courseId,
+                name: name,
+                url: url
+             })
+        })
+        return await response.json()
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 export async function deleteCourse(courseId: string) {
     try {
         const response = await fetch(`/api/course/${courseId}`, {

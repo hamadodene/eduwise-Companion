@@ -3,19 +3,19 @@
 import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { ChatTitleDialog } from "@/components/chat/ChatTitleDialog"
-import { useSidebar } from '../context/sidebarContext'
+import { SidebarContextType, useSidebar } from '../context/sidebarContext'
 import { ListMinus } from "lucide-react"
-import { useDialog } from "../context/DialogContext"
+import { DialogContextType, useDialog } from "../context/DialogContext"
 import { Pencil1Icon } from "@radix-ui/react-icons"
 import { useLocalChatStore } from "@/lib/chat/local-chat-state"
 import { Chat } from "@/lib/chat/store-chats"
 
 
 const NavBar = () => {
-    const { toggleSidebar } = useSidebar()
-    const { dialogs, openDialog, closeDialog } = useDialog()
+    const { toggleSidebar } = useSidebar() as SidebarContextType
+    const { dialogs, openDialog, closeDialog } = useDialog() as DialogContextType
     const { activeChatId, chats } = useLocalChatStore.getState()
-    const activeChat: Chat =  chats.find(chat => chat.id === activeChatId)
+    const activeChat: Chat =  chats.find(chat => chat.id === activeChatId) as Chat
     const numMessage =  activeChat.messages.length
 
     return (

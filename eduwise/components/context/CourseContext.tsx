@@ -11,7 +11,7 @@ export type Course = {
     chats: []
 }
 
-type CourseContextType = {
+export type CourseContextType = {
   courseList: Course[]
   addCourse: (newCourse: Course) => void
   resetCourseList: () => void

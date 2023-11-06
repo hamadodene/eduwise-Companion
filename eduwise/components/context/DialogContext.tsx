@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react'
 
-type DialogContextType = {
+export type DialogContextType = {
   dialogs: { [key: string]: boolean }
   openDialog: (dialogKey: string) => void
   closeDialog: (dialogKey: string) => void

@@ -5,11 +5,11 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { ChatUploadDialog } from './ChatUploadDialog'
-import { useDialog } from '../context/DialogContext'
+import { DialogContextType, useDialog } from '../context/DialogContext'
 
 const ChatFooter = ({ chatId, courseId, userMessage, setUserMessage, handleSendMessage }) => {
 
-    const { dialogs, openDialog, closeDialog } = useDialog()
+    const { dialogs, openDialog, closeDialog } = useDialog() as DialogContextType
 
     const handleUserMessageChange = event => {
         event.preventDefault()
