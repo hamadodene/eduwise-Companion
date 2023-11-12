@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import React, { useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { ChatTitleDialog } from "@/components/chat/ChatTitleDialog"
 import { SidebarContextType, useSidebar } from '../context/sidebarContext'
@@ -25,7 +25,7 @@ const NavBar = () => {
                     <ListMinus />
                 </Button>
                 <div>
-                    <h1 className="text-2xl font-semibold">{activeChat.userTitle || activeChat.autoTitle ||"New conversation"}</h1>
+                    <h1 className="text-2xl font-semibold">{activeChat.userTitle || activeChat.autoTitle || "New conversation"}</h1>
                     <p className="text-sm">{numMessage} message/s</p>
                 </div>
 

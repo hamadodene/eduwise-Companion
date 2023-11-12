@@ -105,6 +105,40 @@ class MoodleClient {
             throw new Error(`Moodle API request failed: ${error.message}`)
         }
     }
+
+    async download(options: {preview: string, filepath: string, offline: boolean }): Promise<any> {
+        if (!("filepath" in options)) {
+            return Promise.reject("missing file path to download");
+        }
+    
+        var uri:string = this.url + "/webservice/pluginfile.php"
+
+        var request_options = {
+            qs: {
+                token: this.token,
+                file: options.filepath,
+                preview: '',
+                offline: 0
+            },
+            strictSSL: this.strictSSL,
+            method: "GET",
+            encoding: null
+        }
+    
+        if (options.preview) {
+            request_options.qs.preview = options.preview;
+        }
+    
+        if (options.offline) {
+            request_options.qs.offline = 1;
+        }
+        try {
+            const response = await fetch(uri, request_options)
+            return response
+        } catch (error) {
+            throw new Error(`Moodle download API request failed: ${error.message}`) 
+        }
+    }
 }
 
 export default MoodleClient

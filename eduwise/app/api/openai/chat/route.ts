@@ -55,6 +55,7 @@ const openAIHeaders = (api: OpenAIAPI.Configuration): HeadersInit => ({
 export const chatCompletionPayload = (input: Omit<ApiChatInput, 'api'>, stream: boolean): OpenAIAPI.Chat.CompletionsRequest => ({
   model: input.model,
   messages: input.messages,
+  relatedDocuments: input.relatedDocuments,
   ...(input.temperature && { temperature: input.temperature }),
   ...(input.max_tokens && { max_tokens: input.max_tokens }),
   stream,
@@ -98,7 +99,8 @@ export async function postToOpenAI<TBody extends object>(api: OpenAIAPI.Configur
 export interface ApiChatInput {
   api: OpenAIAPI.Configuration
   model: string
-  messages: OpenAIAPI.Chat.Message[]
+  messages: OpenAIAPI.Chat.Message[],
+  relatedDocuments?: string[],
   userId: string
   temperature?: number
   max_tokens?: number

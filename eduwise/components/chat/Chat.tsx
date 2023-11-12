@@ -12,6 +12,16 @@ import { useSettingsStore } from '@/lib/settings/store-settings'
 import { streamAssistantMessage, updateAutoConversationTitle } from '@/lib/openai/ai'
 import { useLocalSettingsStore } from '@/lib/settings/local-settings-store'
 import { usePathname } from 'next/navigation'
+import { connect } from 'http2'
+import {
+    WEBSOCKET_URL,
+    APP_NAME,
+    TENANT,
+    CONSUMER,
+    PRODUCER,
+    CREDENTIALS
+} from '@/lib/config'
+import useWebSockets, { ConnectionType, WsMessage } from '@/hook/useLangStreamWebSocket'
 
 
 const runAssistantUpdatingState = async (chat: ChatModel, assistantModelId: string, userId: string, history: Message[], openaiCredential) => {
@@ -62,14 +72,39 @@ const Chat = () => {
     const chatPathName = usePathname()
     const parts = chatPathName.split('/')
     const chatId = parts[parts.length - 1]
+    const { connect, isConnected, messages, sendMessage, waitingForMessage } = useWebSockets()
 
+    const connectWs = () => {
+        const sessionId = session.user.id
+        console.log("web socket url " + WEBSOCKET_URL)
+        connect({
+            consumer: {
+                baseUrl: WEBSOCKET_URL,
+                appName: APP_NAME,
+                tenant: TENANT,
+                gateway: CONSUMER,
+                credentials: CREDENTIALS,
+                type: ConnectionType.Consumer,
+                sessionId
+            },
+            producer: {
+                baseUrl: WEBSOCKET_URL,
+                appName: APP_NAME,
+                tenant: TENANT,
+                gateway: PRODUCER,
+                credentials: CREDENTIALS,
+                type: ConnectionType.Producer,
+                sessionId
+            }
+        });
+    }
 
     const handleLoadChatMessages = useCallback(async () => {
         if (session) {
             // check if chats is on state side
             const chat = chats.find(chat => chat.id === chatId)
             setCourseId(chat.courseId)
-            console.log('chats '+ chat)
+            setChat(chat)
             if (chat) {
                 const messages = chat ? chat.messages : []
                 // maybe not save locally
@@ -80,8 +115,12 @@ const Chat = () => {
                     setMessages(chatId, result)
                 }
             }
+            if (!isConnected) {
+                console.log("try connection")
+                connectWs()
+            }
         }
-    }, [session, chats])
+    }, [session, chats, isConnected])
 
 
     useEffect(() => {
@@ -116,14 +155,27 @@ const Chat = () => {
             apiOrganizationId: apiOrganizationId,
             model: gptModel
         }
+        let relatedDocuments: WsMessage
+        // try get related documents from langStream
+        if (isConnected) {
+            console.log('send somethgin')
+            sendMessage(userMessage)
+
+            while (waitingForMessage) {
+                //wait for related documents 
+            }
+            relatedDocuments = messages.pop()
+        } else {
+            console.log('LangStream is not connected, continue without related documents')
+        }
 
         if (chat && openaiCredential.model) {
             const userMsg: Partial<Message> = {
                 role: "user",
                 text: userMessage,
+                relatedDocuments: relatedDocuments?.value || '',
                 sender: 'You'
             }
-
             const userMessageStored = await useChatStore.addMessageToChat(chatId, userMsg.text, userMsg.sender, userMsg.role, session.user.id)
             if (userMessageStored.id) {
                 appendMessage(chatId, userMessageStored)

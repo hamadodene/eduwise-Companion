@@ -59,47 +59,39 @@ const Courses = ({ courses }) => {
         <>
             {
                 courses.map((course: course, index: React.Key) => (
-                    <div key={index} className="h-full">
-                        <Card className='relative transition ease-in-out duration-800  hover:shadow-lg hover:border-[#A3E4D7] hover:bg-[#f3f3f3] h-52'>
-                            <CardHeader className="flex flex-col items-start gap-4 space-y-0">
-                                <div className='w-full'>
-                                    <CardTitle className='overflow-hidden truncate' >{course.shortname}</CardTitle>
-                                </div>
-                                <div className="space-y-1 w-full">
-                                    <CardDescription className="line-clamp-3">
-                                        {course.summary}
-                                    </CardDescription>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="flex flex-col space-y-4 flex-grow">
-                                <div className="flex space-x-4 text-sm text-muted-foreground">
-                                    <div className="flex items-center">
-                                        <CircleIcon className="mr-1 h-3 w-3 fill-red-400 text-sky-400" />
-                                        {course.origin}
+                    <div className="h-full">
+                        <div className="max-w-md mx-auto bg-white rounded-lg border overflow-hidden md:max-w-2xl mb-2">
+                            <div className="md:flex">
+                                <div className="p-4">
+                                    <h2 className="text-lg font-semibold mb-2 line-clamp-1">{course.shortname}</h2>
+                                    <p className="text-gray-500 text-sm mb-4 line-clamp-3">{course.summary}</p>
+                                    <div className="flex mb-4 gap-4">
+                                        <div className="flex items-center text-sm ">
+                                            <CircleIcon className="mr-1 h-3 w-3 fill-red-400 text-sky-400" />
+                                            {course.origin}
+                                        </div>
+                                        <div className="flex items-center text-sm ">
+                                            <StarIcon className="mr-1 h-3 w-3" />
+                                            {course.chats ? `${course.chats.length} chat/s` : '0 chat'}
+                                        </div>
                                     </div>
-                                    <div className="flex items-center">
-                                        <StarIcon className="mr-1 h-3 w-3" />
-                                        {course.chats ? `${course.chats.length} chat/s` : '0 chat'}
-                                    </div>
-                                </div>
-                            </CardContent>
-                            <CardFooter>
-                                <div className="absolute space-x-4">
-                                    <Button variant="ghost" onClick={() => openDialog(`courseDialog${index}`)} className="p-2 rounded-lg border">
-                                        <Info size={15} />
-                                    </Button>
+                                    <div className="flex justify-between">
+                                        <Button variant="ghost" onClick={() => openDialog(`courseDialog${index}`)} className="p-2 rounded-lg border">
+                                            <Info />
+                                        </Button>
 
-                                    <Button variant="ghost" onClick={(e) => handleCreateChat(e, course)} className="p-2 rounded-lg border">
-                                        <Plus size={15} />
-                                    </Button>
+                                        <Button variant="ghost" onClick={(e) => handleCreateChat(e, course)} className="p-2 rounded-lg border">
+                                            <Plus />
+                                        </Button>
+                                    </div>
                                 </div>
-                            </CardFooter>
-                            <CourseInfoDialog
-                                isOpen={dialogs[`courseDialog${index}`]}
-                                toogleDialog={() => closeDialog(`courseDialog${index}`)}
-                                course={course}
-                            />
-                        </Card>
+                            </div>
+                        </div>
+                        <CourseInfoDialog
+                            isOpen={dialogs[`courseDialog${index}`]}
+                            toogleDialog={() => closeDialog(`courseDialog${index}`)}
+                            course={course}
+                        />
                     </div>
                 ))
             }

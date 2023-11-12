@@ -17,6 +17,7 @@ export interface Chat {
 export interface Message {
   id: string
   text: string
+  relatedDocuments?: string
   sender: 'You' | 'Bot' | string
   model?: string,
   userId: string,

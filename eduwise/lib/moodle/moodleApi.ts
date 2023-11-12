@@ -26,6 +26,21 @@ class MoodleApi {
             throw new Error(`Error while fetching courses: ${error.message}`)
         }
     }
+
+    async getCourseContents(courseId: string) {
+        try {
+           const courseContents = await this.moodleClient.call({
+            wsfunction: Wsfunctions.GET_COURCE_CONTENT,
+            args: {
+                courseid: courseId
+            },
+            method: 'GET'
+           }) 
+           return courseContents
+        } catch (error) {
+            throw new Error(`Error while fetching course ${courseId} contents: ${error.message}`)
+        }
+    }
 }
 
 export default MoodleApi

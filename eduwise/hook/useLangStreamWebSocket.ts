@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export enum ConnectionType {
   Producer = 'producer',
@@ -11,33 +11,33 @@ export enum ReaderMode {
 }
 
 export interface ConnectionParams {
-  baseUrl: string;
-  type: ConnectionType;
-  tenant: string;
-  appName: string;
-  gateway: string;
-  sessionId: number | string;
-  credentials?: string;
-  position?: ReaderMode;
+  baseUrl: string
+  type: ConnectionType
+  tenant: string
+  appName: string
+  gateway: string
+  sessionId: number | string
+  credentials?: string
+  position?: ReaderMode
 }
 
 export interface WsMessage {
-  id: number | string;
-  value: string;
-  yours: boolean;
-  gateway: string;
-  key?: string;
-  properties?: string;
-  headers?: number;
+  id: number | string
+  value: string
+  yours: boolean
+  gateway: string
+  key?: string
+  properties?: string
+  headers?: number
 }
 
 interface ConnectionDetails {
-  connectionError: boolean;
-  hasTimedOut: boolean;
-  manuallyDisconnected: boolean;
-  isPaused: boolean;
-  isTopicReader: boolean;
-  lastMessageId?: number | string;
+  connectionError: boolean
+  hasTimedOut: boolean
+  manuallyDisconnected: boolean
+  isPaused: boolean
+  isTopicReader: boolean
+  lastMessageId?: number | string
 }
 
 const defaultConnectionDetails = {
@@ -46,18 +46,18 @@ const defaultConnectionDetails = {
   isPaused: false,
   isTopicReader: false,
   manuallyDisconnected: false,
-};
+}
 
 export const decodeWsMessage = (message: string) => {
-  const base64Decoded = window.atob(message);
-  let decoded;
+  const base64Decoded = window.atob(message)
+  let decoded
   try {
-    decoded = decodeURIComponent(base64Decoded);
+    decoded = decodeURIComponent(base64Decoded)
   } catch {
-    return base64Decoded;
+    return base64Decoded
   }
-  return decoded;
-};
+  return decoded
+}
 
 const makeWebsocketPath = ({
   baseUrl,
@@ -67,127 +67,127 @@ const makeWebsocketPath = ({
   type,
   sessionId,
 }: ConnectionParams) => {
-  const url = `${baseUrl}/v1/${type === ConnectionType.Consumer ? 'consume': 'produce'}/${tenant}/${appName}/${gateway}?param:sessionId=${sessionId}`;
-  return url.replace(/([^:]\/)\/+/g, "$1");
-};
+  const url = `${baseUrl}/v1/${type === ConnectionType.Consumer ? 'consume': 'produce'}/${tenant}/${appName}/${gateway}?param:sessionId=${sessionId}`
+  return url.replace(/([^:]\/)\/+/g, "$1")
+}
 
 
 export const makeWebsocketUrl = (params: ConnectionParams) => {
-  const url = new URL(makeWebsocketPath(params));
+  const url = new URL(makeWebsocketPath(params))
   if (params.credentials) {
-    url.searchParams.append('credentials', params.credentials);
+    url.searchParams.append('credentials', params.credentials)
   }
-  return url.toString();
-};
+  return url.toString()
+}
 
 const useWebSockets = () => {
   const [producerConnectionParams, setProducerConnectionParams] = useState<
     ConnectionParams | undefined
-  >();
+  >()
   const [consumerConnectionParams, setConsumerConnectionParams] = useState<
     ConnectionParams | undefined
-  >();
+  >()
   const [connectionDetails, setConnectionDetails] = useState<ConnectionDetails>(
     defaultConnectionDetails
-  );
-  const consumerWs = useRef<WebSocket>();
-  const producerWs = useRef<WebSocket>();
-  const [messages, setMessages] = useState<WsMessage[]>([]);
-  const [waitingForMessage, setWaitingForMessage] = useState<boolean>(false);
-  const nextId = useRef<number>(1);
+  )
+  const consumerWs = useRef<WebSocket>()
+  const producerWs = useRef<WebSocket>()
+  const [messages, setMessages] = useState<WsMessage[]>([])
+  const [waitingForMessage, setWaitingForMessage] = useState<boolean>(false)
+  const nextId = useRef<number>(1)
 
   useEffect(() => {
-    nextId.current += 1;
-  }, [messages, nextId]);
+    nextId.current += 1
+  }, [messages, nextId])
 
   const isConnected =
     consumerWs.current?.readyState === WebSocket.OPEN &&
-    producerWs.current?.readyState === WebSocket.OPEN;
+    producerWs.current?.readyState === WebSocket.OPEN
 
   const connect = ({
     producer,
     consumer,
   }: {
-    producer: ConnectionParams;
-    consumer: ConnectionParams;
+    producer: ConnectionParams
+    consumer: ConnectionParams
   }) => {
-    setConnectionDetails(defaultConnectionDetails);
-    setProducerConnectionParams(producer);
-    setConsumerConnectionParams(consumer);
-  };
+    setConnectionDetails(defaultConnectionDetails)
+    setProducerConnectionParams(producer)
+    setConsumerConnectionParams(consumer)
+  }
 
   const connectConsumer = (
     consumer: ConnectionParams,
     topicReader?: boolean
   ) => {
-    disconnectConsumer();
-    setMessages([]);
+    disconnectConsumer()
+    setMessages([])
     if (topicReader) {
       setConnectionDetails({
         ...defaultConnectionDetails,
         isTopicReader: true,
-      });
+      })
     }
-    setConsumerConnectionParams(consumer);
-  };
+    setConsumerConnectionParams(consumer)
+  }
 
   const connectProducer = (producer: ConnectionParams) => {
-    setProducerConnectionParams(producer);
-  };
+    setProducerConnectionParams(producer)
+  }
 
   const disconnectConsumer = useCallback(() => {
-    consumerWs.current?.close();
-  }, []);
+    consumerWs.current?.close()
+  }, [])
 
   const disconnectProducer = useCallback(() => {
-    producerWs.current?.close();
-  }, []);
+    producerWs.current?.close()
+  }, [])
 
   const disconnect = (manual: boolean = false) => {
     if (manual) {
       setConnectionDetails(cd => {
-        return { ...cd, manuallyDisconnected: true };
-      });
+        return { ...cd, manuallyDisconnected: true }
+      })
     }
-    disconnectConsumer();
-    disconnectProducer();
-    setMessages([]);
-  };
+    disconnectConsumer()
+    disconnectProducer()
+    setMessages([])
+  }
 
   // Setup connections
   useEffect(() => {
     if (!consumerConnectionParams) {
-      return;
+      return
     }
     if (consumerWs.current?.OPEN) {
-      disconnectConsumer();
+      disconnectConsumer()
     }
     consumerWs.current = new WebSocket(
       makeWebsocketUrl(consumerConnectionParams)
-    );
+    )
     consumerWs.current.onopen = () => {
       setConnectionDetails(cd => {
-        return { ...cd, connectionError: false };
-      });
-    };
+        return { ...cd, connectionError: false }
+      })
+    }
     consumerWs.current.onerror = e => {
       setConnectionDetails(cd => {
-        return { ...cd, connectionError: true };
-      });
-      disconnect();
-    };
+        return { ...cd, connectionError: true }
+      })
+      disconnect()
+    }
     consumerWs.current.onclose = e => {
       if (!connectionDetails.manuallyDisconnected) {
         setConnectionDetails(cd => {
-          return { ...cd, hasTimedOut: true };
-        });
+          return { ...cd, hasTimedOut: true }
+        })
       }
-    };
+    }
     consumerWs.current.onmessage = ({ data }) => {
       const { offset, record } =
-        JSON.parse(data);
-      const { key, value, headers } = record;
-      setWaitingForMessage(false);
+        JSON.parse(data)
+      const { key, value, headers } = record
+      setWaitingForMessage(false)
       setMessages(m => {
         if (!headers?.["stream-index"] || headers?.["stream-index"] === "1") {
           return [
@@ -199,7 +199,7 @@ const useWebSockets = () => {
               gateway: consumerConnectionParams.gateway,
               yours: false,
             },
-          ];
+          ]
         }
         return [
           ...m.slice(0, m.length - 1),
@@ -210,53 +210,53 @@ const useWebSockets = () => {
             gateway: consumerConnectionParams.gateway,
             yours: false,
           },
-        ];
+        ]
         
-      });
-      consumerWs.current?.send(JSON.stringify({ offset }));
-    };
+      })
+      consumerWs.current?.send(JSON.stringify({ offset }))
+    }
 
-    return disconnectConsumer;
-  }, [consumerConnectionParams, disconnectConsumer, disconnectProducer]);
+    return disconnectConsumer
+  }, [consumerConnectionParams, disconnectConsumer, disconnectProducer])
 
   useEffect(() => {
     if (!producerConnectionParams) {
-      return;
+      return
     }
     if (producerWs.current?.OPEN) {
-      disconnectProducer();
+      disconnectProducer()
     }
     producerWs.current = new WebSocket(
       makeWebsocketUrl(producerConnectionParams)
-    );
+    )
     producerWs.current.onopen = () => {
       setConnectionDetails(cd => {
-        return { ...cd, connectionError: false };
-      });
-    };
+        return { ...cd, connectionError: false }
+      })
+    }
     producerWs.current.onerror = e => {
       setConnectionDetails(cd => {
-        return { ...cd, connectionError: true };
-      });
-      disconnect();
-    };
+        return { ...cd, connectionError: true }
+      })
+      disconnect()
+    }
     producerWs.current.onclose = e => {
       if (!connectionDetails.manuallyDisconnected) {
         setConnectionDetails(cd => {
-          return { ...cd, hasTimedOut: true };
-        });
+          return { ...cd, hasTimedOut: true }
+        })
       }
-    };
+    }
     producerWs.current.onmessage = e => {
       // noop
-    };
-    return disconnectProducer;
-  }, [producerConnectionParams, disconnectConsumer, disconnectProducer]);
+    }
+    return disconnectProducer
+  }, [producerConnectionParams, disconnectConsumer, disconnectProducer])
 
   const sendMessage = useCallback(
     (message: any) => {
       if (!producerConnectionParams) {
-        return;
+        return
       }
       if (producerWs.current?.readyState === WebSocket.OPEN) {
         setMessages(m => [
@@ -267,15 +267,15 @@ const useWebSockets = () => {
             gateway: producerConnectionParams.gateway,
             yours: true,
           },
-        ]);
-        setWaitingForMessage(true);
-        producerWs.current.send(JSON.stringify({ value: message }));
+        ])
+        setWaitingForMessage(true)
+        producerWs.current.send(JSON.stringify({ value: message }))
       } else {
         // noop
       }
     },
     [producerConnectionParams]
-  );
+  )
 
   return {
     connect,
@@ -289,7 +289,7 @@ const useWebSockets = () => {
     messages,
     sendMessage,
     waitingForMessage
-  };
-};
+  }
+}
 
-export default useWebSockets;
+export default useWebSockets

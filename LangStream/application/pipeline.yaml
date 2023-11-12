@@ -14,7 +14,7 @@ pipeline:
   - name: "compute-embeddings"
     type: "compute-ai-embeddings"
     configuration:
-      model: "text-embedding-ada-002"
+      model: "${secrets.open-ai.embeddings-model}"
       embeddings-field: "value.embeddings_vector"
       text: "{{ value.question }}"
       batch-size: 10
