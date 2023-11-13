@@ -13,6 +13,9 @@ export async function POST(
         moodletoken
     } = body
 
+    console.log("token " + moodletoken)
+    console.log("url "+ url)
+    
     if(!url) {
         return NextResponse.json({status: 401})
     }

@@ -22,6 +22,17 @@ import {
     CREDENTIALS
 } from '@/lib/config'
 import useWebSockets, { ConnectionType, WsMessage } from '@/hook/useLangStreamWebSocket'
+import * as z from "zod"
+import { useForm } from 'react-hook-form'
+import { zodResolver } from "@hookform/resolvers/zod"
+
+const FormSchema = z.object({
+    chat_message: z
+        .string()
+        .min(1, {
+            message: "You must write at least one message before sending.",
+        })
+})
 
 
 const runAssistantUpdatingState = async (chat: ChatModel, assistantModelId: string, userId: string, history: Message[], openaiCredential) => {
@@ -64,7 +75,6 @@ const Chat = () => {
     const { data: session } = useSession({
         required: true
     })
-    const [userMessage, setUserMessage] = useState('')
     const { setMessages, chats, appendMessage } = useLocalChatStore.getState()
     const [courseId, setCourseId] = useState("")
     const [chat, setChat] = useState<Chat>()
@@ -73,6 +83,12 @@ const Chat = () => {
     const parts = chatPathName.split('/')
     const chatId = parts[parts.length - 1]
     const { connect, isConnected, messages, sendMessage, waitingForMessage } = useWebSockets()
+    const form = useForm<z.infer<typeof FormSchema>>({
+        resolver: zodResolver(FormSchema),
+        defaultValues: {
+            chat_message: ''
+        }
+    })
 
     const connectWs = () => {
         const sessionId = session.user.id
@@ -146,7 +162,7 @@ const Chat = () => {
         conversationId ? useLocalChatStore.getState().chats.find(c => c.id === conversationId) ?? null : null
 
 
-    const handleSendMessage = async () => {
+    const handleSendMessage = async (data: z.infer<typeof FormSchema>) => {
         //const chat = await useChatStore.getChatInfo(chatId)
         const chat = _findConversation(chatId)
 
@@ -159,7 +175,7 @@ const Chat = () => {
         // try get related documents from langStream
         if (isConnected) {
             console.log('send somethgin')
-            sendMessage(userMessage)
+            sendMessage(data.chat_message)
 
             while (waitingForMessage) {
                 //wait for related documents 
@@ -172,14 +188,14 @@ const Chat = () => {
         if (chat && openaiCredential.model) {
             const userMsg: Partial<Message> = {
                 role: "user",
-                text: userMessage,
+                text: data.chat_message,
                 relatedDocuments: relatedDocuments?.value || '',
                 sender: 'You'
             }
             const userMessageStored = await useChatStore.addMessageToChat(chatId, userMsg.text, userMsg.sender, userMsg.role, session.user.id)
             if (userMessageStored.id) {
                 appendMessage(chatId, userMessageStored)
-                setUserMessage('')
+                form.reset()
                 await runAssistantUpdatingState(chat, openaiCredential.model, session.user.id, [...chat.messages, userMessageStored], openaiCredential)
             }
         }
@@ -195,7 +211,7 @@ const Chat = () => {
                 </div>
             </ScrollArea>
             <div className="sticky bottom-0 mb-0">
-                <ChatFooter chatId={chatId} courseId={courseId} userMessage={userMessage} setUserMessage={setUserMessage} handleSendMessage={handleSendMessage} />
+                <ChatFooter chatId={chatId} courseId={courseId} form={form} handleSendMessage={handleSendMessage} />
             </div>
         </div>
     )

@@ -4,16 +4,19 @@ import React, { useState } from "react"
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 import { course } from "@/lib/courses"
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/ui/tabs"
+import InfoTab from "./InfoTab"
+import ContentsTab from "./ContentsTab"
+import { useDialog } from "../context/DialogContext"
 
 interface CourseInfoDialogProps {
     course: course
@@ -22,88 +25,31 @@ interface CourseInfoDialogProps {
 }
 
 const CourseInfoDialog: React.FC<CourseInfoDialogProps> = ({ isOpen, toogleDialog, course }) => {
-    const isMoodleCourse = course.origin === 'moodle';
-
-    const [fullname, setFullname] = useState("")
-    const [shortname, setShortname] = useState("")
-    const [summary, setSummary] = useState("")
-
-    const handleFullnameChange = event => {
-        setFullname(event)
-    }
-
-    const handleShortnameChange = event => {
-        setShortname(event)
-    }
-
-    const handleSummaryChange = event => {
-        setSummary(event)
-    }
-
-    const handleSaveButtonClick = async (e, couese: course) => {
-        // save course here
-    }
-
     return (
-        <Dialog key={course.fullname} open={isOpen} onOpenChange={toogleDialog}>
-            <DialogContent className="sm:max-w-[600px]">
-                <DialogHeader>
-                    <DialogTitle>Course info</DialogTitle>
+        <Dialog open={isOpen} onOpenChange={toogleDialog}>
+            <DialogContent className="md:max-w-[680px] rounded-lg">
+                <DialogHeader className="border-b">
+                    <DialogTitle className="mb-4">{course.shortname}</DialogTitle>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="fullname" className="text-right">
-                            Fullname
-                        </Label>
-                        <Input
-                            id="fullname"
-                            defaultValue={course.fullname}
-                            className="col-span-3"
-                            onChange={handleFullnameChange}
-                            disabled={isMoodleCourse}
-                        />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="shortname" className="text-right">
-                            Shortname
-                        </Label>
-                        <Input
-                            id="shortname"
-                            defaultValue={course.shortname}
-                            className="col-span-3"
-                            onChange={handleShortnameChange}
-                            disabled={isMoodleCourse}
-                        />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="summary" className="text-right">
-                            Summary
-                        </Label>
-                        <textarea
-                            id="summary"
-                            defaultValue={course.summary}
-                            onChange={handleSummaryChange}
-                            className="col-span-3"
-                            disabled={isMoodleCourse}
-                        />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="origin" className="text-right">
-                            Origin
-                        </Label>
-                        <input
-                            id="origin"
-                            value={course.origin}
-                            className="col-span-3"
-                            disabled
-                        />
-                    </div>
-                </div>
-                {!isMoodleCourse && ( // Render the button only if it's not a moodle course
-                    <DialogFooter>
-                        <Button type="submit">Save changes</Button>
-                    </DialogFooter>
-                )}
+                <Tabs defaultValue="info" className="w-full">
+                    <TabsList className="grid w-full h-12 grid-cols-2 bg-[#12b886] text-white">
+                        <TabsTrigger
+                            className="h-10 data-[state=active]:bg-[#0ca678] data-[state=active]:text-white"
+                            value="info">
+                            Info
+                        </TabsTrigger>
+                        <TabsTrigger className="h-10 data-[state=active]:bg-[#0ca678] data-[state=active]:text-white"
+                            value="contents">
+                            Contents
+                        </TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="info">
+                        <InfoTab course={course}/>
+                    </TabsContent>
+                    <TabsContent value="contents">
+                        <ContentsTab course={course}/>
+                    </TabsContent>
+                </Tabs>
             </DialogContent>
         </Dialog>
     )

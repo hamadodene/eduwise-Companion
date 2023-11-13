@@ -64,7 +64,13 @@ const OpenaiSettings = () => {
                 setApiKey(result.apiKey)
                 setApiOrganizationId(result.apiOrganizationId)
                 setGtpModel(result.model)
+                setToken(result.apiKey)
+                setOrganizzationId(result.apiOrganizationId)
+                setModel(result.model)
             }
+            setToken(apiKey)
+            setOrganizzationId(apiOrganizationId)
+            setModel(gptModel)
         }
     }, [session])
 
@@ -144,11 +150,10 @@ const OpenaiSettings = () => {
     return (
         <>
             {/* GPT settings */}
-            < div className="border rounded-lg ml-2 mr-2" >
+            < div className="rounded-lg ml-2 mr-2" >
                 <div className="flex items-center justify-between p-4 border-b">
                     <div>
-                        <div className="text-lg font-semibold">GPT model</div>
-                        <div className="text-gray-500">Select the model you want to use as default</div>
+                        <div className="font-semibold">GPT model</div>
                     </div>
                     <div>
                         <Select onValueChange={handleModelSelectorChange} defaultValue={gptModel}>
@@ -167,8 +172,7 @@ const OpenaiSettings = () => {
 
                 <div className="flex items-center justify-between p-4 border-b">
                     <div>
-                        <div className="text-lg font-semibold">OPENAI token</div>
-                        <div className="text-gray-500">Set your custom openai token</div>
+                        <div className="font-semibold">OpenAi token</div>
                     </div>
                     <div className="w-6/12">
                         <Input
@@ -183,8 +187,7 @@ const OpenaiSettings = () => {
                 </div>
                 <div className="flex items-center justify-between p-4 border-b">
                     <div>
-                        <div className="text-lg font-semibold">OPENAI organizzation id</div>
-                        <div className="text-gray-500">Set openai organizzation id</div>
+                        <div className="font-semibold">OpenAI organizzation id</div>
                     </div>
                     <div className="w-6/12">
                         <Input
@@ -200,8 +203,8 @@ const OpenaiSettings = () => {
 
                 <div className="flex items-center justify-between p-4 border-b">
                     <div>
-                        <div className="text-lg font-semibold">Test OpenAI connection</div>
-                        <div className="text-gray-500">Check if your configured credential work properly</div>
+                        <div className="font-semibold">Test OpenAI connection</div>
+                        <div className="text-gray-500 text-sm">Check if your configured credential work properly</div>
                     </div>
                     <div>
                         {/* if check successfull open popup to confirm if user want to save or not*/}
@@ -217,11 +220,11 @@ const OpenaiSettings = () => {
                     </div>
                 </div>
 
-                <div className="flex items-center justify-between p-4 border-b w-full">
+                <div className="flex items-center justify-between p-4 mt-2 w-full">
                     <div className="text-center mx-auto mr-2">
                         {/* if check successfull open popup to confirm if user want to save or not*/}
                         {useSettingsStore.savingOpenai ? (
-                            <Button disabled className="bg-green-100 hover:bg-green-200 dark:bg-gray-800 text-xl py-2 px-4">
+                            <Button disabled className="bg-green-100 hover:bg-green-200 dark:bg-gray-800 py-2 px-4">
                                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" /> Saving
                             </Button>
                         ) : (
@@ -229,7 +232,7 @@ const OpenaiSettings = () => {
                                 variant="ghost"
                                 disabled={buttonDisabled}
                                 onClick={handleSaveOpenAiCredentials}
-                                className="bg-green-100 hover:bg-green-200 dark:bg-gray-800 text-xl py-2 px-4 w-36">
+                                className="bg-green-100 hover:bg-green-200 dark:bg-gray-800 py-2 px-4 w-36">
                                 Save
                             </Button>
                         )}
@@ -240,7 +243,7 @@ const OpenaiSettings = () => {
                             variant="ghost"
                             onClick={handleResetButton}
                             disabled={useSettingsStore.checkingOpenai || useSettingsStore.savingOpenai}
-                            className="bg-red-100 hover:bg-red-200 dark:bg-gray-800 py-2 px-4 rounded-lg text-xl w-36"
+                            className="bg-red-100 hover:bg-red-200 dark:bg-gray-800 py-2 px-4 rounded-lg w-36"
                         >
                             Reset
                         </Button>

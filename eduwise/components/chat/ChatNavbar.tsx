@@ -9,14 +9,20 @@ import { DialogContextType, useDialog } from "../context/DialogContext"
 import { Pencil1Icon } from "@radix-ui/react-icons"
 import { useLocalChatStore } from "@/lib/chat/local-chat-state"
 import { Chat } from "@/lib/chat/store-chats"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 
 const NavBar = () => {
     const { toggleSidebar } = useSidebar() as SidebarContextType
     const { dialogs, openDialog, closeDialog } = useDialog() as DialogContextType
     const { activeChatId, chats } = useLocalChatStore.getState()
-    const activeChat: Chat =  chats.find(chat => chat.id === activeChatId) as Chat
-    const numMessage =  activeChat.messages.length
+    const activeChat: Chat = chats.find(chat => chat.id === activeChatId) as Chat
+    const numMessage = activeChat.messages.length
 
     return (
         <div className="flex items-center justify-beetween border">
@@ -31,9 +37,18 @@ const NavBar = () => {
 
             </div>
             <div className="space-x-4 ml-auto mr-2">
-                <Button variant="ghost" onClick={() => openDialog(`chatTitleDialog`)} className="border-2" size="icon">
-                    <Pencil1Icon className="h-4 w-4" />
-                </Button>
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="ghost" onClick={() => openDialog(`chatTitleDialog`)} className="border-2 border-[#12b886]" size="icon">
+                                <Pencil1Icon className="h-4 w-4" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side='bottom' className='mr-9'>
+                            <p>Edit title</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             </div>
             <ChatTitleDialog
                 chatTitle={activeChat.userTitle || activeChat.autoTitle}

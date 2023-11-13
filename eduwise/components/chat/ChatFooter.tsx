@@ -1,40 +1,77 @@
 'use client'
 
-import { SendIcon, UploadIcon } from 'lucide-react'
+import { SendIcon, Sparkles, UploadIcon } from 'lucide-react'
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { ChatUploadDialog } from './ChatUploadDialog'
 import { DialogContextType, useDialog } from '../context/DialogContext'
+import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
 
-const ChatFooter = ({ chatId, courseId, userMessage, setUserMessage, handleSendMessage }) => {
+
+const ChatFooter = ({ chatId, courseId, form, handleSendMessage }) => {
 
     const { dialogs, openDialog, closeDialog } = useDialog() as DialogContextType
-
-    const handleUserMessageChange = event => {
-        event.preventDefault()
-        setUserMessage(event.target.value)
-    }
 
     return (
         <div className="p-4 border-t sticky">
             <div className="flex space-x-4">
                 <Button
                     variant="ghost"
-                    className="p-2 rounded-lg border-2 space-x-2"
+                    className="p-2 rounded-lg border-2 space-x-2 border-[#12b886]"
                     size='sm'
                     onClick={() => openDialog(`chatUploadDialog`)}
-                    >
+                >
                     <UploadIcon size={15} /> <p>Upload</p>
+                </Button>
+                <Button
+                    variant="ghost"
+                    className="p-2 rounded-lg border-2 space-x-2 border-[#12b886]"
+                    size='sm'
+                >
+                    <Sparkles size={15} /> <p>suggestions</p>
                 </Button>
             </div>
             <div className="flex flex-col mt-4">
-                <div className="flex justify-between border rounded-lg p-4 flex space-x-2 items-center">
-                    <Textarea onChange={handleUserMessageChange} value={userMessage} className="p-2 rounded-md flex-grow border-none shadow-none" placeholder="Inserisci il testo"></Textarea>
-                    <Button onClick={handleSendMessage} className="flex items-center rounded-md transition duration-300 self-end bg-[#5DF0D0] hover:bg-[#5DF0D0] text-black">
-                        <SendIcon className="w-4 h-4 ml-1 mr-2" /> Send
-                    </Button>
-                </div>
+                <Form {...form}>
+                    <form
+                        onSubmit={form.handleSubmit(handleSendMessage)}
+                        className='flex justify-between border rounded-lg p-4 flex space-x-2 items-center w-full'
+                    >
+                        <FormField
+                            control={form.control}
+                            name="chat_message"
+                            render={({ field }) => (
+                                <FormItem className='w-full'>
+                                    {/*<FormLabel>Message</FormLabel>*/}
+                                    <FormControl className='w-full'>
+                                        <Textarea
+                                            className="w-full p-2 rounded-md flex-grow border-none shadow-none resize-none"
+                                            {...field}
+                                            placeholder="Send a message" />
+                                    </FormControl>
+                                    {/*<FormDescription>
+                                        You can <span>@mention</span> other users and organizations.
+                                    </FormDescription>*/}
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+
+                        />
+                        <Button type='submit'
+                            className="flex items-center rounded-md transition duration-300 self-end bg-[#12b886] hover:bg-[#0ca678]">
+                            <SendIcon className="w-4 h-4 ml-1 mr-2" /> Send
+                        </Button>
+                    </form>
+                </Form>
             </div>
             <ChatUploadDialog
                 courseId={courseId as string}

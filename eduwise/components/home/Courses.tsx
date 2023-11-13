@@ -21,7 +21,7 @@ import { useCourseContext } from "@/components/context/CourseContext"
 import { useLocalChatStore } from "@/lib/chat/local-chat-state"
 
 const Courses = ({ courses }) => {
-    const { dialogs, openDialog, closeDialog } = useDialog() as DialogContextType
+    const { dialogs, openDialog, closeDialog } = useDialog()
     const router = useRouter()
     const { data: session } = useSession({
         required: true,
@@ -58,9 +58,12 @@ const Courses = ({ courses }) => {
     return (
         <>
             {
-                courses.map((course: course, index: React.Key) => (
-                    <div className="h-full">
-                        <div className="max-w-md mx-auto bg-white rounded-lg border overflow-hidden md:max-w-2xl mb-2">
+                courses.map((course: course) => (
+                    <div key={course.id} className="hover:cursor-pointer border rounded-lg border-[#63e6be] shadow-lg w-full">
+                        <div className="max-w-md mx-auto rounded-lg overflow-hidden md:max-w-2xl mb-2" onClick={(e) => {
+                            e.preventDefault()
+                            openDialog(`courseDialog${course.id}`)
+                        }}>
                             <div className="md:flex">
                                 <div className="p-4">
                                     <h2 className="text-lg font-semibold mb-2 line-clamp-1">{course.shortname}</h2>
@@ -75,21 +78,18 @@ const Courses = ({ courses }) => {
                                             {course.chats ? `${course.chats.length} chat/s` : '0 chat'}
                                         </div>
                                     </div>
-                                    <div className="flex justify-between">
-                                        <Button variant="ghost" onClick={() => openDialog(`courseDialog${index}`)} className="p-2 rounded-lg border">
-                                            <Info />
-                                        </Button>
 
-                                        <Button variant="ghost" onClick={(e) => handleCreateChat(e, course)} className="p-2 rounded-lg border">
-                                            <Plus />
-                                        </Button>
-                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <div className="w-full rounded flex items-center justify-center mb-1 border-[#12b886]">
+                            <Button variant="ghost" onClick={(e) => handleCreateChat(e, course)} className="w-11/12 p-4 bg-secondary">
+                                Create chat
+                            </Button>
+                        </div>
                         <CourseInfoDialog
-                            isOpen={dialogs[`courseDialog${index}`]}
-                            toogleDialog={() => closeDialog(`courseDialog${index}`)}
+                            isOpen={dialogs[`courseDialog${course.id}`]}
+                            toogleDialog={() => closeDialog(`courseDialog${course.id}`)}
                             course={course}
                         />
                     </div>

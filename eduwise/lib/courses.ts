@@ -1,12 +1,13 @@
 export interface course {
     id?: string
-    shortname: string,
-    fullname: string,
-    summary: string,
-    origin?: string,
-    userId: string,
-    systemPrompt: string,
+    shortname: string
+    fullname: string
+    summary: string
+    origin?: string
+    userId: string
+    systemPrompt: string
     chats: []
+    documents: []
 }
 
 export interface chat {
@@ -18,8 +19,18 @@ export interface chat {
     updatedAt: Date
     courseId: string
     courseName?: string
-    systemPrompt: string,
+    systemPrompt: string
     messages: []
+}
+
+export interface documents {
+    id: string,
+    aws_url?: string
+    mimetype: string
+    name: string
+    filename: string
+    store_in_aws: boolean
+    url?: string
 }
 
 export async function createCourses(shortname: string, fullname: string, summary: string, userId: string) {
@@ -54,7 +65,11 @@ export async function addDocument(courseId: string, name: string, url: string) {
             body: JSON.stringify({ 
                 courseId: courseId,
                 name: name,
-                url: url
+                filename: name,
+                url: url,
+                mimetype: "application/pdf",
+                aws_url: url,
+                store_in_aws: true
              })
         })
         return await response.json()
@@ -102,6 +117,7 @@ export async function getAllCourses(userId: string) {
         const response = await fetch(`/api/course?userid=${userId}`, {
             method: 'GET'
         })
+
 
         return await response.json() as course[]
     } catch (error) {

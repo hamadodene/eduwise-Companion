@@ -24,12 +24,15 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import SettingsDialog from './settingsDialog'
+import { DialogContextType, useDialog } from '../context/DialogContext'
 
 
 const Sidebar = () => {
     const { isSidebarOpen, toggleSidebar } = useSidebar()
     const router = useRouter()
     const { data: session } = useSession()
+    const { dialogs, openDialog, closeDialog } = useDialog() as DialogContextType
 
     function signOutHandler() {
         useLocalChatStore.persist.clearStorage()
@@ -65,9 +68,9 @@ const Sidebar = () => {
             </div>
             <Popover>
                 <PopoverTrigger asChild>
-                    <div className=" flex  items-center justify-betwee hover:cursor-pointer">
+                    <div className="flex items-center justify-between hover:cursor-pointer hover:bg-[#099268] rounded-lg">
                         <div className='pt-2 flex items-center space-x-2'>
-                            <div className="bg-transparent w-10 h-10 border rounded-lg flex items-center justify-center text-xl font-semibold text-white text-opacity-25">
+                            <div className="bg-transparent w-10 h-10 border border-[#099268] rounded-lg flex items-center justify-center text-xl font-semibold text-white text-opacity-25">
                                 {session ? session.user.name.slice(0, 2) : ""}
                             </div>
                             <div className='text-white text-opacity-25'>{session ? session.user.name : ""}</div>
@@ -77,16 +80,14 @@ const Sidebar = () => {
                 </PopoverTrigger>
                 <PopoverContent className="mr-4 bg-[#0ca678] border-none rounded-lg w-72">
                     <div>
-                        <div>
-                            <Link href="/settings" className="rounded-lg flex items-center mb-4">
-                                <div className='bg-transparent h-10 flex items-center space-x-2 text-white text-opacity-90'>
-                                    <Settings2Icon size={15} />
-                                    <h1>Settings</h1>
-                                </div>
-                            </Link>
+                        <div className='mb-4 hover:bg-[#099268] rounded-lg hover:cursor-pointer' onClick={() => openDialog("settingsDialog")}>
+                            <div className='bg-transparent h-10 flex items-center space-x-2 text-white text-opacity-90'>
+                                <Settings2Icon size={15} />
+                                <h1>Settings</h1>
+                            </div>
                         </div>
                         <Separator />
-                        <div>
+                        <div className='hover:bg-[#099268] rounded-lg h-10'>
                             <Link href="#" className="rounded-lg flex items-center mt-4" onClick={() => {
                                 signOutHandler();
                                 signOut({ redirect: true }).then(() => {
@@ -102,7 +103,10 @@ const Sidebar = () => {
                     </div>
                 </PopoverContent>
             </Popover>
-
+            <SettingsDialog
+                isOpen={dialogs["settingsDialog"]}
+                toogleDialog={() => closeDialog("settingsDialog")}
+            />
         </div>
     )
 }

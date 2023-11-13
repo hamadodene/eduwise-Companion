@@ -22,6 +22,7 @@ function HomePage() {
         if (session && !( new Date() > new Date(session.expires))) {
             const result = await getAllCourses(session.user.id)
             result.forEach(res => {
+                console.log(res.documents)
                 addCourse(res)
             })
         }

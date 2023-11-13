@@ -70,23 +70,6 @@ const ChatHistory = () => {
                         </div>
                     </div>
                 ))}
-
-
-            {/*<Card key={index} onClick={(e) => handleCardClick(e, chat)} className='mt-2 bg-[#087f5b]'>
-                        <CardHeader className="flex flex-col items-start gap-4 space-y-0">
-                            <div className='w-full'>
-                                <CardTitle className='overflow-hidden truncate'>{chat.userTitle || chat.autoTitle || "New chat"}</CardTitle>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex space-x-4 text-sm text-muted-foreground">
-                                <div className="flex items-center">
-                                    <CircleIcon className="mr-1 h-3 w-3 fill-red-400 text-sky-400" />
-                                    {chat.courseName}
-                                </div>
-                            </div>
-                        </CardContent>
-                </Card>*/}
         </>
     )
 }
