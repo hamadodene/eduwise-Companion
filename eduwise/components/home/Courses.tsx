@@ -9,7 +9,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { CircleIcon, Info, Plus, StarIcon } from "lucide-react"
+import { CircleIcon, Info, Plus, StarIcon, Trash2 } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { course, createChat as persisteChatOnDB } from "@/lib/courses"
 import { DialogContextType, useDialog } from "@/components/context/DialogContext"
@@ -59,7 +59,7 @@ const Courses = ({ courses }) => {
         <>
             {
                 courses.map((course: course) => (
-                    <div key={course.id} className="hover:cursor-pointer border rounded-lg border-[#63e6be] shadow-lg w-full">
+                    <div key={course.id} className="hover:cursor-pointer border-2 rounded-lg hover:border-[#63e6be] shadow-lg w-full">
                         <div className="max-w-md mx-auto rounded-lg overflow-hidden md:max-w-2xl mb-2" onClick={(e) => {
                             e.preventDefault()
                             openDialog(`courseDialog${course.id}`)
@@ -67,7 +67,7 @@ const Courses = ({ courses }) => {
                             <div className="md:flex">
                                 <div className="p-4">
                                     <h2 className="text-lg font-semibold mb-2 line-clamp-1">{course.shortname}</h2>
-                                    <p className="text-gray-500 text-sm mb-4 line-clamp-3">{course.summary}</p>
+                                    <p className="text-gray-500 text-sm mb-4 line-clamp-3 md:line-clamp-5">{course.summary}</p>
                                     <div className="flex mb-4 gap-4">
                                         <div className="flex items-center text-sm ">
                                             <CircleIcon className="mr-1 h-3 w-3 fill-red-400 text-sky-400" />

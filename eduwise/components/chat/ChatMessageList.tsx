@@ -4,6 +4,7 @@ import React from "react"
 import ChatMessage from "./ChatMessage"
 import { useLocalChatStore } from "@/lib/chat/local-chat-state"
 import useStore from "@/lib/chat/useStore"
+import { Separator } from "../ui/separator"
 
 const MessageList = (props: { chatId: string }) => {
     const messagesEndRef = React.useRef<HTMLDivElement | null>(null)
@@ -34,6 +35,7 @@ const MessageList = (props: { chatId: string }) => {
                         <ChatMessage
                             key={index}
                             text={message.text}
+                            model={message.model}
                             isBot={message.role === 'assistant'}
                         />
                     ))

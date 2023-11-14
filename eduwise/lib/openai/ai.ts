@@ -44,6 +44,7 @@ export async function streamAssistantMessage(
       let incrementalText = ''
       let parsedFirstPacket = false
       let sentFirstParagraph = false
+      let model = ""
       while (true) {
         const { value, done } = await reader.read()
 
@@ -59,6 +60,7 @@ export async function streamAssistantMessage(
             incrementalText = incrementalText.substring(endOfJson + 1)
             try {
               const parsed = JSON.parse(json)
+              model = parsed.model
               editMessage(chatId, assistantMessageId, { model: parsed.model }, false)
               parsedFirstPacket = true
             } catch (e) {
@@ -82,7 +84,7 @@ export async function streamAssistantMessage(
         editMessage(chatId, assistantMessageId, { text: incrementalText }, false)
       }
       // persist on db
-      await useChatStore.updateMessage({ text: incrementalText }, assistantMessageId)
+      await useChatStore.updateMessage({ text: incrementalText, model: model  }, assistantMessageId)
     }
   } catch (error: any) {
     console.error('Fetch request error:', error)
