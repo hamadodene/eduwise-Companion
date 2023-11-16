@@ -204,14 +204,23 @@ const Chat = () => {
 
     return (
         <div className="flex flex-col h-screen bg-[#F8F8F8]">
-            <NavBar/>
+            <NavBar />
             <ScrollArea className='flex-1'>
                 <div className="flex flex-col p-4 w-full">
                     <MessageList chatId={chatId} />
                 </div>
             </ScrollArea>
             <div className="sticky bottom-0 mb-0">
-                <ChatFooter chatId={chatId} courseId={courseId} form={form} handleSendMessage={handleSendMessage} />
+                <ChatFooter
+                    chatId={chatId}
+                    courseId={courseId}
+                    form={form}
+                    openaiCredential={{
+                        apiKey: apiKey,
+                        apiOrganizationId: apiOrganizationId,
+                        model: gptModel
+                    }}
+                    handleSendMessage={handleSendMessage} />
             </div>
         </div>
     )

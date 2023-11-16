@@ -2,14 +2,13 @@
 
 // components/Sidebar.js
 import React from 'react'
-import { Icons } from '../icons'
-import { LogOutIcon, PanelLeftClose, PlusIcon, Settings2Icon, X } from 'lucide-react'
+import { LogOutIcon, PlusIcon, Settings2Icon, X } from 'lucide-react'
 import { Button } from '../ui/button'
 import Link from 'next/link'
 import { useSidebar } from '../context/sidebarContext'
 import ChatHistory from './chatHistory'
 import { useRouter } from "next/navigation"
-import { getSession, signOut, useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { useLocalChatStore } from '@/lib/chat/local-chat-state'
 import { useLocalSettingsStore } from '@/lib/settings/local-settings-store'
 import { Separator } from '../ui/separator'
@@ -70,12 +69,12 @@ const Sidebar = () => {
                 <PopoverTrigger asChild>
                     <div className="flex items-center justify-between hover:cursor-pointer hover:bg-[#099268] rounded-lg">
                         <div className='pt-2 flex items-center space-x-2'>
-                            <div className="bg-transparent w-10 h-10 border border-[#099268] rounded-lg flex items-center justify-center text-xl font-semibold text-white text-opacity-25">
+                            <div className="bg-transparent w-10 h-10 border border-[#099268] rounded-lg flex items-center justify-center text-xl font-semibold text-white text-opacity-90">
                                 {session ? session.user.name.slice(0, 2) : ""}
                             </div>
-                            <div className='text-white text-opacity-25'>{session ? session.user.name : ""}</div>
+                            <div className='text-white text-opacity-90'>{session ? session.user.name : ""}</div>
                         </div>
-                        <div className='text-white text-opacity-25'>...</div>
+                        <div className='text-white text-opacity-90'>...</div>
                     </div>
                 </PopoverTrigger>
                 <PopoverContent className="mr-4 bg-[#0ca678] border-none rounded-lg w-72">

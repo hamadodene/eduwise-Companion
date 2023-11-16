@@ -1,3 +1,5 @@
+import { Message } from "./chat/store-chats"
+
 export interface course {
     id?: string
     shortname: string
@@ -20,7 +22,8 @@ export interface chat {
     courseId: string
     courseName?: string
     systemPrompt: string
-    messages: []
+    messages: Message[]
+    suggestions: suggestions[]
 }
 
 export interface documents {
@@ -31,6 +34,14 @@ export interface documents {
     filename: string
     store_in_aws: boolean
     url?: string
+}
+
+export interface suggestions {
+    title: string
+    content: string
+    difficulty_level: string
+    priority: string
+    importance: string
 }
 
 export async function createCourses(shortname: string, fullname: string, summary: string, userId: string) {

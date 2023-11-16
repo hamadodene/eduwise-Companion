@@ -9,10 +9,11 @@ import {
     DialogTitle
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { BanIcon, Check } from "lucide-react"
+import { BanIcon, Check, SeparatorHorizontal } from "lucide-react"
 import { useState } from "react"
 import { useS3Upload } from "next-s3-upload"
 import { addDocument } from "@/lib/courses"
+import { Separator } from "../ui/separator"
 
 interface ChatUploadDialogProps {
     chatId: string
@@ -55,10 +56,12 @@ export const ChatUploadDialog: React.FC<ChatUploadDialogProps> = ({ chatId, cour
                 <DialogHeader>
                     <DialogTitle>Upload documents</DialogTitle>
                 </DialogHeader>
+                <Separator/>
                 <Input
                     type="file"
                     multiple
                     accept="application/pdf"
+                    className="mt-2 mb-2 h-10"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         const selectedFiles = e.target.files;
                         if (selectedFiles) {
@@ -66,13 +69,14 @@ export const ChatUploadDialog: React.FC<ChatUploadDialogProps> = ({ chatId, cour
                             setFiles(filesArray);
                         }
                     }} />
+                <Separator/>
                 <DialogFooter>
                     <div className="flex space-x-2">
                         <Button variant="ghost" onClick={toogleDialog} className="flex items-center px-4 py-2 rounded-lg">
                             <BanIcon className="mr-2" size={15} />
                             Cancel
                         </Button>
-                        <Button onClick={handleFilesUpload} className="flex items-center px-4 py-2 rounded-lg">
+                        <Button variant="ghost" onClick={handleFilesUpload} className="flex items-center px-4 py-2 rounded-lg">
                             <Check className="mr-2" size={15} />
                             Confirm
                         </Button>

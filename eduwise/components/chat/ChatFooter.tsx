@@ -15,9 +15,18 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet"
+import ChatSuggestions from './ChatSuggestion'
 
 
-const ChatFooter = ({ chatId, courseId, form, handleSendMessage }) => {
+const ChatFooter = ({ chatId, courseId, form, openaiCredential, handleSendMessage }) => {
 
     const { dialogs, openDialog, closeDialog } = useDialog() as DialogContextType
 
@@ -32,13 +41,28 @@ const ChatFooter = ({ chatId, courseId, form, handleSendMessage }) => {
                 >
                     <UploadIcon size={15} /> <p>Upload</p>
                 </Button>
-                <Button
-                    variant="ghost"
-                    className="p-2 rounded-lg border-2 space-x-2 border-[#12b886]"
-                    size='sm'
-                >
-                    <Sparkles size={15} /> <p>suggestions</p>
-                </Button>
+                <Sheet>
+                    <SheetTrigger>
+                        <Button
+                            variant="ghost"
+                            className="p-2 rounded-lg border-2 space-x-2 border-[#12b886]"
+                            size='sm'
+                        >
+                            <Sparkles size={15} /> <p>suggestions</p>
+                        </Button>
+                    </SheetTrigger>
+                    <SheetContent>
+                        <SheetHeader>
+                            <SheetTitle>Suggestions</SheetTitle>
+                            <SheetDescription>
+                                <div className='w-full border-b border-[#12b886]'>
+                                    <p className='mb-4'>This is a list of suggestions we have written for you based on our conversation.</p>
+                                </div>
+                                <ChatSuggestions chatId={chatId} openaiCredential={openaiCredential}/>
+                            </SheetDescription>
+                        </SheetHeader>
+                    </SheetContent>
+                </Sheet>
             </div>
             <div className="flex flex-col mt-4">
                 <Form {...form}>

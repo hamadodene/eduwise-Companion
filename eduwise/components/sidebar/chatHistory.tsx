@@ -1,12 +1,6 @@
 'use client'
 
 import React, { useCallback, useEffect, useState } from "react"
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
 import { CircleIcon, Delete, MessageSquareIcon, Trash, Trash2 } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/navigation'
