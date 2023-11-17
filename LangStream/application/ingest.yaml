@@ -1,5 +1,30 @@
 name: "Ingest text files from S3"
 assets:
+  - name: "eduwise-keyspace"
+    asset-type: "astra-keyspace"
+    creation-mode: create-if-not-exists
+    config:
+      keyspace: "eduwise_default"
+      datasource: "AstraDatasource"
+  - name: "documents-table"
+    asset-type: "cassandra-table"
+    creation-mode: create-if-not-exists
+    config:
+      table-name: "documents"
+      keyspace: "eduwise_default"
+      datasource: "AstraDatasource"
+      create-statements:
+        - >
+          CREATE TABLE IF NOT EXISTS eduwise_default.documents(  
+            filename TEXT,
+            chunk_id int,
+            text TEXT,
+            embeddings_vector VECTOR<FLOAT, 1536>,
+            PRIMARY KEY (filename, chunk_id)
+            );
+        - >
+          CREATE CUSTOM INDEX IF NOT EXISTS eduwise_index 
+          ON eduwise_default.documents(embeddings_vector) USING 'StorageAttachedIndex';
 pipeline:
   - name: "Read from S3"
     type: "s3-source"
@@ -36,7 +61,10 @@ pipeline:
     configuration:
       fields:
         - name: "value.filename"
-          expression: "properties.url"
+          expression: "properties.name"
+          type: STRING
+        - name: "value.chunk_id"
+          expression: "properties.chunk_id"
           type: STRING
   - name: "compute-embeddings"
     type: "compute-ai-embeddings"
@@ -46,11 +74,10 @@ pipeline:
       text: "{{ value.text }}"
       batch-size: 10
       flush-interval: 500
-  - name: "Write to Pinecone"
+  - name: "Write to Astra DB"
     type: "vector-db-sink"
     configuration:
-      datasource: "PineconeDatasource"
-      vector.id: "value.id"
-      vector.vector: "value.embeddings_vector"
-      vector.namespace: ""
-      vector.metadata.content: "value.text"
+      datasource: "AstraDatasource"
+      table-name: "documents"
+      keyspace: "eduwise_default"
+      mapping: "filename=value.filename, chunk_id=value.chunk_id, text=value.text, embeddings_vector=value.embeddings_vector"

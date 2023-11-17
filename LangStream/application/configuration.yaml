@@ -1,11 +1,14 @@
 configuration:
   resources:
-    - type: "vector-database"
-      name: "PineconeDatasource"
+    - type: "open-ai-configuration"
+      name: "OpenAI"
       configuration:
-        service: "pinecone"
-        api-key: "${secrets.pinecone.api-key}"
-        environment: "${secrets.pinecone.environment}"
-        index-name: "${secrets.pinecone.index-name}"
-        project-name: "${secrets.pinecone.project-name}"
-        server-side-timeout-sec: 10
+        access-key: "${secrets.open-ai.access-key}"
+    - type: "vector-database"
+      name: "AstraDatasource"
+      configuration:
+        service: "astra"
+        clientId: "${secrets.astra.clientId}"
+        secret: "${secrets.astra.secret}"
+        database: "${secrets.astra.database}"
+        token: "${secrets.astra.token}"
