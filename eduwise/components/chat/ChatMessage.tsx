@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/popover"
 import { Copy, Delete, Edit, MoreVerticalIcon } from "lucide-react"
 import { Separator } from "../ui/separator"
+import { useSession } from "next-auth/react"
 
 
 
@@ -234,8 +235,10 @@ const ChatMessage = ({ text, isBot, model }) => {
     const messageBgColor = isBot ? '' : 'bg-[#f8f9fa]'
     const renderMarkdown = true
     const { isAssistantError, errorMessage } = explainErrorInMessage(text, isBot, model)
-    const popoverSide = isBot? 'right': 'left'
-    
+    const popoverSide = isBot ? 'right' : 'left'
+    const { data: session } = useSession({
+        required: true
+    })
     const cssBlocks = {
         my: 'auto',
     }
@@ -250,13 +253,17 @@ const ChatMessage = ({ text, isBot, model }) => {
 
     return (
         <>
-            <div className={`flex flex-col justify-center mb-4 ${alignmentClass}`}>
+            <div className={`flex flex-col justify-center items-center mb-4 ${alignmentClass}`}>
                 <div className={`group border w-10 h-10 rounded-lg bg-[#12b886] relative ${marginLeft}`}>
-                    <img
-                        src={`${isBot ? '/avatars/chatbot.png' : '/avatars/01.png'}`}
-                        alt={`Image ${isBot ? 'Bot' : 'User'}`}
+                    {isBot ? <img
+                        src="/avatars/chatbot.png"
+                        alt="eduwise"
                         className='rounded-lg group-hover:opacity-50 transition duration-300'
-                    />
+                    /> :
+                        <div className="w-full h-full flex items-center justify-center font-semibold text-white text-opacity-90">
+                            {session ? session.user.name.slice(0, 2) : ""}
+                        </div>
+                    }
                     <Popover>
                         <PopoverTrigger>
                             <div className="absolute inset-0 flex items-center bg-gray-300 justify-center opacity-0 group-hover:opacity-100 transition duration-300">

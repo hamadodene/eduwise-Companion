@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 export enum ConnectionType {
-  Producer = 'producer',
-  Consumer = 'consumer',
+  Chat = 'chat'
 }
 
 export enum ReaderMode {
@@ -29,6 +28,25 @@ export interface WsMessage {
   key?: string
   properties?: string
   headers?: number
+}
+
+interface CustomRecord {
+  key: null | string;
+  value: string;
+  headers: Record<string, string>;
+}
+
+interface ConsumerMessage {
+  record: CustomRecord;
+  offset: string;
+}
+
+interface ParsedData {
+  record: {
+    value: string | null
+    headers: { [key: string]: string }
+  }
+  offset: string
 }
 
 interface ConnectionDetails {
@@ -64,10 +82,9 @@ const makeWebsocketPath = ({
   tenant,
   appName,
   gateway,
-  type,
   sessionId,
 }: ConnectionParams) => {
-  const url = `${baseUrl}/v1/${type === ConnectionType.Consumer ? 'consume': 'produce'}/${tenant}/${appName}/${gateway}?param:sessionId=${sessionId}`
+  const url = `${baseUrl}/v1/${ConnectionType.Chat}/${tenant}/${appName}/${gateway}?param:sessionId=${sessionId}`
   return url.replace(/([^:]\/)\/+/g, "$1")
 }
 
@@ -92,7 +109,7 @@ const useWebSockets = () => {
   )
   const consumerWs = useRef<WebSocket>()
   const producerWs = useRef<WebSocket>()
-  const [messages, setMessages] = useState<WsMessage[]>([])
+  const [messages, setMessages] = useState<string>()
   const [waitingForMessage, setWaitingForMessage] = useState<boolean>(false)
   const nextId = useRef<number>(1)
 
@@ -121,7 +138,7 @@ const useWebSockets = () => {
     topicReader?: boolean
   ) => {
     disconnectConsumer()
-    setMessages([])
+    setMessages("")
     if (topicReader) {
       setConnectionDetails({
         ...defaultConnectionDetails,
@@ -151,7 +168,7 @@ const useWebSockets = () => {
     }
     disconnectConsumer()
     disconnectProducer()
-    setMessages([])
+    setMessages("")
   }
 
   // Setup connections
@@ -184,36 +201,19 @@ const useWebSockets = () => {
       }
     }
     consumerWs.current.onmessage = ({ data }) => {
-      const { offset, record } =
-        JSON.parse(data)
-      const { key, value, headers } = record
-      setWaitingForMessage(false)
-      setMessages(m => {
-        if (!headers?.["stream-index"] || headers?.["stream-index"] === "1") {
-          return [
-            ...m,
-            {
-              id: headers?.["stream-id"] ?? offset,
-              key,
-              value,
-              gateway: consumerConnectionParams.gateway,
-              yours: false,
-            },
-          ]
-        }
-        return [
-          ...m.slice(0, m.length - 1),
-          {
-            id: headers?.["stream-id"] ?? offset,
-            key,
-            value: m[m.length - 1].value + value,
-            gateway: consumerConnectionParams.gateway,
-            yours: false,
-          },
-        ]
-        
-      })
-      consumerWs.current?.send(JSON.stringify({ offset }))
+      const parsedData: ParsedData = JSON.parse(data)
+      const value: string | null = parsedData.record?.value
+      const headers: { [key: string]: string } = parsedData.record?.headers
+      const offset: string = parsedData?.offset
+
+
+      if (consumerWs.current?.readyState === WebSocket.OPEN && value) {
+        setMessages(value)
+        setWaitingForMessage(false)
+        consumerWs.current?.send(JSON.stringify({ offset }))
+      } else {
+        //Noop
+      }
     }
 
     return disconnectConsumer
@@ -259,15 +259,7 @@ const useWebSockets = () => {
         return
       }
       if (producerWs.current?.readyState === WebSocket.OPEN) {
-        setMessages(m => [
-          ...m,
-          {
-            id: nextId.current,
-            value: message,
-            gateway: producerConnectionParams.gateway,
-            yours: true,
-          },
-        ])
+        setMessages(message)
         setWaitingForMessage(true)
         producerWs.current.send(JSON.stringify({ value: message }))
       } else {

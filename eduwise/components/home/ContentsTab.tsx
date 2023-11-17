@@ -9,7 +9,6 @@ import {
 import { Download, ScanFaceIcon } from "lucide-react"
 import { Separator } from "../ui/separator"
 
-
 const ContentsTab = (props: { course: course }) => {
     const contents: documents[] = props.course.documents
     return (

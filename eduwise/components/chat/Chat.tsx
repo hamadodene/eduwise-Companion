@@ -12,7 +12,7 @@ import { useSettingsStore } from '@/lib/settings/store-settings'
 import { streamAssistantMessage, updateAutoConversationTitle } from '@/lib/openai/ai'
 import { useLocalSettingsStore } from '@/lib/settings/local-settings-store'
 import { usePathname } from 'next/navigation'
-import { connect } from 'http2'
+
 import {
     WEBSOCKET_URL,
     APP_NAME,
@@ -35,7 +35,7 @@ const FormSchema = z.object({
 })
 
 
-const runAssistantUpdatingState = async (chat: ChatModel, assistantModelId: string, userId: string, history: Message[], openaiCredential) => {
+const runAssistantUpdatingState = async (chat: ChatModel, assistantModelId: string, userId: string, history: Message[], openaiCredential, relatedDocuments: string) => {
     const chatId = chat.id
     const { appendMessage, setMessages } = useLocalChatStore.getState()
 
@@ -66,7 +66,7 @@ const runAssistantUpdatingState = async (chat: ChatModel, assistantModelId: stri
     newAssistantMessageStored.typing = true
     appendMessage(chatId, newAssistantMessageStored)
 
-    await streamAssistantMessage(chatId, newAssistantMessageStored.id, history, openaiCredential, userId)
+    await streamAssistantMessage(chatId, newAssistantMessageStored.id, history, openaiCredential, userId, relatedDocuments)
     await updateAutoConversationTitle(chatId, userId, openaiCredential)
 }
 
@@ -98,23 +98,23 @@ const Chat = () => {
                 baseUrl: WEBSOCKET_URL,
                 appName: APP_NAME,
                 tenant: TENANT,
-                gateway: CONSUMER,
+                gateway: "chat",
                 credentials: CREDENTIALS,
-                type: ConnectionType.Consumer,
+                type: ConnectionType.Chat,
                 sessionId
             },
             producer: {
                 baseUrl: WEBSOCKET_URL,
                 appName: APP_NAME,
                 tenant: TENANT,
-                gateway: PRODUCER,
+                gateway: "chat",
                 credentials: CREDENTIALS,
-                type: ConnectionType.Producer,
+                type: ConnectionType.Chat,
                 sessionId
             }
         });
     }
-
+    
     const handleLoadChatMessages = useCallback(async () => {
         if (session) {
             // check if chats is on state side
@@ -171,16 +171,18 @@ const Chat = () => {
             apiOrganizationId: apiOrganizationId,
             model: gptModel
         }
-        let relatedDocuments: WsMessage
+        let relatedDocuments: string
         // try get related documents from langStream
         if (isConnected) {
             console.log('send somethgin')
             sendMessage(data.chat_message)
 
             while (waitingForMessage) {
-                //wait for related documents 
+                //wait for related documents
             }
-            relatedDocuments = messages.pop()
+
+            console.log("messages " + messages)
+            relatedDocuments = messages
         } else {
             console.log('LangStream is not connected, continue without related documents')
         }
@@ -189,14 +191,13 @@ const Chat = () => {
             const userMsg: Partial<Message> = {
                 role: "user",
                 text: data.chat_message,
-                relatedDocuments: relatedDocuments?.value || '',
                 sender: 'You'
             }
             const userMessageStored = await useChatStore.addMessageToChat(chatId, userMsg.text, userMsg.sender, userMsg.role, session.user.id)
             if (userMessageStored.id) {
                 appendMessage(chatId, userMessageStored)
                 form.reset()
-                await runAssistantUpdatingState(chat, openaiCredential.model, session.user.id, [...chat.messages, userMessageStored], openaiCredential)
+                await runAssistantUpdatingState(chat, openaiCredential.model, session.user.id, [...chat.messages, userMessageStored], openaiCredential, relatedDocuments)
             }
         }
     }

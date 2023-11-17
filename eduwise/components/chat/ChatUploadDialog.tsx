@@ -14,6 +14,7 @@ import { useState } from "react"
 import { useS3Upload } from "next-s3-upload"
 import { addDocument } from "@/lib/courses"
 import { Separator } from "../ui/separator"
+import { useCourseContext } from "../context/CourseContext"
 
 interface ChatUploadDialogProps {
     chatId: string
@@ -26,6 +27,7 @@ export const ChatUploadDialog: React.FC<ChatUploadDialogProps> = ({ chatId, cour
     const [urls, setUrls] = useState<string[]>([])
     const [files, setFiles] = useState<File[]>([])
     const { uploadToS3 } = useS3Upload()
+    const {resetCourseList} = useCourseContext()
 
     const handleFilesUpload = async () => {
         try {
@@ -43,6 +45,7 @@ export const ChatUploadDialog: React.FC<ChatUploadDialogProps> = ({ chatId, cour
                 })
                 setUrls(current => [...current, url])
                 await addDocument(courseId, file.name, url)
+                resetCourseList()
             }
             toogleDialog()
         } catch (error) {

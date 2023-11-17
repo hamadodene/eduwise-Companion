@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { OpenAIAPI } from '@/app/types/api-openai'
-
+import prisma from '@/lib/prismadb'
 
 if (!process.env.OPENAI_API_KEY)
   console.warn(
