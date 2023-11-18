@@ -35,7 +35,7 @@ const FormSchema = z.object({
 })
 
 
-const runAssistantUpdatingState = async (chat: ChatModel, assistantModelId: string, userId: string, history: Message[], openaiCredential, relatedDocuments: string) => {
+const runAssistantUpdatingState = async (chat: ChatModel, assistantModelId: string, userId: string, history: Message[], openaiCredential) => {
     const chatId = chat.id
     const { appendMessage, setMessages } = useLocalChatStore.getState()
 
@@ -66,7 +66,7 @@ const runAssistantUpdatingState = async (chat: ChatModel, assistantModelId: stri
     newAssistantMessageStored.typing = true
     appendMessage(chatId, newAssistantMessageStored)
 
-    await streamAssistantMessage(chatId, newAssistantMessageStored.id, history, openaiCredential, userId, relatedDocuments)
+    await streamAssistantMessage(chatId, newAssistantMessageStored.id, history, openaiCredential, userId)
     await updateAutoConversationTitle(chatId, userId, openaiCredential)
 }
 
@@ -166,10 +166,9 @@ const Chat = () => {
                 if (!waitingForMessage) {
                     resolve()
                 } else {
-                    setTimeout(checkMessage, 100)
+                    setTimeout(checkMessage, 1000)
                 }
             }
-
             checkMessage()
         })
     }
@@ -190,7 +189,6 @@ const Chat = () => {
             await waitForMessage()
 
             relatedDocuments = messages.pop()
-            console.log("related documents " + JSON.stringify(messages))
         } else {
             console.log('LangStream is not connected, continue without related documents')
         }
@@ -204,8 +202,18 @@ const Chat = () => {
             const userMessageStored = await useChatStore.addMessageToChat(chatId, userMsg.text, userMsg.sender, userMsg.role, session.user.id)
             if (userMessageStored.id) {
                 appendMessage(chatId, userMessageStored)
+                const userMessageStoredWithReleatedDocuments = {
+                    id: userMessageStored.id,
+                    text: userMessageStored.text + "\n relatedDocuments=" + relatedDocuments.value,
+                    sender: userMessageStored.sender,
+                    model: userMessageStored.model,
+                    userId: userMessageStored.userId,
+                    updateAt: userMessageStored.updateAt,
+                    createdAt: userMessageStored.createdAt,
+                    role: userMessageStored.role
+                } 
                 form.reset()
-                await runAssistantUpdatingState(chat, openaiCredential.model, session.user.id, [...chat.messages, userMessageStored], openaiCredential, relatedDocuments.value)
+                await runAssistantUpdatingState(chat, openaiCredential.model, session.user.id, [...chat.messages, userMessageStoredWithReleatedDocuments], openaiCredential)
             }
         }
     }

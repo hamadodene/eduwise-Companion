@@ -9,7 +9,7 @@ import { suggestions } from '../courses'
  * Main function to send the chat to the assistant and receive a response (streaming)
  */
 export async function streamAssistantMessage(
-  chatId: string, assistantMessageId: string, history: Message[], openaiCredential: openai, userId, relatedDocuments: string,
+  chatId: string, assistantMessageId: string, history: Message[], openaiCredential: openai, userId,
   onFirstParagraph?: (firstParagraph: string) => void
 ) {
 
@@ -29,7 +29,7 @@ export async function streamAssistantMessage(
     userId: userId,
     messages: history.map(({ role, text }) => ({
       role: role,
-      content: text + " \n relatedDocuments=" + relatedDocuments,
+      content: text,
     }))
   }
 

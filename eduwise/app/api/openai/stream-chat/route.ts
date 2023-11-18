@@ -90,7 +90,6 @@ export interface ApiChatFirstOutput {
 export async function POST(req: NextRequest): Promise<Response> {
   try {
     const apiChatInput = await extractOpenaiChatInputs(req)
-    console.log("reletad documents " + apiChatInput.relatedDocuments)
     const stream: ReadableStream = await chatStreamRepeater(apiChatInput)
     return new NextResponse(stream)
   } catch (error: any) {
