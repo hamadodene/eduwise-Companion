@@ -7,7 +7,7 @@ gateways:
     produceOptions:
       headers:
         - key: langstream-client-session-id
-          valueFromParameters: sessionId
+          value-from-parameters: sessionId
 
   - id: "bot-output"
     type: consume
@@ -18,4 +18,4 @@ gateways:
       filters:
         headers:
           - key: langstream-client-session-id
-            valueFromParameters: sessionId
+            value-from-parameters: sessionId
