@@ -40,7 +40,7 @@ const CourseInfoDialog: React.FC<CourseInfoDialogProps> = ({ isOpen, toogleDialo
                         </TabsTrigger>
                         <TabsTrigger className="h-10 data-[state=active]:bg-[#0ca678] data-[state=active]:text-white"
                             value="contents">
-                            Contents
+                            Contents processed for ai
                         </TabsTrigger>
                     </TabsList>
                     <TabsContent value="info">

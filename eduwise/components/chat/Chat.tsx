@@ -34,10 +34,16 @@ const FormSchema = z.object({
         })
 })
 
+function generateUniqueId(): string {
+    const timestamp = new Date().getTime().toString(16);
+    const randomPart = Math.random().toString(16).substr(2, 8);
+    return `${timestamp}${randomPart}`;
+  }
 
-const runAssistantUpdatingState = async (chat: ChatModel, assistantModelId: string, userId: string, history: Message[], openaiCredential) => {
+const runAssistantUpdatingState = async (chat: ChatModel, assistantModelId: string, userId: string, history: Message[],
+    openaiCredential) => {
     const chatId = chat.id
-    const { appendMessage, setMessages } = useLocalChatStore.getState()
+    const { appendMessage, setMessages, editMessage } = useLocalChatStore.getState()
 
     const systemMessage = history ? history.find((message) => message.role === "system") : null
 
@@ -75,7 +81,7 @@ const Chat = () => {
     const { data: session } = useSession({
         required: true
     })
-    const { setMessages, chats, appendMessage } = useLocalChatStore.getState()
+    const { setMessages, chats, appendMessage, editMessage } = useLocalChatStore.getState()
     const [courseId, setCourseId] = useState("")
     const [chat, setChat] = useState<Chat>()
     const { apiKey, apiOrganizationId, gptModel, setApiKey, setApiOrganizationId, setGtpModel } = useLocalSettingsStore.getState()
@@ -130,15 +136,15 @@ const Chat = () => {
                     setMessages(chatId, result)
                 }
             }
-            if (!isConnected) {
-                console.log("try connection")
-                connectWs()
-            }
         }
     }, [session, chats, isConnected])
 
 
     useEffect(() => {
+        if (!isConnected) {
+            console.log("try connection")
+            connectWs()
+        }
         const loadChatData = async () => {
             await handleLoadChatMessages()
         }
@@ -155,7 +161,7 @@ const Chat = () => {
         }
         loadChatData()
         loadOpenAiCredential()
-    }, [session])
+    }, [session, isConnected])
 
     const _findConversation = (conversationId: string) =>
         conversationId ? useLocalChatStore.getState().chats.find(c => c.id === conversationId) ?? null : null
@@ -163,7 +169,7 @@ const Chat = () => {
     function waitForMessage(): Promise<void> {
         return new Promise<void>((resolve) => {
             const checkMessage = () => {
-                if (!waitingForMessage) {
+                if (!waitingForMessage && !(messages.length === 0)) {
                     resolve()
                 } else {
                     setTimeout(checkMessage, 1000)
@@ -176,6 +182,16 @@ const Chat = () => {
     const handleSendMessage = async (data: z.infer<typeof FormSchema>) => {
         //const chat = await useChatStore.getChatInfo(chatId)
         const chat = _findConversation(chatId)
+        const tmpId = generateUniqueId()
+        const userMsg: Message = {
+            id: tmpId,
+            role: "user",
+            text: data.chat_message,
+            sender: 'You',
+            userId: session.user.id,
+            createdAt: Date.now(),
+        }
+        appendMessage(chatId, userMsg)
 
         const openaiCredential = {
             apiKey: apiKey,
@@ -184,8 +200,9 @@ const Chat = () => {
         }
         let relatedDocuments: WsMessage
         // try get related documents from langStream
+        !isConnected? connectWs(): ''
         if (isConnected) {
-            sendMessage(data.chat_message)
+            sendMessage(chat.courseName + ":" + data.chat_message)
             await waitForMessage()
 
             relatedDocuments = messages.pop()
@@ -194,26 +211,25 @@ const Chat = () => {
         }
 
         if (chat && openaiCredential.model) {
-            const userMsg: Partial<Message> = {
-                role: "user",
-                text: data.chat_message,
-                sender: 'You'
-            }
             const userMessageStored = await useChatStore.addMessageToChat(chatId, userMsg.text, userMsg.sender, userMsg.role, session.user.id)
+            editMessage(chatId, tmpId, userMessageStored, false)
             if (userMessageStored.id) {
-                appendMessage(chatId, userMessageStored)
                 const userMessageStoredWithReleatedDocuments = {
                     id: userMessageStored.id,
-                    text: userMessageStored.text + "\n relatedDocuments=" + relatedDocuments.value,
+                    text: userMessageStored.text + "\n relatedDocuments=" + relatedDocuments?.value,
                     sender: userMessageStored.sender,
                     model: userMessageStored.model,
                     userId: userMessageStored.userId,
                     updateAt: userMessageStored.updateAt,
                     createdAt: userMessageStored.createdAt,
                     role: userMessageStored.role
-                } 
+                }
                 form.reset()
-                await runAssistantUpdatingState(chat, openaiCredential.model, session.user.id, [...chat.messages, userMessageStoredWithReleatedDocuments], openaiCredential)
+                await runAssistantUpdatingState(
+                    chat, openaiCredential.model,
+                    session.user.id,
+                    [...chat.messages, userMessageStoredWithReleatedDocuments],
+                    openaiCredential)
             }
         }
     }

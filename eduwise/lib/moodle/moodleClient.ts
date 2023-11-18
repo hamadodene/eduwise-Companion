@@ -23,9 +23,9 @@ class MoodleClient {
         this.logger = options.logger || console
         this.service = options.service || 'moodle_mobile_app'
         this.strictSSL = options.strictSSL || true
-        if(options.token) {
+        if (options.token) {
             this.token = options.token
-        } else if(options.username && options.password){
+        } else if (options.username && options.password) {
             // try to get token
             this.authenticateClient(options.username, options.password)
         } else {
@@ -53,7 +53,7 @@ class MoodleClient {
                     'Content-Type': 'application/json'
                 }
             }
-            
+
             try {
                 const response = await fetch(`${this.url}/login/token.php?${queryParams}`, options)
                 const data = await response.json()
@@ -106,37 +106,25 @@ class MoodleClient {
         }
     }
 
-    async download(options: {preview: string, filepath: string, offline: boolean }): Promise<any> {
+    async download(options: { filepath: string }): Promise<any> {
         if (!("filepath" in options)) {
             return Promise.reject("missing file path to download");
         }
-    
-        var uri:string = this.url + "/webservice/pluginfile.php"
+        const queryParams = new URLSearchParams({
+            token: this.token,
+            file: options.filepath
+        })
+        var uri: string = this.url + `/webservice/pluginfile.php?${queryParams}`
 
         var request_options = {
-            qs: {
-                token: this.token,
-                file: options.filepath,
-                preview: '',
-                offline: 0
-            },
-            strictSSL: this.strictSSL,
-            method: "GET",
-            encoding: null
-        }
-    
-        if (options.preview) {
-            request_options.qs.preview = options.preview;
-        }
-    
-        if (options.offline) {
-            request_options.qs.offline = 1;
+            method: "GET"
         }
         try {
             const response = await fetch(uri, request_options)
-            return response
+            const result = await response.blob()
+            return result
         } catch (error) {
-            throw new Error(`Moodle download API request failed: ${error.message}`) 
+            throw new Error(`Moodle download API request failed: ${error.message}`)
         }
     }
 }

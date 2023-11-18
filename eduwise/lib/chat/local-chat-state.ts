@@ -63,17 +63,9 @@ export const useLocalChatStore = createWithEqualityFn<ChatStore>()(
           const cIndex = state.chats.findIndex((chat: Chat): boolean => chat.id === chatId)
           // remove from the list
           const chats = state.chats.filter((chat: Chat): boolean => chat.id !== chatId)
-
-          // update the active conversation to the next in list
-          let activeChatId = undefined
-          if (state.activeChatId === chatId && cIndex >= 0)
-            activeChatId = chats.length
-              ? chats[cIndex < chats.length ? cIndex : chats.length - 1].id
-              : null
-
+          
           return {
             chats,
-            ...(activeChatId !== undefined ? { activeChatId } : {}),
           }
         }),
 

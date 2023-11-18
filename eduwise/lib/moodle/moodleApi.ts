@@ -27,16 +27,27 @@ class MoodleApi {
         }
     }
 
+    async downloadContent(filepath: string) {
+        try {
+            const content = await this.moodleClient.download({
+                filepath: filepath
+            })
+            return content
+        } catch (error) {
+            throw new Error(`Error while fetching file content: ${error.message}`)
+        }
+    }
+
     async getCourseContents(courseId: string) {
         try {
-           const courseContents = await this.moodleClient.call({
-            wsfunction: Wsfunctions.GET_COURCE_CONTENT,
-            args: {
-                courseid: courseId
-            },
-            method: 'GET'
-           }) 
-           return courseContents
+            const courseContents = await this.moodleClient.call({
+                wsfunction: Wsfunctions.GET_COURCE_CONTENT,
+                args: {
+                    courseid: courseId
+                },
+                method: 'GET'
+            })
+            return courseContents
         } catch (error) {
             throw new Error(`Error while fetching course ${courseId} contents: ${error.message}`)
         }

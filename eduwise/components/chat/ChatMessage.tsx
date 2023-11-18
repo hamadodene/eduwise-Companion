@@ -264,36 +264,6 @@ const ChatMessage = ({ text, isBot, model }) => {
                             {session ? session.user.name.slice(0, 2) : ""}
                         </div>
                     }
-                    <Popover>
-                        <PopoverTrigger>
-                            <div className="absolute inset-0 flex items-center bg-gray-300 justify-center opacity-0 group-hover:opacity-100 transition duration-300">
-                                <MoreVerticalIcon className="text-4xl" />
-                            </div>
-                        </PopoverTrigger>
-                        <PopoverContent side={`${popoverSide}`} className="w-40 bg-gray-100">
-                            <div>
-                                <div className='rounded-lg hover:cursor-pointer'>
-                                    <div className='bg-transparent h-10 flex items-center space-x-2 text-opacity-90'>
-                                        <Copy size={15} />
-                                        <p className="text-sm">Copy</p>
-                                    </div>
-                                </div>
-                                <div className='rounded-lg mb-2 hover:cursor-pointer'>
-                                    <div className="rounded-lg bg-transparent mt-2 flex items-center space-x-2 text-opacity-90">
-                                        <Edit size={15} />
-                                        <p className="text-sm">Edit</p>
-                                    </div>
-                                </div>
-                                <Separator />
-                                <div className='rounded-lg mt-2 hover:cursor-pointer'>
-                                    <div className="rounded-lg bg-transparent mt-2 flex items-center space-x-2 text-opacity-90">
-                                        <Delete size={15} />
-                                        <p className="text-sm">Delete</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
                 </div>
                 <div className={`rounded-lg border mt-2 p-2 flex-grow ${messageBgColor}`}>
                     <Box sx={{ ...cssBlocks, flexGrow: 0 }}>

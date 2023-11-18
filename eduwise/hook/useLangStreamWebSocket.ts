@@ -188,7 +188,6 @@ const useWebSockets = () => {
         JSON.parse(data)
       const { key, value, headers } = record
       console.log("waiting for data " + JSON.stringify(record))
-      setWaitingForMessage(false)
       setMessages(m => {
         if (!headers?.["stream-index"] || headers?.["stream-index"] === "1") {
           return [
@@ -214,6 +213,7 @@ const useWebSockets = () => {
         ]
         
       })
+      setWaitingForMessage(false)
       consumerWs.current?.send(JSON.stringify({ offset }))
     }
 

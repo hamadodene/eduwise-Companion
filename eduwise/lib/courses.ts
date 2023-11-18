@@ -110,7 +110,7 @@ export async function updateCourse(newCourse: Partial<course>, courseId: string)
         const message: Partial<course> = newCourse
 
         const response = await fetch(`/api/course/${courseId}`, {
-            method: 'UPDATE',
+            method: 'PUT',
             headers: {
                 'Content-type': 'application/json'
             },
