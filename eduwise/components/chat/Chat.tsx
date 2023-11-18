@@ -92,29 +92,28 @@ const Chat = () => {
 
     const connectWs = () => {
         const sessionId = session.user.id
-        console.log("web socket url " + WEBSOCKET_URL)
         connect({
             consumer: {
                 baseUrl: WEBSOCKET_URL,
                 appName: APP_NAME,
                 tenant: TENANT,
-                gateway: "chat",
+                gateway: CONSUMER,
                 credentials: CREDENTIALS,
-                type: ConnectionType.Chat,
+                type: ConnectionType.Consumer,
                 sessionId
             },
             producer: {
                 baseUrl: WEBSOCKET_URL,
                 appName: APP_NAME,
                 tenant: TENANT,
-                gateway: "chat",
+                gateway: PRODUCER,
                 credentials: CREDENTIALS,
-                type: ConnectionType.Chat,
+                type: ConnectionType.Producer,
                 sessionId
-            }
-        });
+            },
+        })
     }
-    
+
     const handleLoadChatMessages = useCallback(async () => {
         if (session) {
             // check if chats is on state side
@@ -161,6 +160,19 @@ const Chat = () => {
     const _findConversation = (conversationId: string) =>
         conversationId ? useLocalChatStore.getState().chats.find(c => c.id === conversationId) ?? null : null
 
+    function waitForMessage(): Promise<void> {
+        return new Promise<void>((resolve) => {
+            const checkMessage = () => {
+                if (!waitingForMessage) {
+                    resolve()
+                } else {
+                    setTimeout(checkMessage, 100)
+                }
+            }
+
+            checkMessage()
+        })
+    }
 
     const handleSendMessage = async (data: z.infer<typeof FormSchema>) => {
         //const chat = await useChatStore.getChatInfo(chatId)
@@ -171,18 +183,14 @@ const Chat = () => {
             apiOrganizationId: apiOrganizationId,
             model: gptModel
         }
-        let relatedDocuments: string
+        let relatedDocuments: WsMessage
         // try get related documents from langStream
         if (isConnected) {
-            console.log('send somethgin')
             sendMessage(data.chat_message)
+            await waitForMessage()
 
-            while (waitingForMessage) {
-                //wait for related documents
-            }
-
-            console.log("messages " + messages)
-            relatedDocuments = messages
+            relatedDocuments = messages.pop()
+            console.log("related documents " + JSON.stringify(messages))
         } else {
             console.log('LangStream is not connected, continue without related documents')
         }
@@ -197,7 +205,7 @@ const Chat = () => {
             if (userMessageStored.id) {
                 appendMessage(chatId, userMessageStored)
                 form.reset()
-                await runAssistantUpdatingState(chat, openaiCredential.model, session.user.id, [...chat.messages, userMessageStored], openaiCredential, relatedDocuments)
+                await runAssistantUpdatingState(chat, openaiCredential.model, session.user.id, [...chat.messages, userMessageStored], openaiCredential, relatedDocuments.value)
             }
         }
     }
