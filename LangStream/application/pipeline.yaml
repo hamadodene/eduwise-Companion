@@ -23,7 +23,7 @@ pipeline:
     type: "query-vector-db"
     configuration:
       datasource: "AstraDatasource"
-      query: "SELECT text FROM eduwise_default.documents ORDER BY embeddings_vector ANN OF ? LIMIT 5"
+      query: "SELECT text FROM eduwise_default.documents ORDER BY embeddings_vector ANN OF ? LIMIT 1"
       fields:
         - "value.embeddings_vector"
       output-field: "value.related_documents"

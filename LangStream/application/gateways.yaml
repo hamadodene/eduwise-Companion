@@ -1,9 +1,21 @@
 gateways:
-  - id: chat
-    type: chat
-    chat-options:
-      answers-topic: answers-topic
-      questions-topic: questions-topic
+  - id: "user-input"
+    type: produce
+    topic: "questions-topic"
+    parameters:
+      - sessionId
+    produceOptions:
       headers:
         - key: langstream-client-session-id
-          value-from-parameters: sessionId
+          valueFromParameters: sessionId
+
+  - id: "bot-output"
+    type: consume
+    topic: "answers-topic"
+    parameters:
+      - sessionId
+    consumeOptions:
+      filters:
+        headers:
+          - key: langstream-client-session-id
+            valueFromParameters: sessionId
