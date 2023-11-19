@@ -50,7 +50,7 @@ const DeleteChatDialog: React.FC<DeleteChatsDialogProps> = ({ chat, isOpen, toog
                 <DialogHeader className="border-b">
                     <DialogTitle className="mb-4">Delete chat?</DialogTitle>
                 </DialogHeader>
-                The chat with title "{chat.userTitle || chat.autoTitle}" will be deleted
+                The chat with title "{chat.userTitle || chat.autoTitle || "New conversation"}" from course "{chat.courseName}" will be deleted
                 <DialogFooter>
                     <div className="flex space-x-2">
                         <Button variant="ghost" onClick={toogleDialog} className="flex items-center px-4 py-2 rounded-lg">

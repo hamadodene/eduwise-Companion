@@ -17,9 +17,9 @@ function HomePage() {
         },
     })
     const { addCourse, courseList } = useCourseContext()
-    
+
     const handleGetAllCourses = useCallback(async () => {
-        if (session && !( new Date() > new Date(session.expires))) {
+        if (session && !(new Date() > new Date(session.expires))) {
             const result = await getAllCourses(session.user.id)
             result.forEach(res => {
                 console.log(res.documents)
@@ -43,9 +43,17 @@ function HomePage() {
         <div className='flex flex-col h-full'>
             <NavBar />
             {/* Content */}
-            <div className="overflow-y-scroll container mx-auto grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 h-full gap-2 mt-2 overflow-hidden">
-                <Courses courses={courseList} />
-            </div>
+            {
+                courseList.length > 0 ? (
+                    <div className="overflow-y-scroll container mx-auto grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 h-full gap-2 mt-2 overflow-hidden">
+                        <Courses courses={courseList} />
+                    </div>
+                ) : (
+                    <div className='flex items-center justify-center h-full'>
+                        <p className="text-center">No course available.<br/> Add new course or configure your moodle account.</p>
+                    </div>
+                )
+            }
         </div>
     )
 }

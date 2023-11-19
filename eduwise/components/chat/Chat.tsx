@@ -141,7 +141,7 @@ const Chat = () => {
 
 
     useEffect(() => {
-        if (!isConnected) {
+        if (!isConnected && session) {
             console.log("try connection")
             connectWs()
         }
@@ -213,10 +213,16 @@ const Chat = () => {
         if (chat && openaiCredential.model) {
             const userMessageStored = await useChatStore.addMessageToChat(chatId, userMsg.text, userMsg.sender, userMsg.role, session.user.id)
             editMessage(chatId, tmpId, userMessageStored, false)
+            let text = ""
+            if(!relatedDocuments) {
+                text = userMessageStored.text
+            } else {
+                text = userMessageStored.text + "\n relatedDocuments=" + relatedDocuments?.value 
+            }
             if (userMessageStored.id) {
                 const userMessageStoredWithReleatedDocuments = {
                     id: userMessageStored.id,
-                    text: userMessageStored.text + "\n relatedDocuments=" + relatedDocuments?.value,
+                    text: text,
                     sender: userMessageStored.sender,
                     model: userMessageStored.model,
                     userId: userMessageStored.userId,

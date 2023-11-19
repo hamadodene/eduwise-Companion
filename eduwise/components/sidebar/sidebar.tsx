@@ -42,17 +42,20 @@ const Sidebar = () => {
     return (
 
         <div className={`rounded fixed flex flex-col p-2 h-screen w-72 bg-[#12b886] z-40 transition-transform transform md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-            <div className="mb-1 flex items-center justify-between mb-6 ">
-                <Link href="/" className="bg-transparent px-4 py-2 w-4/6 space-x-2 border h-12 rounded-lg flex items-center justify-left">
-                    <div className='space-x-2 text-white text-opacity-70 flex items-center'>
-                        <PlusIcon size={15} />
-                        <h1>New Chat</h1>
+            <div className="mb-1 flex items-center justify-between mb-6 hover:bg-[#099268] rounded-lg">
+                <Link href="/" className="bg-transparent px-4 py-2 w-4/6 space-x-2 h-12 rounded-lg flex items-center justify-left">
+                    <div className='space-x-2 text-white text-opacity-100 flex items-center'>
+                        {/*<PlusIcon size={15} />*/}
+                        <div className='bg-white rounded-xl w-8 h-8 flex justify-center items-center'>
+                            <img src="/cep_logo_mini.png" />
+                        </div>
+                        <h1>New chat</h1>
                     </div>
                 </Link>
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="link" onClick={toggleSidebar} className=" text-xl font-semibold h-12 bg-transparent text-white text-opacity-70 border rounded-lg">
+                            <Button variant="link" onClick={toggleSidebar} className=" text-xl font-semibold h-12 bg-transparent text-white text-opacity-70 rounded-lg">
                                 <X />
                             </Button>
                         </TooltipTrigger>
@@ -70,9 +73,9 @@ const Sidebar = () => {
                     <div className="flex items-center justify-between hover:cursor-pointer hover:bg-[#099268] rounded-lg">
                         <div className='pt-2 flex items-center space-x-2'>
                             <div className="bg-transparent w-10 h-10 border border-[#099268] rounded-lg flex items-center justify-center text-xl font-semibold text-white text-opacity-90">
-                                {session ? session.user.name.slice(0, 2) : ""}
+                                {session ? session.user.name.slice(0, 2).toUpperCase() : ""}
                             </div>
-                            <div className='text-white text-opacity-90'>{session ? session.user.name : ""}</div>
+                            <div className='text-white text-opacity-90'>{session ? session.user.name.toUpperCase() : ""}</div>
                         </div>
                         <div className='text-white text-opacity-90'>...</div>
                     </div>

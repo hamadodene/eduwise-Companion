@@ -21,7 +21,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { Copy, Delete, Edit, MoreVerticalIcon } from "lucide-react"
+import { BotIcon, Copy, Delete, Edit, MoreVerticalIcon } from "lucide-react"
 import { Separator } from "../ui/separator"
 import { useSession } from "next-auth/react"
 
@@ -255,11 +255,11 @@ const ChatMessage = ({ text, isBot, model }) => {
         <>
             <div className={`flex flex-col justify-center items-center mb-4 ${alignmentClass}`}>
                 <div className={`group border w-10 h-10 rounded-lg bg-[#12b886] relative ${marginLeft}`}>
-                    {isBot ? <img
-                        src="/avatars/chatbot.png"
-                        alt="eduwise"
-                        className='rounded-lg group-hover:opacity-50 transition duration-300'
-                    /> :
+                    {isBot ? 
+                    <div className="flex items-center justify-center h-full">
+                        <BotIcon color="white"/>
+                    </div>
+                     :
                         <div className="w-full h-full flex items-center justify-center font-semibold text-white text-opacity-90">
                             {session ? session.user.name.slice(0, 2) : ""}
                         </div>
