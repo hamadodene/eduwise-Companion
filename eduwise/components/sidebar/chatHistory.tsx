@@ -12,12 +12,14 @@ import { shallow } from "zustand/shallow"
 import { Button } from "../ui/button"
 import DeleteChatDialog from "./deleteChatDialog"
 import { useDialog } from "../context/DialogContext"
+import { Icons } from "../icons"
 
 const ChatHistory = () => {
     const { data: session } = useSession()
     const router = useRouter()
     const { setIsSidebarOpen } = useSidebar()
     const [chatList, setChatList] = useState<Chat[]>([])
+    const [loadingChat, setLoadingChat] = useState(false)
     // external state
     const { chats, setActiveChatId, createChat } = useLocalChatStore(state => ({
         chats: state.chats,
@@ -31,12 +33,14 @@ const ChatHistory = () => {
     const handleGetAllchats = useCallback(async () => {
         if (session) {
             if (chats.length === 0) {
+                setLoadingChat(true)
                 const result = await getChats(session.user.id)
                 result.forEach(res => {
                     createChat(res)
                 })
             }
             setChatList(chats)
+            setLoadingChat(false)
         }
     }, [session, chats, createChat])
 
@@ -56,7 +60,12 @@ const ChatHistory = () => {
     return (
         <>
             {
-                chatList.length > 0 ? (
+                loadingChat ? (
+                    <div className='flex items-center justify-center h-full'>
+                        <Icons.animeted_spinner />
+                        <p className="text-center">Loading chats...</p>
+                    </div>
+                ) : chatList.length > 0 ? (
                     chatList.map((chat, index) => (
                         <div
                             key={index}

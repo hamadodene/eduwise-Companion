@@ -1,12 +1,13 @@
 'use client'
 
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import NavBar from './HomeNavbar'
 import Courses from './Courses'
 import { useSession } from 'next-auth/react'
 import { getAllCourses } from '@/lib/courses'
 import { useCourseContext } from '@/components/context/CourseContext'
 import { useRouter } from 'next/navigation'
+import { Icons } from '../icons'
 
 function HomePage() {
     const router = useRouter()
@@ -17,14 +18,17 @@ function HomePage() {
         },
     })
     const { addCourse, courseList } = useCourseContext()
+    const [loadingCourse, setLoadingCourse] = useState(false)
 
     const handleGetAllCourses = useCallback(async () => {
         if (session && !(new Date() > new Date(session.expires))) {
+            setLoadingCourse(true)
             const result = await getAllCourses(session.user.id)
             result.forEach(res => {
                 console.log(res.documents)
                 addCourse(res)
             })
+            setLoadingCourse(false)
         }
     }, [session])
 
@@ -44,13 +48,18 @@ function HomePage() {
             <NavBar />
             {/* Content */}
             {
-                courseList.length > 0 ? (
-                    <div className="overflow-y-scroll container mx-auto grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 h-full gap-2 mt-2 overflow-hidden">
+                loadingCourse ? (
+                    <div className='flex items-center justify-center h-full'>
+                        <Icons.animeted_spinner/>
+                        <p className="text-center">Loading courses...</p>
+                    </div>
+                ) : courseList.length > 0 ? (
+                    <div className="overflow-y-scroll container mx-auto grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 h-full gap-2 mt-2 mb-2 overflow-hidden">
                         <Courses courses={courseList} />
                     </div>
                 ) : (
                     <div className='flex items-center justify-center h-full'>
-                        <p className="text-center">No course available.<br/> Add new course or configure your moodle account.</p>
+                        <p className="text-center">No course available.<br /> Add new course or configure your moodle account.</p>
                     </div>
                 )
             }

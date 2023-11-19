@@ -178,11 +178,11 @@ export async function getSuggestions(chatId: string, userId: string, openaiCrede
     return
   } 
 
-  // first line of the last 5 messages
+  // first line of the last 10 messages
   const historyLines: string[] = chat.messages.slice(-10).map(m => {
     const text = `${m.role === 'user' ? 'You' : 'Assistant'}: ${m.text}`;
     return `- ${text}`;
-  });
+  })
 
   // We try first use user key, otherwise we use default key
   const apiKey = (openaiCredential.apiKey || process.env.NEXT_PUBLIC_OPENAI_API_KEY || '').trim()
