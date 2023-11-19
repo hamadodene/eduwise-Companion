@@ -51,13 +51,11 @@ export const ChatTitleDialog: React.FC<ChatTitleDialogProps> = ({ chatTitle, isO
     return (
         <Dialog open={isOpen} onOpenChange={toogleDialog}>
             <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Edit chat title</DialogTitle>
+                <DialogHeader className="border-b">
+                    <DialogTitle className="mb-4">Edit chat title</DialogTitle>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
+                <div className="">
                         <Input id="name" value={title} onChange={handleTitleInputChange} className="col-span-3" />
-                    </div>
                 </div>
                 <DialogFooter>
                     <div className="flex space-x-2">
@@ -65,7 +63,7 @@ export const ChatTitleDialog: React.FC<ChatTitleDialogProps> = ({ chatTitle, isO
                             <BanIcon className="mr-2" size={15} />
                             Cancel
                         </Button>
-                        <Button onClick={handleConfirmButton} className="flex items-center px-4 py-2 rounded-lg">
+                        <Button variant="ghost" onClick={handleConfirmButton} className="flex items-center px-4 py-2 rounded-lg">
                             <Check className="mr-2" size={15} />
                             Confirm
                         </Button>

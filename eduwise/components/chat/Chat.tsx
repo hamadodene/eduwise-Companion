@@ -13,10 +13,37 @@ import { streamAssistantMessage, updateAutoConversationTitle } from '@/lib/opena
 import { useLocalSettingsStore } from '@/lib/settings/local-settings-store'
 import { usePathname } from 'next/navigation'
 
+import {
+    WEBSOCKET_URL,
+    APP_NAME,
+    TENANT,
+    CONSUMER,
+    PRODUCER,
+    CREDENTIALS
+} from '@/lib/config'
+import useWebSockets, { ConnectionType, WsMessage } from '@/hook/useLangStreamWebSocket'
+import * as z from "zod"
+import { useForm } from 'react-hook-form'
+import { zodResolver } from "@hookform/resolvers/zod"
 
-const runAssistantUpdatingState = async (chat: ChatModel, assistantModelId: string, userId: string, history: Message[], openaiCredential) => {
+const FormSchema = z.object({
+    chat_message: z
+        .string()
+        .min(1, {
+            message: "You must write at least one message before sending.",
+        })
+})
+
+function generateUniqueId(): string {
+    const timestamp = new Date().getTime().toString(16);
+    const randomPart = Math.random().toString(16).substr(2, 8);
+    return `${timestamp}${randomPart}`;
+  }
+
+const runAssistantUpdatingState = async (chat: ChatModel, assistantModelId: string, userId: string, history: Message[],
+    openaiCredential) => {
     const chatId = chat.id
-    const { appendMessage, setMessages } = useLocalChatStore.getState()
+    const { appendMessage, setMessages, editMessage } = useLocalChatStore.getState()
 
     const systemMessage = history ? history.find((message) => message.role === "system") : null
 
@@ -54,22 +81,51 @@ const Chat = () => {
     const { data: session } = useSession({
         required: true
     })
-    const [userMessage, setUserMessage] = useState('')
-    const { setMessages, chats, appendMessage } = useLocalChatStore.getState()
+    const { setMessages, chats, appendMessage, editMessage } = useLocalChatStore.getState()
     const [courseId, setCourseId] = useState("")
     const [chat, setChat] = useState<Chat>()
     const { apiKey, apiOrganizationId, gptModel, setApiKey, setApiOrganizationId, setGtpModel } = useLocalSettingsStore.getState()
     const chatPathName = usePathname()
     const parts = chatPathName.split('/')
     const chatId = parts[parts.length - 1]
+    const { connect, isConnected, messages, sendMessage, waitingForMessage } = useWebSockets()
+    const form = useForm<z.infer<typeof FormSchema>>({
+        resolver: zodResolver(FormSchema),
+        defaultValues: {
+            chat_message: ''
+        }
+    })
 
+    const connectWs = () => {
+        const sessionId = session.user.id
+        connect({
+            consumer: {
+                baseUrl: WEBSOCKET_URL,
+                appName: APP_NAME,
+                tenant: TENANT,
+                gateway: CONSUMER,
+                credentials: CREDENTIALS,
+                type: ConnectionType.Consumer,
+                sessionId
+            },
+            producer: {
+                baseUrl: WEBSOCKET_URL,
+                appName: APP_NAME,
+                tenant: TENANT,
+                gateway: PRODUCER,
+                credentials: CREDENTIALS,
+                type: ConnectionType.Producer,
+                sessionId
+            },
+        })
+    }
 
     const handleLoadChatMessages = useCallback(async () => {
         if (session) {
             // check if chats is on state side
             const chat = chats.find(chat => chat.id === chatId)
             setCourseId(chat.courseId)
-            console.log('chats '+ chat)
+            setChat(chat)
             if (chat) {
                 const messages = chat ? chat.messages : []
                 // maybe not save locally
@@ -81,10 +137,14 @@ const Chat = () => {
                 }
             }
         }
-    }, [session, chats])
+    }, [session, chats, isConnected])
 
 
     useEffect(() => {
+        if (!isConnected && session) {
+            console.log("try connection")
+            connectWs()
+        }
         const loadChatData = async () => {
             await handleLoadChatMessages()
         }
@@ -101,34 +161,81 @@ const Chat = () => {
         }
         loadChatData()
         loadOpenAiCredential()
-    }, [session])
+    }, [session, isConnected])
 
     const _findConversation = (conversationId: string) =>
         conversationId ? useLocalChatStore.getState().chats.find(c => c.id === conversationId) ?? null : null
 
+    function waitForMessage(): Promise<void> {
+        return new Promise<void>((resolve) => {
+            const checkMessage = () => {
+                if (!waitingForMessage && !(messages.length === 0)) {
+                    resolve()
+                } else {
+                    setTimeout(checkMessage, 1000)
+                }
+            }
+            checkMessage()
+        })
+    }
 
-    const handleSendMessage = async () => {
+    const handleSendMessage = async (data: z.infer<typeof FormSchema>) => {
         //const chat = await useChatStore.getChatInfo(chatId)
         const chat = _findConversation(chatId)
+        const tmpId = generateUniqueId()
+        const userMsg: Message = {
+            id: tmpId,
+            role: "user",
+            text: data.chat_message,
+            sender: 'You',
+            userId: session.user.id,
+            createdAt: Date.now(),
+        }
+        appendMessage(chatId, userMsg)
 
         const openaiCredential = {
             apiKey: apiKey,
             apiOrganizationId: apiOrganizationId,
             model: gptModel
         }
+        let relatedDocuments: WsMessage
+        // try get related documents from langStream
+        !isConnected? connectWs(): ''
+        if (isConnected) {
+            sendMessage(chat.courseName + ":" + data.chat_message)
+            await waitForMessage()
+
+            relatedDocuments = messages.pop()
+        } else {
+            console.log('LangStream is not connected, continue without related documents')
+        }
 
         if (chat && openaiCredential.model) {
-            const userMsg: Partial<Message> = {
-                role: "user",
-                text: userMessage,
-                sender: 'You'
-            }
-
             const userMessageStored = await useChatStore.addMessageToChat(chatId, userMsg.text, userMsg.sender, userMsg.role, session.user.id)
+            editMessage(chatId, tmpId, userMessageStored, false)
+            let text = ""
+            if(!relatedDocuments) {
+                text = userMessageStored.text
+            } else {
+                text = userMessageStored.text + "\n relatedDocuments=" + relatedDocuments?.value 
+            }
             if (userMessageStored.id) {
-                appendMessage(chatId, userMessageStored)
-                setUserMessage('')
-                await runAssistantUpdatingState(chat, openaiCredential.model, session.user.id, [...chat.messages, userMessageStored], openaiCredential)
+                const userMessageStoredWithReleatedDocuments = {
+                    id: userMessageStored.id,
+                    text: text,
+                    sender: userMessageStored.sender,
+                    model: userMessageStored.model,
+                    userId: userMessageStored.userId,
+                    updateAt: userMessageStored.updateAt,
+                    createdAt: userMessageStored.createdAt,
+                    role: userMessageStored.role
+                }
+                form.reset()
+                await runAssistantUpdatingState(
+                    chat, openaiCredential.model,
+                    session.user.id,
+                    [...chat.messages, userMessageStoredWithReleatedDocuments],
+                    openaiCredential)
             }
         }
     }
@@ -136,14 +243,23 @@ const Chat = () => {
 
     return (
         <div className="flex flex-col h-screen bg-[#F8F8F8]">
-            <NavBar/>
+            <NavBar />
             <ScrollArea className='flex-1'>
                 <div className="flex flex-col p-4 w-full">
                     <MessageList chatId={chatId} />
                 </div>
             </ScrollArea>
             <div className="sticky bottom-0 mb-0">
-                <ChatFooter chatId={chatId} courseId={courseId} userMessage={userMessage} setUserMessage={setUserMessage} handleSendMessage={handleSendMessage} />
+                <ChatFooter
+                    chatId={chatId}
+                    courseId={courseId}
+                    form={form}
+                    openaiCredential={{
+                        apiKey: apiKey,
+                        apiOrganizationId: apiOrganizationId,
+                        model: gptModel
+                    }}
+                    handleSendMessage={handleSendMessage} />
             </div>
         </div>
     )

@@ -17,7 +17,8 @@ export namespace OpenAIAPI {
 
     export interface CompletionsRequest {
       model: string
-      messages: Message[]
+      messages: Message[],
+      relatedDocuments?: String[],
       temperature?: number
       top_p?: number
       frequency_penalty?: number

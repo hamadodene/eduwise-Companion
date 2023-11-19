@@ -2,6 +2,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
 import { Chat, Message } from './store-chats'
 import { createWithEqualityFn } from 'zustand/traditional'
+import { suggestions } from '../courses'
 export { createWithEqualityFn } from 'zustand/traditional'
 
 
@@ -21,7 +22,7 @@ export interface ChatStore {
   editMessage: (chatId: string, messageId: string, updatedMessage: Partial<Message>, touch: boolean) => void
   setAutoTitle: (chatId: string, autoTitle: string) => void
   setUserTitle: (chatId: string, userTitle: string) => void
-
+  setSuggestion: (chatId: string, suggestions: suggestions[]) => void
   // utility function
   _editChat: (chatId: string, update: Partial<Chat> | ((conversation: Chat) => Partial<Chat>)) => void
 }
@@ -48,7 +49,8 @@ export const useLocalChatStore = createWithEqualityFn<ChatStore>()(
             userId: newChat.userId,
             userTitle: newChat.userTitle,
             autoTitle: newChat.autoTitle,
-            courseName: newChat.courseName
+            courseName: newChat.courseName,
+            suggestions: []
           }
           return {
             chats: [chat, ...state.chats],
@@ -61,17 +63,9 @@ export const useLocalChatStore = createWithEqualityFn<ChatStore>()(
           const cIndex = state.chats.findIndex((chat: Chat): boolean => chat.id === chatId)
           // remove from the list
           const chats = state.chats.filter((chat: Chat): boolean => chat.id !== chatId)
-
-          // update the active conversation to the next in list
-          let activeChatId = undefined
-          if (state.activeChatId === chatId && cIndex >= 0)
-            activeChatId = chats.length
-              ? chats[cIndex < chats.length ? cIndex : chats.length - 1].id
-              : null
-
+          
           return {
             chats,
-            ...(activeChatId !== undefined ? { activeChatId } : {}),
           }
         }),
 
@@ -131,6 +125,11 @@ export const useLocalChatStore = createWithEqualityFn<ChatStore>()(
             userTitle,
           }),
 
+      setSuggestion: (chatId: string, suggestions: []) =>
+        get()._editChat(chatId,
+          {
+            suggestions,
+          }),
 
       _editChat: (chatId: string, update: Partial<Chat> | ((conversation: Chat) => Partial<Chat>)) =>
         set(state => ({

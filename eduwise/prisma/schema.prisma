@@ -97,8 +97,12 @@ model Course {
 
 model Document {
   id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  url       String  // Store the URL of the document in AWS S3
+  name          String
+  filename      String
+  url       String? // url
+  mimetype  String
+  store_in_aws      Boolean @default(false)
+  aws_url   String?
   course    Course  @relation(fields: [courseId], references: [id])
   courseId  String  @map("courseId") @db.ObjectId
 }
@@ -123,6 +127,7 @@ model Message {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   chatId    String    @db.ObjectId
   text      String
+  relatedDocuments String?
   model     String?
   createdAt DateTime  @default(now())
   updatedAt DateTime @updatedAt

@@ -3,17 +3,21 @@ import { Message, useChatStore } from '@/lib/chat/store-chats'
 import { fastChatModelId } from './data'
 import { openai } from '../settings/store-settings'
 import { useLocalChatStore } from '@/lib/chat/local-chat-state'
+import { generateSuggestionPrompt } from '../prompts'
+import { suggestions } from '../courses'
 /**
  * Main function to send the chat to the assistant and receive a response (streaming)
  */
 export async function streamAssistantMessage(
   chatId: string, assistantMessageId: string, history: Message[], openaiCredential: openai, userId,
-  onFirstParagraph?: (firstParagraph: string) => void,
+  onFirstParagraph?: (firstParagraph: string) => void
 ) {
 
-  const apiKey = openaiCredential.apiKey
-  const apiOrganizationId = openaiCredential.apiOrganizationId
-  const chatModelId = openaiCredential.model
+  // We try first use user key, otherwise we use default key
+  const apiKey = (openaiCredential.apiKey || process.env.NEXT_PUBLIC_OPENAI_API_KEY || '').trim()
+  const apiHost = (process.env.NEXT_PUBLIC_OPENAI_API_HOST || 'api.openai.com').trim().replaceAll('https://', '')
+  const apiOrganizationId = (openaiCredential.apiOrganizationId || process.env.NEXT_PUBLIC_OPENAI_API_ORG_ID || '').trim()
+  const chatModelId = (openaiCredential.model || process.env.OPENAI_DEFAULT_MODEL || '').trim()
   const { editMessage } = useLocalChatStore.getState();
 
   const payload: ApiChatInput = {
@@ -44,6 +48,7 @@ export async function streamAssistantMessage(
       let incrementalText = ''
       let parsedFirstPacket = false
       let sentFirstParagraph = false
+      let model = ""
       while (true) {
         const { value, done } = await reader.read()
 
@@ -59,6 +64,7 @@ export async function streamAssistantMessage(
             incrementalText = incrementalText.substring(endOfJson + 1)
             try {
               const parsed = JSON.parse(json)
+              model = parsed.model
               editMessage(chatId, assistantMessageId, { model: parsed.model }, false)
               parsedFirstPacket = true
             } catch (e) {
@@ -82,7 +88,7 @@ export async function streamAssistantMessage(
         editMessage(chatId, assistantMessageId, { text: incrementalText }, false)
       }
       // persist on db
-      await useChatStore.updateMessage({ text: incrementalText }, assistantMessageId)
+      await useChatStore.updateMessage({ text: incrementalText, model: model }, assistantMessageId)
     }
   } catch (error: any) {
     console.error('Fetch request error:', error)
@@ -113,9 +119,9 @@ export async function updateAutoConversationTitle(chatId: string, userId: string
 
 
   // We try first use user key, otherwise we use default key
-  const apiKey = (openaiCredential.apiKey || process.env.OPENAI_API_KEY || '').trim()
-  const apiHost = (process.env.OPENAI_API_HOST || 'api.openai.com').trim().replaceAll('https://', '')
-  const apiOrganizationId = (openaiCredential.apiOrganizationId || process.env.OPENAI_API_ORG_ID || '').trim()
+  const apiKey = (openaiCredential.apiKey || process.env.NEXT_PUBLIC_OPENAI_API_KEY || '').trim()
+  const apiHost = (process.env.NEXT_PUBLIC_OPENAI_API_HOST || 'api.openai.com').trim().replaceAll('https://', '')
+  const apiOrganizationId = (openaiCredential.apiOrganizationId || process.env.NEXT_PUBLIC_OPENAI_API_ORG_ID || '').trim()
 
   const payload: ApiChatInput = {
     api: {
@@ -162,3 +168,59 @@ export async function updateAutoConversationTitle(chatId: string, userId: string
   }
 }
 
+export async function getSuggestions(chatId: string, userId: string, openaiCredential) {
+  // external state
+  const { setSuggestion, chats } = useLocalChatStore.getState()
+
+  // only operate on valid conversations, without any title
+  const chat = chats.find(c => c.id === chatId) ?? null
+  if (!chat || chat.suggestions.length !== 0) {
+    return
+  } 
+
+  // first line of the last 10 messages
+  const historyLines: string[] = chat.messages.slice(-10).map(m => {
+    const text = `${m.role === 'user' ? 'You' : 'Assistant'}: ${m.text}`;
+    return `- ${text}`;
+  })
+
+  // We try first use user key, otherwise we use default key
+  const apiKey = (openaiCredential.apiKey || process.env.NEXT_PUBLIC_OPENAI_API_KEY || '').trim()
+  const apiHost = (process.env.OPENAI_API_HOST || 'api.openai.com').trim().replaceAll('https://', '')
+  const apiOrganizationId = (openaiCredential.apiOrganizationId || process.env.NEXT_PUBLIC_OPENAI_API_ORG_ID || '').trim()
+
+  const payload: ApiChatInput = {
+    api: {
+      ...(apiKey && { apiKey }),
+      ...(apiHost && { apiHost }),
+      ...(apiOrganizationId && { apiOrganizationId }),
+    },
+    userId: userId,
+    model: fastChatModelId,
+    messages: [
+      { role: 'system', content: `You are an AI language expert capable of generating suggestions that can help students improve their skills or fill in their gaps.` },
+      {
+        role: 'user', content:
+          generateSuggestionPrompt(chat.courseName) +
+          '\n' +
+          historyLines.join('\n') +
+          '\n',
+      },
+    ],
+  }
+
+  try {
+    const response = await fetch('/api/openai/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    if (response.ok) {
+      const chatResponse: ApiChatResponse = await response.json()
+      const resp: suggestions[] = JSON.parse(chatResponse.message.content) 
+      setSuggestion(chatId, resp)
+    }
+  } catch (error: any) {
+    console.error('updateAutoConversationTitle: fetch request error:', error)
+  }
+}

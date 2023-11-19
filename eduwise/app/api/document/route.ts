@@ -7,12 +7,20 @@ export async function POST(request: NextRequest) {
         const {
             courseId,
             name,
-            url
+            filename,
+            url,
+            mimetype,
+            aws_url,
+            store_in_aws
         } = body
         const result = await prisma.document.create({
             data: {
                 courseId: courseId,
                 name: name,
+                filename: filename,
+                mimetype: mimetype,
+                aws_url: aws_url,
+                store_in_aws: store_in_aws,
                 url: url
             }
         })

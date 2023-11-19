@@ -1,4 +1,5 @@
 // /api/chat/info/[chatid]
+import prisma from '@/lib/prismadb'
 
 import { NextRequest, NextResponse } from "next/server"
 

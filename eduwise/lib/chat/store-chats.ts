@@ -1,3 +1,4 @@
+import { suggestions } from "../courses"
 
 type defaultRole = 'assistant' | 'system' | 'user'
 
@@ -11,12 +12,14 @@ export interface Chat {
   courseId: string
   courseName?: string
   systemPrompt: string
-  messages: any[]
+  messages: Message[]
+  suggestions: suggestions[]
 }
 
 export interface Message {
   id: string
   text: string
+  relatedDocuments?: string
   sender: 'You' | 'Bot' | string
   model?: string,
   userId: string,

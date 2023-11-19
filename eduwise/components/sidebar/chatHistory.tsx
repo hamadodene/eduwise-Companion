@@ -1,13 +1,7 @@
 'use client'
 
 import React, { useCallback, useEffect, useState } from "react"
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import { CircleIcon } from "lucide-react"
+import { MessageSquareIcon, Trash2 } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/navigation'
 import { useSidebar } from "../context/sidebarContext"
@@ -15,12 +9,17 @@ import { Chat } from "@/lib/chat/store-chats"
 import { useLocalChatStore } from "@/lib/chat/local-chat-state"
 import { getChats } from "@/lib/courses"
 import { shallow } from "zustand/shallow"
+import { Button } from "../ui/button"
+import DeleteChatDialog from "./deleteChatDialog"
+import { useDialog } from "../context/DialogContext"
+import { Icons } from "../icons"
 
 const ChatHistory = () => {
     const { data: session } = useSession()
     const router = useRouter()
     const { setIsSidebarOpen } = useSidebar()
     const [chatList, setChatList] = useState<Chat[]>([])
+    const [loadingChat, setLoadingChat] = useState(false)
     // external state
     const { chats, setActiveChatId, createChat } = useLocalChatStore(state => ({
         chats: state.chats,
@@ -29,17 +28,19 @@ const ChatHistory = () => {
         deleteChat: state.deleteChat,
         setActiveChat: state.setActiveChatId,
     }), shallow)
-
+    const { dialogs, openDialog, closeDialog } = useDialog()
 
     const handleGetAllchats = useCallback(async () => {
         if (session) {
             if (chats.length === 0) {
+                setLoadingChat(true)
                 const result = await getChats(session.user.id)
                 result.forEach(res => {
                     createChat(res)
                 })
             }
             setChatList(chats)
+            setLoadingChat(false)
         }
     }, [session, chats, createChat])
 
@@ -59,23 +60,44 @@ const ChatHistory = () => {
     return (
         <>
             {
-                chatList.map((chat, index) => (
-                    <Card key={index} onClick={(e) => handleCardClick(e, chat)} className='mt-2 hover:bg-gray-200'>
-                        <CardHeader className="flex flex-col items-start gap-4 space-y-0">
-                            <div className='w-full'>
-                                <CardTitle className='overflow-hidden truncate'>{chat.userTitle || chat.autoTitle || "New chat"}</CardTitle>
+                loadingChat ? (
+                    <div className='flex items-center justify-center h-full'>
+                        <Icons.animeted_spinner />
+                        <p className="text-center">Loading chats...</p>
+                    </div>
+                ) : chatList.length > 0 ? (
+                    chatList.map((chat, index) => (
+                        <div
+                            key={index}
+                            className={` group p-4 rounded-lg flex items-center mb-2 ${useLocalChatStore.getState().activeChatId === chat.id ? 'bg-[#099268]' : ''
+                                } hover:bg-[#099268] hover:cursor-pointer`}
+                            onClick={(e) => handleCardClick(e, chat)}
+                        >                        <div className="flex-shrink-0 mr-4">
+                                <MessageSquareIcon color="white" />
                             </div>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex space-x-4 text-sm text-muted-foreground">
-                                <div className="flex items-center">
-                                    <CircleIcon className="mr-1 h-3 w-3 fill-red-400 text-sky-400" />
-                                    {chat.courseName}
-                                </div>
+                            <div>
+                                <h2 className="text-lg text-white text-opacity-90 font-semibold line-clamp-1">{chat.userTitle || chat.autoTitle || "New chat"}</h2>
+                                <p className="text-sm text-white text-opacity-70">{chat.courseName}</p>
                             </div>
-                        </CardContent>
-                    </Card>
-                ))}
+                            <Button className="hidden bg-transparent hover:bg-transparent group-hover:block" onClick={(e) => {
+                                e.preventDefault()
+                                e.stopPropagation()
+                                openDialog(`deleteChatDialog${chat.id}`)
+                            }} variant="ghost"><Trash2 color="white" /></Button>
+
+                            <DeleteChatDialog
+                                isOpen={dialogs[`deleteChatDialog${chat.id}`]}
+                                toogleDialog={() => closeDialog(`deleteChatDialog${chat.id}`)}
+                                chat={chat}
+                            />
+                        </div>
+                    ))) :
+                    (
+                        <div className="flex items-center justify-center h-full">
+                            <p className="text-center text-white">No chat available.</p>
+                        </div>
+                    )
+            }
         </>
     )
 }

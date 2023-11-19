@@ -73,6 +73,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         const chatId: string = params.id
         const {
             text,
+            relatedDocuments,
             sender,
             role,
             userId
@@ -83,6 +84,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
                 userId: userId,
                 chatId: chatId,
                 text: text,
+                relatedDocuments: relatedDocuments,
                 sender: sender,
                 role: role
             }

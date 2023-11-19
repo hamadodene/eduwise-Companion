@@ -6,7 +6,6 @@ import { UserProvider } from "@/components/user-provider"
 import { Providers } from './provider'
 import { Toaster } from "@/components/ui/toaster"
 
-
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -28,14 +27,14 @@ export default function RootLayout({
           <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet" />
         </head>
         <body className={inter.className} suppressHydrationWarning={true}>
-          <UserProvider>
-            <Providers>
-              <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-                {children}
-                <Toaster />
-              </ThemeProvider>
-            </Providers>
-          </UserProvider>
+            <UserProvider>
+              <Providers>
+                <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                  {children}
+                  <Toaster />
+                </ThemeProvider>
+              </Providers>
+            </UserProvider>
         </body>
       </html>
     </>

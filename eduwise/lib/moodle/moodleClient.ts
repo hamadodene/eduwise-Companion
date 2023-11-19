@@ -23,9 +23,9 @@ class MoodleClient {
         this.logger = options.logger || console
         this.service = options.service || 'moodle_mobile_app'
         this.strictSSL = options.strictSSL || true
-        if(options.token) {
+        if (options.token) {
             this.token = options.token
-        } else if(options.username && options.password){
+        } else if (options.username && options.password) {
             // try to get token
             this.authenticateClient(options.username, options.password)
         } else {
@@ -53,7 +53,7 @@ class MoodleClient {
                     'Content-Type': 'application/json'
                 }
             }
-            
+
             try {
                 const response = await fetch(`${this.url}/login/token.php?${queryParams}`, options)
                 const data = await response.json()
@@ -103,6 +103,28 @@ class MoodleClient {
             return responseData
         } catch (error) {
             throw new Error(`Moodle API request failed: ${error.message}`)
+        }
+    }
+
+    async download(options: { filepath: string }): Promise<any> {
+        if (!("filepath" in options)) {
+            return Promise.reject("missing file path to download");
+        }
+        const queryParams = new URLSearchParams({
+            token: this.token,
+            file: options.filepath
+        })
+        var uri: string = this.url + `/webservice/pluginfile.php?${queryParams}`
+
+        var request_options = {
+            method: "GET"
+        }
+        try {
+            const response = await fetch(uri, request_options)
+            const result = await response.blob()
+            return result
+        } catch (error) {
+            throw new Error(`Moodle download API request failed: ${error.message}`)
         }
     }
 }

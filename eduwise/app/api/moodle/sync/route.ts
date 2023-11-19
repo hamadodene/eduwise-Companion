@@ -28,6 +28,21 @@ interface CourseModel {
   systemPrompt: string
 }
 
+interface Content {
+  id?: string,
+  name: string,
+  filename: string,
+  url: string,
+  mimetype: string,
+  courseId?: string
+}
+
+interface OriginalContent {
+  filename: String
+  fileurl: String
+  mimetype: String
+  modulename: string
+}
 
 class DefaultCourse implements CourseModel {
   moodleCourseId: string
@@ -86,6 +101,7 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    let storeResponse: Course;
     // Compare and update courses in the database
     for (const course of coursesWithDefaults) {
       const existingCourse = existingCourses.find(
@@ -97,33 +113,94 @@ export async function POST(request: NextRequest) {
         const hasChanged = (
           existingCourse.shortname !== course.shortname ||
           existingCourse.fullname !== course.fullname ||
-          existingCourse.summary.replace( /(<([^>]+)>)/ig, '') !== course.summary
+          existingCourse.summary.replace(/(<([^>]+)>)/ig, '') !== course.summary
           // Add more fields to check for changes as needed
         )
 
         if (hasChanged) {
-          await prisma.course.update({
+          storeResponse = await prisma.course.update({
             where: { id: existingCourse.id },
             data: {
               shortname: course.shortname,
               fullname: course.fullname,
-              summary: course.summary.replace( /(<([^>]+)>)/ig, '')
+              summary: course.summary.replace(/(<([^>]+)>)/ig, '')
             },
           })
         }
       } else {
         // Course does not exist in the database, create it
-        await prisma.course.create({
+        storeResponse = await prisma.course.create({
           data: {
             moodleCourseId: course.moodleCourseId,
             shortname: course.shortname,
             fullname: course.fullname,
-            summary: course.summary.replace( /(<([^>]+)>)/ig, '') ,
+            summary: course.summary.replace(/(<([^>]+)>)/ig, ''),
             origin: course.origin,
             userId: course.userId,
             systemPrompt: course.systemPrompt
           }
         })
+      }
+
+      // get course Documents
+      const courseContents = await client.getCourseContents(course.moodleCourseId)
+      const parsedJson = JSON.parse(JSON.stringify(courseContents))
+      const allContents: OriginalContent[] = [];
+
+      parsedJson.forEach((section: { modules: any[] }) => {
+        section.modules.forEach((module) => {
+          const name = module.name
+          if (module.contents) {
+            allContents.push(
+              ...module.contents.map((content: { filename: any; fileurl: any; mimetype: any }) => ({
+                modulename: name,
+                filename: content.filename,
+                fileurl: content.fileurl,
+                mimetype: content.mimetype
+              }))
+            )
+          }
+        })
+      })
+
+      for (const content of allContents) {
+        const exist = await prisma.document.findFirst({
+          where: {
+            url: content.fileurl.toString()
+          }
+        })
+
+        try {
+          if (!exist) {
+            await prisma.document.create({
+              data: {
+                name: content.modulename,
+                filename: content.filename.toString(),
+                url: content.fileurl.toString(),
+                mimetype: content.mimetype.toString(),
+                courseId: storeResponse.id
+              }
+            })
+          } else {
+            await prisma.document.update({
+              where: {
+                id: exist.id
+              },
+              data: {
+                name: content.modulename,
+                filename: content.filename.toString(),
+                mimetype: content.mimetype.toString()
+              }
+            })
+          }
+        } catch (error) {
+          console.log(error)
+          return NextResponse.json({
+            status: 500,
+            message: "Some error occured on server side..",
+            success: false
+          })
+        }
       }
     }
     return NextResponse.json({ status: 200, success: true })

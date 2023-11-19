@@ -44,14 +44,13 @@ export async function GET(request: NextRequest) {
                 userId: userId
             },
             include: {
-                chats: true
+                chats: true,
+                documents: true
             }
         })
         return NextResponse.json(result)
-
     } catch (error) {
-        
+        console.log(error)
         return NextResponse.json({ status: 400, message: error })
-
     }
 }
