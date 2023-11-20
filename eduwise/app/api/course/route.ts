@@ -8,13 +8,12 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
         let origin = "custom"
-
         const {
             shortname,
             fullname,
             summary,
             userId
-        } = body
+        } = body.courseData
 
         const systemPrompt = generateCoursePrompt(fullname)
 
@@ -30,6 +29,7 @@ export async function POST(request: NextRequest) {
         })
         return NextResponse.json(result)
     } catch (error) {
+        console.log(error)
         return NextResponse.json({ status: 400, message: error })
     }
 }

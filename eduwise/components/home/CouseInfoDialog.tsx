@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from "react"
+import React from "react"
 
 import {
     Dialog,
@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/tabs"
 import InfoTab from "./InfoTab"
 import ContentsTab from "./ContentsTab"
-import { useDialog } from "../context/DialogContext"
 
 interface CourseInfoDialogProps {
     course: course

@@ -62,8 +62,8 @@ const ChatHistory = () => {
             {
                 loadingChat ? (
                     <div className='flex items-center justify-center h-full'>
-                        <Icons.animeted_spinner />
-                        <p className="text-center">Loading chats...</p>
+                        <Icons.animeted_spinner color="#087f5b" />
+                        <p className="text-center text-white">Loading chats...</p>
                     </div>
                 ) : chatList.length > 0 ? (
                     chatList.map((chat, index) => (
@@ -79,12 +79,13 @@ const ChatHistory = () => {
                                 <h2 className="text-lg text-white text-opacity-90 font-semibold line-clamp-1">{chat.userTitle || chat.autoTitle || "New chat"}</h2>
                                 <p className="text-sm text-white text-opacity-70">{chat.courseName}</p>
                             </div>
-                            <Button className="hidden bg-transparent hover:bg-transparent group-hover:block" onClick={(e) => {
-                                e.preventDefault()
-                                e.stopPropagation()
-                                openDialog(`deleteChatDialog${chat.id}`)
-                            }} variant="ghost"><Trash2 color="white" /></Button>
-
+                            <div className="ml-auto">
+                                <Button className="mr-auto hidden bg-transparent hover:bg-transparent group-hover:block" onClick={(e) => {
+                                    e.preventDefault()
+                                    e.stopPropagation()
+                                    openDialog(`deleteChatDialog${chat.id}`)
+                                }} variant="ghost"><Trash2 color="white" /></Button>
+                            </div>
                             <DeleteChatDialog
                                 isOpen={dialogs[`deleteChatDialog${chat.id}`]}
                                 toogleDialog={() => closeDialog(`deleteChatDialog${chat.id}`)}

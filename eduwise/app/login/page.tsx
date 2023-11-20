@@ -57,7 +57,6 @@ export default function page() {
 
 
   function handleChange(event: any) {
-    console.log(event.currentTarget)
     const { name, value } = event.currentTarget;
     setState({ ...state, [name]: value })
   }
@@ -74,7 +73,8 @@ export default function page() {
             }}
           />
           <div className="relative z-20 flex items-center text-lg font-medium">
-            <Command className="mr-2 h-6 w-6" /> Acme Inc
+            <Command className="mr-2 h-6 w-6" />
+             Comunity education platform
           </div>
           <div className="relative z-20 mt-auto">
             <blockquote className="space-y-2">
@@ -91,7 +91,7 @@ export default function page() {
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
             <div className="flex flex-col space-y-2 text-center">
               <h1 className="text-2xl font-semibold tracking-tight">
-                Login to eduwise
+                Login to Comunity Education Platform
               </h1>
               <p className="text-sm text-muted-foreground">
                 Enter your email below to login into your account

@@ -38,6 +38,7 @@ const DeleteChatDialog: React.FC<DeleteChatsDialogProps> = ({ chat, isOpen, toog
             } catch (error) {
                 console.log(error)
                 toast({
+                    variant: "destructive",
                     title: "Error occured during chat deletion"
                 })
             }

@@ -68,7 +68,7 @@ const MoodleSettings = () => {
 
     useEffect(() => {
         handleLoadMoodleCredentials()
-    }, [session])
+    }, [session, moodleEndpoint, moodleToken])
 
     const handleCheckMoodleSettings = async (e) => {
         e.preventDefault()

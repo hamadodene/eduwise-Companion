@@ -21,7 +21,7 @@ import {
     PRODUCER,
     CREDENTIALS
 } from '@/lib/config'
-import useWebSockets, { ConnectionType, WsMessage } from '@/hook/useLangStreamWebSocket'
+import useWebSockets, { ConnectionType, WsMessage } from '@/hooks/useLangStreamWebSocket'
 import * as z from "zod"
 import { useForm } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod"

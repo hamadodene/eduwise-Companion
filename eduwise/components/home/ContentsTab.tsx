@@ -91,7 +91,7 @@ const ContentsTab = (props: { course: course }) => {
 
     return (
         <div className="rounded-md overflow-y-auto p-4">
-            {contents.length === 0 ? (
+            {!contents || contents.length === 0 ? (
                 <p>No content for this selected course.</p>
             ) : (
                 <div className="flex flex-col">

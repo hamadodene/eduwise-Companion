@@ -10,6 +10,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { useRouter } from 'next/navigation'
 import { useCourseContext } from "@/components/context/CourseContext"
 import { useLocalChatStore } from "@/lib/chat/local-chat-state"
+import { Separator } from "../ui/separator"
 
 const Courses = ({ courses }) => {
     const { dialogs, openDialog, closeDialog } = useDialog()
@@ -50,7 +51,7 @@ const Courses = ({ courses }) => {
         <>
             {
                 courses.map((course: course) => (
-                    <div key={course.id} className="relative hover:cursor-pointer border rounded-lg hover:border-[#63e6be] w-full">
+                    <div key={course.id} className="relative hover:cursor-pointer border-2 shadow-xl rounded-lg hover:border-[#20c997] w-full">
                         <div className="max-w-md mx-auto rounded-lg overflow-hidden md:max-w-2xl mb-2" onClick={(e) => {
                             e.preventDefault()
                             openDialog(`courseDialog${course.id}`)
@@ -61,7 +62,8 @@ const Courses = ({ courses }) => {
                                     <p className="text-gray-500 text-sm mb-4 line-clamp-3">{course.summary}</p>
                                     <div className="flex mb-4 gap-4">
                                         <div className="flex items-center text-sm ">
-                                            <CircleIcon className="mr-1 h-3 w-3 fill-red-400 text-sky-400" />
+                                            <CircleIcon className={`mr-1 h-3 w-3
+                                             ${course.origin === "moodle" ? "fill-red-400" : "fill-yellow-400"} text-sky-400`} />
                                             {course.origin}
                                         </div>
                                         <div className="flex items-center text-sm ">
@@ -73,12 +75,14 @@ const Courses = ({ courses }) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="w-full h-8 rounded ml-auto mr-auto items-center justify-center border-[#12b886] absolute bottom-0">
-                            <div onClick={(e) => handleCreateChat(e, course)}
-                                className="flex items-center justify-center p-1 gap-2 w-full hover:cursor-pointer bg-[#20c997] rounded">
-                                <PlusIcon size={15} color="white" /> <p className="text-white">Create chat</p>
+
+                        <div className="w-full rounded absolute bottom-0">
+                            <Separator className="bg-[#20c997]"/>
+                            <div onClick={(e) => handleCreateChat(e, course)} className="flex items-center justify-center p-2 gap-2 hover:cursor-pointer bg-slate-200">
+                                <PlusIcon size={15} /><p>Create chat</p>
                             </div>
                         </div>
+
                         <CourseInfoDialog
                             isOpen={dialogs[`courseDialog${course.id}`]}
                             toogleDialog={() => closeDialog(`courseDialog${course.id}`)}

@@ -168,26 +168,34 @@ export async function updateAutoConversationTitle(chatId: string, userId: string
   }
 }
 
-export async function getSuggestions(chatId: string, userId: string, openaiCredential) {
+export async function getSuggestions(
+  chatId: string,
+  userId: string,
+  openaiCredential
+) {
   // external state
   const { setSuggestion, chats } = useLocalChatStore.getState()
 
-  // only operate on valid conversations, without any title
+  // only operate on valid conversations
   const chat = chats.find(c => c.id === chatId) ?? null
   if (!chat || chat.suggestions.length !== 0) {
     return
-  } 
+  }
 
-  // first line of the last 10 messages
+  //last 10 messages
   const historyLines: string[] = chat.messages.slice(-10).map(m => {
     const text = `${m.role === 'user' ? 'You' : 'Assistant'}: ${m.text}`;
     return `- ${text}`;
   })
 
   // We try first use user key, otherwise we use default key
-  const apiKey = (openaiCredential.apiKey || process.env.NEXT_PUBLIC_OPENAI_API_KEY || '').trim()
-  const apiHost = (process.env.OPENAI_API_HOST || 'api.openai.com').trim().replaceAll('https://', '')
-  const apiOrganizationId = (openaiCredential.apiOrganizationId || process.env.NEXT_PUBLIC_OPENAI_API_ORG_ID || '').trim()
+  const apiKey = (openaiCredential.apiKey
+    || process.env.NEXT_PUBLIC_OPENAI_API_KEY
+    || '').trim()
+  const apiHost = (process.env.OPENAI_API_HOST
+    || 'api.openai.com').trim().replaceAll('https://', '')
+  const apiOrganizationId = (openaiCredential.apiOrganizationId
+    || process.env.NEXT_PUBLIC_OPENAI_API_ORG_ID || '').trim()
 
   const payload: ApiChatInput = {
     api: {
@@ -198,7 +206,11 @@ export async function getSuggestions(chatId: string, userId: string, openaiCrede
     userId: userId,
     model: fastChatModelId,
     messages: [
-      { role: 'system', content: `You are an AI language expert capable of generating suggestions that can help students improve their skills or fill in their gaps.` },
+      {
+        role: 'system',
+        content: `You are an AI language expert capable of 
+        generating suggestions that can help students
+        improve their skills or fill in their gaps.` },
       {
         role: 'user', content:
           generateSuggestionPrompt(chat.courseName) +
@@ -217,10 +229,10 @@ export async function getSuggestions(chatId: string, userId: string, openaiCrede
     })
     if (response.ok) {
       const chatResponse: ApiChatResponse = await response.json()
-      const resp: suggestions[] = JSON.parse(chatResponse.message.content) 
+      const resp: suggestions[] = JSON.parse(chatResponse.message.content)
       setSuggestion(chatId, resp)
     }
   } catch (error: any) {
-    console.error('updateAutoConversationTitle: fetch request error:', error)
+    console.error('getSuggestion: fetch request error:', error)
   }
 }
