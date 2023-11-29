@@ -38,7 +38,7 @@ function generateUniqueId(): string {
     const timestamp = new Date().getTime().toString(16);
     const randomPart = Math.random().toString(16).substr(2, 8);
     return `${timestamp}${randomPart}`;
-  }
+}
 
 const runAssistantUpdatingState = async (chat: ChatModel, assistantModelId: string, userId: string, history: Message[],
     openaiCredential) => {
@@ -89,6 +89,7 @@ const Chat = () => {
     const parts = chatPathName.split('/')
     const chatId = parts[parts.length - 1]
     const { connect, isConnected, messages, sendMessage, waitingForMessage } = useWebSockets()
+    const [relatedDocuments, setRelatedDocuments] = useState<WsMessage>()
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -163,21 +164,31 @@ const Chat = () => {
         loadOpenAiCredential()
     }, [session, isConnected])
 
+    useEffect(() => {
+        const checkMessage = () => {
+            if (!waitingForMessage && messages.length > 0) {
+                setRelatedDocuments(messages.pop())
+            }
+        }
+        checkMessage()
+    }, [waitingForMessage, messages])
+
     const _findConversation = (conversationId: string) =>
         conversationId ? useLocalChatStore.getState().chats.find(c => c.id === conversationId) ?? null : null
 
     function waitForMessage(): Promise<void> {
         return new Promise<void>((resolve) => {
             const checkMessage = () => {
-                if (!waitingForMessage && !(messages.length === 0)) {
+                if (!waitingForMessage || relatedDocuments) {
                     resolve()
                 } else {
                     setTimeout(checkMessage, 1000)
                 }
-            }
+            };
             checkMessage()
-        })
+        });
     }
+
 
     const handleSendMessage = async (data: z.infer<typeof FormSchema>) => {
         //const chat = await useChatStore.getChatInfo(chatId)
@@ -198,26 +209,23 @@ const Chat = () => {
             apiOrganizationId: apiOrganizationId,
             model: gptModel
         }
-        let relatedDocuments: WsMessage
+        //let relatedDocuments: WsMessage
         // try get related documents from langStream
-        !isConnected? connectWs(): ''
+        !isConnected ? connectWs() : ''
         if (isConnected) {
             sendMessage(chat.courseName + ":" + data.chat_message)
             await waitForMessage()
-
-            relatedDocuments = messages.pop()
         } else {
             console.log('LangStream is not connected, continue without related documents')
         }
-
         if (chat && openaiCredential.model) {
             const userMessageStored = await useChatStore.addMessageToChat(chatId, userMsg.text, userMsg.sender, userMsg.role, session.user.id)
             editMessage(chatId, tmpId, userMessageStored, false)
             let text = ""
-            if(!relatedDocuments) {
+            if (!relatedDocuments) {
                 text = userMessageStored.text
             } else {
-                text = userMessageStored.text + "\n relatedDocuments=" + relatedDocuments?.value 
+                text = userMessageStored.text + "\n relatedDocuments=" + relatedDocuments?.value
             }
             if (userMessageStored.id) {
                 const userMessageStoredWithReleatedDocuments = {

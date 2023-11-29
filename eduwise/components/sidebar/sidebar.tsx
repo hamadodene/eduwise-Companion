@@ -47,7 +47,7 @@ const Sidebar = () => {
                     <div className='space-x-2 text-white text-opacity-100 flex items-center'>
                         {/*<PlusIcon size={15} />*/}
                         <div className='bg-white rounded-xl w-8 h-8 flex justify-center items-center'>
-                            <img src="/cep_logo_mini.png" />
+                            <img src="/logo.png" />
                         </div>
                         <h1>New chat</h1>
                     </div>

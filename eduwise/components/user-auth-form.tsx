@@ -70,7 +70,11 @@ export function UserAuthForm({ ...props }) {
         <Button
           variant="outline"
           type="button"
-          onClick={() => signIn('github', { redirect: true, callbackUrl: '/' })}
+          onClick={() => signIn('github',
+            {
+              redirect: true,
+              callbackUrl: '/'
+            })}
           disabled={props.isLoading}>
           {props.isLoading ? (
             <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />

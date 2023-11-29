@@ -42,7 +42,7 @@ const MessageList = (props: { chatId: string }) => {
                     ))
             ) : (
                 <div className="flex flex-col items-center justify-center h-full">
-                    <img src="/cep_logo_1.png" alt="" className="" />
+                    <img src="/logo.png" alt="" className="h-32 w-32" />
                     <div className="mt-4 text-center">
                         <h1 className="text-2xl">Welcome to Comunity education platform for Africa</h1>
                         <h2 className="mr-48 ml-48 mt-2">I am here to help you with any questions and doubts you have.

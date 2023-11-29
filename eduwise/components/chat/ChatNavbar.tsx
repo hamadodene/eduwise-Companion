@@ -36,7 +36,7 @@ const NavBar = () => {
                 </Button>
                 <div>
                     <h1 className="text-2xl font-semibold">{activeChat?.userTitle || activeChat?.autoTitle || "New conversation"}</h1>
-                    <p className="text-sm">{numMessage} message/s</p>
+                    <p className="text-sm">{numMessage-1} message/s</p>
                 </div>
 
             </div>
