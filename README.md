@@ -10,7 +10,8 @@
 ![frontend_architecture](https://github.com/hamadodene/eduwise-Companion/assets/43852233/c3b7d7ee-c546-4e0f-b50c-843adcde172d)
 
 ## LangStream Pipeline
-![langstream_pipeline_schema](https://github.com/hamadodene/eduwise-Companion/assets/43852233/ecfdf462-dc6e-4c12-b532-63b5b74d17c8)
+![langstream_pipeline](https://github.com/hamadodene/eduwise-Companion/assets/43852233/80a08f0d-d4e7-4c71-88a6-3e6e6a4503cc)
+
 
 ## Images
 
